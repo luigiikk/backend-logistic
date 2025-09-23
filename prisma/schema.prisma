@@ -15,3 +15,304 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  id            Int      @id @default(autoincrement())
+  enrollment    String   @unique
+  name          String?
+  email         String?  @unique
+  phone_number  String?
+  password_hash String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  vehicles   Vehicles[]
+  user_roles User_roles[]
+
+  @@map("users")
+}
+
+model Vehicles {
+  id         Int      @id @default(autoincrement())
+  plate      String   @unique
+  model      String?
+  capacity   Int?
+  status_id  Int
+  user_id    Int? // optional FK to Users
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  status Status   @relation(fields: [status_id], references: [id])
+  user   Users?   @relation(fields: [user_id], references: [id])
+  orders Orders[] @relation("VehicleOrders") // Orders that used this vehicle
+
+  @@map("vehicles")
+}
+
+model User_roles {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  roles_id   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  user Users @relation(fields: [user_id], references: [id])
+  role Roles @relation(fields: [roles_id], references: [id])
+
+  @@index([user_id])
+  @@index([roles_id])
+  @@map("user_roles")
+}
+
+model Roles {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  user_roles User_roles[]
+  clients    Client[]     @relation("ClientRoleRelation")
+
+  @@map("roles")
+}
+
+model Client {
+  id            Int      @id @default(autoincrement())
+  CPF           String?  @unique
+  CNPJ          String?  @unique
+  name          String?
+  email         String?  @unique
+  phone_number  String?
+  password_hash String?
+  client_roles  Int // FK to Roles.id (single role)
+  addres_id     Int?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  role            Roles     @relation("ClientRoleRelation", fields: [client_roles], references: [id])
+  addres          Addres?   @relation(fields: [addres_id], references: [id])
+  orders_sent     Orders[]  @relation("SenderOrders")
+  orders_received Orders[]  @relation("ReceiverOrders")
+  invoices        Invoice[]
+
+  @@index([client_roles])
+  @@index([addres_id])
+  @@map("client")
+}
+
+model Orders {
+  id                 Int      @id @default(autoincrement())
+  sender_client_id   Int
+  receiver_client_id Int
+  status_id          Int
+  vehicle_id         Int
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // relations
+  sender_client   Client     @relation("SenderOrders", fields: [sender_client_id], references: [id])
+  receiver_client Client     @relation("ReceiverOrders", fields: [receiver_client_id], references: [id])
+  status          Status     @relation(fields: [status_id], references: [id])
+  vehicle         Vehicles   @relation("VehicleOrders", fields: [vehicle_id], references: [id])
+  products        Products[]
+
+  @@index([sender_client_id])
+  @@index([receiver_client_id])
+  @@index([status_id])
+  @@index([vehicle_id])
+  @@map("orders")
+}
+
+model Products {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  order_id    Int
+  description String?
+  quantity    Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // relations
+  order Orders @relation(fields: [order_id], references: [id])
+
+  @@index([order_id])
+  @@map("products")
+}
+
+model Status {
+  id   Int    @id @default(autoincrement())
+  name String // you mentioned "enum" in the design — consider replacing with an enum in Prisma if you have fixed values
+
+  // relations
+  orders          Orders[]
+  invoices        Invoice[]
+  purchase_orders purchase_orders[]
+  Vehicles        Vehicles[]
+
+  @@map("status")
+}
+
+model Invoice {
+  id             Int       @id @default(autoincrement())
+  client_id      Int?
+  invoice_number Int?
+  issue_date     DateTime?
+  due_date       DateTime?
+  total_amount   Float?
+  tax_amount     Float?
+  status_id      Int
+  link_file      String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  // relations
+  client Client? @relation(fields: [client_id], references: [id])
+  status Status  @relation(fields: [status_id], references: [id])
+
+  @@index([client_id])
+  @@index([status_id])
+  @@map("invoice")
+}
+
+model Resources {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  description String?
+  quantity    Int?
+  category_id Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // relations
+  category             Category_Resource?     @relation(fields: [category_id], references: [id])
+  inventory            Inventory[]
+  purchase_order_items purchase_order_items[]
+
+  @@index([category_id])
+  @@map("resources")
+}
+
+model Category_Resource {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // relations
+  resources Resources[]
+
+  @@map("category_resource")
+}
+
+model purchase_order_items {
+  id                Int      @id @default(autoincrement())
+  purchase_order_id Int
+  resource_id       Int
+  quantity          Int?
+  unit_price        Float?
+  total_price       Float?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // relations
+  purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
+  resource       Resources       @relation(fields: [resource_id], references: [id])
+
+  @@index([purchase_order_id])
+  @@index([resource_id])
+  @@map("purchase_order_items")
+}
+
+model purchase_orders {
+  id          Int      @id @default(autoincrement())
+  supplier_id Int
+  status_id   Int
+  total_value Float?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // relations
+  supplier Supplier               @relation(fields: [supplier_id], references: [id])
+  status   Status                 @relation(fields: [status_id], references: [id])
+  items    purchase_order_items[]
+
+  @@index([supplier_id])
+  @@index([status_id])
+  @@map("purchase_orders")
+}
+
+model Supplier {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  CPF        String?  @unique
+  CNPJ       String?  @unique
+  contact    String?
+  addres_id  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  addres          Addres            @relation(fields: [addres_id], references: [id])
+  purchase_orders purchase_orders[]
+
+  @@index([addres_id])
+  @@map("supplier")
+}
+
+model Warehouses {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  addres_id  Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  addres    Addres?     @relation(fields: [addres_id], references: [id])
+  inventory Inventory[]
+
+  @@index([addres_id])
+  @@map("warehouses")
+}
+
+model Inventory {
+  id           Int      @id @default(autoincrement())
+  resource_id  Int
+  warehouse_id Int?
+  quantity     Int?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // relations
+  resource  Resources   @relation(fields: [resource_id], references: [id])
+  warehouse Warehouses? @relation(fields: [warehouse_id], references: [id])
+
+  @@index([resource_id])
+  @@index([warehouse_id])
+  @@map("inventory")
+}
+
+model Addres {
+  id         Int      @id @default(autoincrement())
+  street     String?
+  number     Int?
+  complement String?
+  city       String?
+  state      String?
+  country    String?
+  zipcode    String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  clients    Client[]
+  suppliers  Supplier[]
+  warehouses Warehouses[]
+
+  @@map("addres")
+}
