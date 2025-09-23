@@ -1,5 +1,6 @@
 import z from "zod";
 import type { FastifyTypedInstance } from "./types.js";
+import { register, userRegisterBodySchema } from "./http/controllers/register.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get("/users", {
@@ -20,14 +21,10 @@ export async function routes(app: FastifyTypedInstance) {
     schema: {
       tags: ['users'],
       description: 'Create new user',
-      body: z.object({
-        name: z.string(),
-      }),
+      body: userRegisterBodySchema,
       response: {
         201: z.null().describe('User created')
       }
     }
-  }, async(request, reply) => {
-    reply.status(201).send(null);
-  })
+  }, register)
 }
