@@ -3,6 +3,7 @@ import type { FastifyTypedInstance } from "./types.js";
 import { register, userRegisterBodySchema } from "./http/controllers/register.js";
 import { getAllUsers } from "./http/controllers/getAllUser.js";
 import { deleteUser } from "./http/controllers/deleteUser.js";
+import { getUser } from "./http/controllers/getUser.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get('/users', {
@@ -20,6 +21,24 @@ export async function routes(app: FastifyTypedInstance) {
     }
   }, getAllUsers);
 
+  app.get('/user/:id', {
+    schema: {
+      tags: ['users'],
+      description: 'List unique user by id',
+      params: z.object({
+        id:  z.coerce.number()
+      }),
+      response: {
+        200: z.object({
+          enrollment: z.string(),
+          name: z.string(),
+          email: z.email(),
+          phone_number: z.string(),
+        })
+      }
+    }
+  }, getUser);
+  
   app.post('/user', {
     schema: {
       tags: ['users'],

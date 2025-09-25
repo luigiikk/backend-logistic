@@ -23,6 +23,16 @@ export class PrismaUsersRepository {
 
     return listUsers;
   }
+  
+  async getUser(id: number){
+    const user = await prisma.users.findUnique({
+      where: {
+        id,
+      }
+    });
+    
+    return user;
+  }
 
   async deleteUser(id: number){
     await prisma.users.delete({
