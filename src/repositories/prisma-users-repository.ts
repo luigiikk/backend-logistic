@@ -24,10 +24,10 @@ export class PrismaUsersRepository {
     return listUsers;
   }
 
-  async deleteUser(enrollment: string){
+  async deleteUser(id: number){
     await prisma.users.delete({
       where: {
-        enrollment,
+        id,
       }
     })
   }

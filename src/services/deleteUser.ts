@@ -2,22 +2,23 @@ import { prisma } from "@/lib/prisma.js";
 import { PrismaUsersRepository } from "@/repositories/prisma-users-repository.js";
 
 
-export async function deleteUserService(enrollment: string) {
-  const user = await prisma.users.findUnique({
+export async function deleteUserService(id: number) {
+  const user = await prisma.users.findFirst({
     where: {
-      enrollment,
+      id,
     }
   })
-
-  if(user === null){
+  
+  if(!user){
     throw new Error('User not exists');
   }
+
   const prismaUsersRepository = new PrismaUsersRepository;
 
   try {
-    prismaUsersRepository.deleteUser(user.enrollment);
+    await prismaUsersRepository.deleteUser(user.id);
   } catch(error) {
-    console.error(error);
+    throw new Error("Error deleting user");
   }
   
 }

@@ -2,7 +2,7 @@ import z from "zod";
 import type { FastifyTypedInstance } from "./types.js";
 import { register, userRegisterBodySchema } from "./http/controllers/register.js";
 import { getAllUsers } from "./http/controllers/getAllUser.js";
-import { deleteUser, userDeleteBodySchema } from "./http/controllers/deleteUser.js";
+import { deleteUser } from "./http/controllers/deleteUser.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get('/users', {
@@ -20,7 +20,7 @@ export async function routes(app: FastifyTypedInstance) {
     }
   }, getAllUsers);
 
-  app.post('/users', {
+  app.post('/user', {
     schema: {
       tags: ['users'],
       description: 'Create new user',
@@ -31,11 +31,13 @@ export async function routes(app: FastifyTypedInstance) {
     }
   }, register)
 
-  app.delete('/users', {
+  app.delete('/user/:id', {
     schema: {
       tags: ['users'],
       description: 'Delete user by id',
-      body: userDeleteBodySchema,
+      params: z.object({
+        id:  z.coerce.number()
+      }),
       response: {
         200: z.string(),
       }
