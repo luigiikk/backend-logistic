@@ -10,4 +10,27 @@ export class PrismaUsersRepository {
 
     return user;
   }
+
+  async getAllUsers(){
+    const users = await prisma.users.findMany();
+    
+    const listUsers = users.map(({ name, enrollment, email, phone_number }) => ({
+      name,
+      enrollment,
+      email,
+      phone_number
+    }));
+
+    return listUsers;
+  }
+
+  async deleteUser(id: number){
+    const userDeleted = await prisma.users.delete({
+      where: {
+        id,
+      }
+    })
+
+    return userDeleted;
+  }
 }

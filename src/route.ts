@@ -1,6 +1,7 @@
 import z from "zod";
 import type { FastifyTypedInstance } from "./types.js";
 import { register, userRegisterBodySchema } from "./http/controllers/register.js";
+import { getAllUsers } from "./http/controllers/getAllUser.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get("/users", {
@@ -9,13 +10,14 @@ export async function routes(app: FastifyTypedInstance) {
       description: 'List users',
       response: {
         200: z.array(z.object({
-          name: z.string()
+          enrollment: z.string(),
+          name: z.string(),
+          email: z.email(),
+          phone_number: z.string(),
         }))
       }
     }
-  }, () => {
-    return [];
-  });
+  }, getAllUsers);
 
   app.post('/users', {
     schema: {
