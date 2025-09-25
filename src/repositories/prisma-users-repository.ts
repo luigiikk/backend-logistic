@@ -24,13 +24,11 @@ export class PrismaUsersRepository {
     return listUsers;
   }
 
-  async deleteUser(id: number){
-    const userDeleted = await prisma.users.delete({
+  async deleteUser(enrollment: string){
+    await prisma.users.delete({
       where: {
-        id,
+        enrollment,
       }
     })
-
-    return userDeleted;
   }
 }

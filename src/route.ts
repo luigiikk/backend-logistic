@@ -2,9 +2,10 @@ import z from "zod";
 import type { FastifyTypedInstance } from "./types.js";
 import { register, userRegisterBodySchema } from "./http/controllers/register.js";
 import { getAllUsers } from "./http/controllers/getAllUser.js";
+import { deleteUser, userDeleteBodySchema } from "./http/controllers/deleteUser.js";
 
 export async function routes(app: FastifyTypedInstance) {
-  app.get("/users", {
+  app.get('/users', {
     schema: {
       tags: ['users'],
       description: 'List users',
@@ -29,4 +30,15 @@ export async function routes(app: FastifyTypedInstance) {
       }
     }
   }, register)
+
+  app.delete('/users', {
+    schema: {
+      tags: ['users'],
+      description: 'Delete user by id',
+      body: userDeleteBodySchema,
+      response: {
+        200: z.string(),
+      }
+    }
+  }, deleteUser)
 }
