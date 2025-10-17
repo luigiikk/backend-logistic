@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma.js";
+import type { UserUpdateParams } from "@/services/updateUser.js";
 import { Prisma } from "@prisma/client";
 
 
@@ -30,7 +31,7 @@ export class PrismaUsersRepository {
         id,
       }
     });
-    
+
     return user;
   }
 
@@ -40,5 +41,16 @@ export class PrismaUsersRepository {
         id,
       }
     })
+  }
+
+  async updateUser(id: number, data: UserUpdateParams) {
+    const userExists = await prisma.users.findUnique({ where: { id } });
+    if (!userExists) {
+      throw new Error('User not found');
+    }
+    await prisma.users.update({
+      where: { id }, 
+      data,            
+    });
   }
 }

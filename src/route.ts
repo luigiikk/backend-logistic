@@ -4,6 +4,7 @@ import { register, userRegisterBodySchema } from "./http/controllers/register.js
 import { getAllUsers } from "./http/controllers/getAllUser.js";
 import { deleteUser } from "./http/controllers/deleteUser.js";
 import { getUser } from "./http/controllers/getUser.js";
+import { updateUser, userUpdateBodySchema } from "./http/controllers/updateUser.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get('/users', {
@@ -62,4 +63,18 @@ export async function routes(app: FastifyTypedInstance) {
       }
     }
   }, deleteUser)
+
+  app.put('/user/:id', {
+    schema: {
+      tags: ['users'],
+      description: 'Update user',
+      params: z.object({
+        id:  z.coerce.number()
+      }),
+      body: userUpdateBodySchema,
+      response: {
+        204: z.null().describe('User Updated')
+      }      
+    }
+  }, updateUser)
 }
