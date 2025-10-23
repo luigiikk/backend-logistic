@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma.js";
-import { PrismaUsersRepository } from "@/repositories/prisma-users-repository.js";
+import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repository.js";
 import { hash } from "bcryptjs";
 
-interface UserRegisterParams {
-  enrollment: string;
+interface CompanyRegisterParams {
+  CNPJ: string;
   name: string;
   email: string;
   phone_number: string;
@@ -14,38 +14,40 @@ export async function registerService({
   name,
   email,
   password,
-  enrollment,
+  CNPJ,
   phone_number,
-}: UserRegisterParams) {
+}: CompanyRegisterParams) {
   const password_hash = await hash(password, 6);
 
-  const userWithSameEmail = await prisma.users.findUnique({
+  const companyWithSameEmail = await prisma.companies.findUnique({
     where: {
       email,
     },
   });
 
-  const userWithSameEnrollment = await prisma.users.findUnique({
+  const companyWithSameEnrollment = await prisma.companies.findUnique({
     where: {
-      enrollment,
+      CNPJ,
     },
   });
 
-  if (userWithSameEmail) {
+  if (companyWithSameEmail) {
     throw new Error("Email already exists");
   }
 
-  if (userWithSameEnrollment) {
+  if (companyWithSameEnrollment) {
     throw new Error("Enrollment already exists");
   }
 
-  const prismaUsersRepository = new PrismaUsersRepository;
+  const prismaCompaniesRepository = new PrismaCompaniesRepository;
 
-  await prismaUsersRepository.create({
+  const company = await prismaCompaniesRepository.create({
     name,
     email,
     password_hash,
-    enrollment,
+    CNPJ,
     phone_number,
   });
+
+  return company;
 }

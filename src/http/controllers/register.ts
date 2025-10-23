@@ -2,24 +2,24 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 import { registerService } from "@/services/register.js";
 
-export const userRegisterBodySchema = z.object({
-  enrollment: z.string(),
+export const companyRegisterBodySchema = z.object({
   name: z.string(),
   email: z.email(),
   phone_number: z.string(),
+  CNPJ: z.string(),
   password: z.string().min(6),
 });
 
-type RegisterBody = z.infer<typeof userRegisterBodySchema>;
+type RegisterBody = z.infer<typeof companyRegisterBodySchema>;
 
 export async function register(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, enrollment, email, password, phone_number } = request.body;
+  const { name, email, password, phone_number, CNPJ } = request.body;
 
   try {
-    await registerService({ name, enrollment, email, password, phone_number });
+    await registerService({ name, CNPJ, email, password, phone_number });
   } catch (error) {
     return reply.status(409).send();
   }
