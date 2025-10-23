@@ -1,8 +1,7 @@
-import { prisma } from "@/lib/prisma.js";
 import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repository.js";
 
 export interface CompanyUpdateParams {
-  cnpj: string;
+  CNPJ: string;
   name: string;
   email: string;
   phone_number: string;
@@ -11,7 +10,7 @@ export interface CompanyUpdateParams {
 export async function updateCompanyService(id:number, {
   name,
   email,
-  cnpj,
+  CNPJ,
   phone_number,
 }: CompanyUpdateParams) {
  
@@ -20,7 +19,7 @@ export async function updateCompanyService(id:number, {
   await prismaCompaniesRepository.updateCompany(id, {
     name,
     email,
-    cnpj,
+    CNPJ,
     phone_number,
   });
 }

@@ -6,7 +6,7 @@ export const companyUpdateBodySchema = z.object({
   name: z.string(),
   email: z.email(),
   phone_number: z.string(),
-  cnpj: z.string(),
+  CNPJ: z.string(),
 });
 
 type RegisterBody = z.infer<typeof companyUpdateBodySchema>;
@@ -15,11 +15,11 @@ export async function updateCompany(
   request: FastifyRequest<{ Params: { id: number }, Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name,  email, phone_number, cnpj } = request.body;
+  const { name,  email, phone_number, CNPJ } = request.body;
   const { id } = request.params;
 
   try {
-    await updateCompanyService(id, { name, email, phone_number, cnpj});
+    await updateCompanyService(id, { name, email, phone_number, CNPJ});
   } catch (error) {
     return reply.status(409).send();
   }

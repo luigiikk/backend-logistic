@@ -25,7 +25,7 @@ export async function registerService({
     },
   });
 
-  const companyWithSameEnrollment = await prisma.companies.findUnique({
+  const companyWithSameCNPJ = await prisma.companies.findUnique({
     where: {
       CNPJ,
     },
@@ -35,8 +35,8 @@ export async function registerService({
     throw new Error("Email already exists");
   }
 
-  if (companyWithSameEnrollment) {
-    throw new Error("Enrollment already exists");
+  if (companyWithSameCNPJ) {
+    throw new Error("CNPJ already exists");
   }
 
   const prismaCompaniesRepository = new PrismaCompaniesRepository;
