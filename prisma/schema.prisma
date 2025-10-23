@@ -16,53 +16,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id            Int      @id @default(autoincrement())
-  enrollment    String   @unique
+model Companies {
+  id            Int       @id @default(autoincrement())
   name          String?
-  email         String?  @unique
+  email         String?   @unique
   phone_number  String?
+  CNPJ          String?  @unique
   password_hash String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
   // relations
   vehicles   Vehicles[]
-  user_roles User_roles[]
+  employees  Employees[]
 
-  @@map("users")
+  @@map("companies")
+}
+
+model Employees {
+  id            Int       @id @default(autoincrement())
+  company_id    Int
+  enrollment    String    @unique
+  name          String
+  email         String    @unique
+  phone_number  String?
+  password_hash String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // relations
+  company     Companies  @relation(fields: [company_id], references: [id])
+  user_roles  User_roles[]
+
+  @@map("employees")
 }
 
 model Vehicles {
-  id         Int      @id @default(autoincrement())
-  plate      String   @unique
-  model      String?
-  capacity   Int?
-  status_id  Int
-  user_id    Int? // optional FK to Users
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  plate       String    @unique
+  model       String?
+  capacity    Int?
+  status_id   Int
+  company_id  Int        // 🚀 Nova coluna
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
 
   // relations
-  status Status   @relation(fields: [status_id], references: [id])
-  user   Users?   @relation(fields: [user_id], references: [id])
-  orders Orders[] @relation("VehicleOrders") // Orders that used this vehicle
+  status   Status    @relation(fields: [status_id], references: [id])
+  company  Companies @relation(fields: [company_id], references: [id])
+  orders   Orders[]  @relation("VehicleOrders")
 
+  @@index([status_id])
+  @@index([company_id])
   @@map("vehicles")
 }
 
 model User_roles {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  roles_id   Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id           Int       @id @default(autoincrement())
+  employee_id  Int
+  roles_id     Int
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   // relations
-  user Users @relation(fields: [user_id], references: [id])
-  role Roles @relation(fields: [roles_id], references: [id])
+  employee Employees @relation(fields: [employee_id], references: [id])
+  role     Roles     @relation(fields: [roles_id], references: [id])
 
-  @@index([user_id])
+  @@index([employee_id])
   @@index([roles_id])
   @@map("user_roles")
 }
