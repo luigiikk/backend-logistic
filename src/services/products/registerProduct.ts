@@ -12,10 +12,9 @@ export async function registerProductService({
   name,
   description,
   quantity,
-  order_id
+  order_id,
 }: ProductRegisterParams) {
-
-    const orderExists = await prisma.orders.findUnique({
+  const orderExists = await prisma.orders.findUnique({
     where: { id: order_id },
   });
 
@@ -23,12 +22,12 @@ export async function registerProductService({
     throw new Error("Order not found");
   }
 
-  const prismaProductsRepository = new PrismaProductsRepository;
+  const prismaProductsRepository = new PrismaProductsRepository();
 
   await prismaProductsRepository.create({
     name,
     description,
     quantity,
-    order: { connect: { id: order_id } }, 
+    order: { connect: { id: order_id } },
   });
 }
