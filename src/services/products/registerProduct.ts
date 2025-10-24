@@ -22,12 +22,21 @@ export async function registerProductService({
     throw new Error("Order not found");
   }
 
+  const existingProduct = await prisma.products.findFirst({
+    where: { name, description, order_id },
+  });
+
+  if (existingProduct) {
+    throw new Error("Product with this name and description already exists in this order");
+  }
+
   const prismaProductsRepository = new PrismaProductsRepository();
 
-  await prismaProductsRepository.create({
+  const product = await prismaProductsRepository.create({
     name,
     description,
     quantity,
     order: { connect: { id: order_id } },
   });
+  return product; 
 }

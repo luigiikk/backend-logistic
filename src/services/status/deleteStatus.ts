@@ -9,7 +9,7 @@ export async function deleteStatusService(id: number) {
   });
 
   if (!status) {
-    throw new Error("Status not exists");
+    throw new Error("Status not found");
   }
 
   const prismasStatusRepository = new PrismaStatusRepository();
@@ -19,4 +19,5 @@ export async function deleteStatusService(id: number) {
   } catch (error) {
     throw new Error("Error deleting status");
   }
+  return status;
 }

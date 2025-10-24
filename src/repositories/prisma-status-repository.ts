@@ -10,10 +10,10 @@ export class PrismaStatusRepository {
     return status;
   }
 
-  async getDefault(user_id: number, type: string) {
+  async getDefault(company_id: number, type: string) {
     const status = await prisma.status.findFirst({
       where: {
-        user_id,
+        company_id,
         type,
         is_default: true,
       },
@@ -29,7 +29,7 @@ export class PrismaStatusRepository {
         name: true,
         type: true,
         is_default: true,
-        user_id: true,
+        company_id: true,
       },
       orderBy: {
         id: "asc",

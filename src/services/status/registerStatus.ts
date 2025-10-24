@@ -4,20 +4,20 @@ interface RegisterStatusParams {
   name: string;
   type: "order" | "vehicle" | "invoice" | "purchase_order";
   is_default?: boolean;
-  user_id: number;
+  company_id: number;
 }
 
 export async function registerStatusService({
   name,
   type,
   is_default = false,
-  user_id,
+  company_id,
 }: RegisterStatusParams) {
   const prismaStatusRepository = new PrismaStatusRepository();
 
   if (is_default) {
     const existingDefault = await prismaStatusRepository.getDefault(
-      user_id,
+      company_id,
       type
     );
 
@@ -30,8 +30,8 @@ export async function registerStatusService({
     name,
     type,
     is_default,
-    user: {
-      connect: { id: user_id },
+    company: {
+      connect: { id: company_id },
     },
   });
 

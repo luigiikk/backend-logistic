@@ -19,4 +19,6 @@ export async function deleteProductService(id: number) {
   } catch (error) {
     throw new Error("Error deleting product");
   }
+  return product;
+  
 }
