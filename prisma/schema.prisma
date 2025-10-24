@@ -29,6 +29,7 @@ model Companies {
   // relations
   vehicles   Vehicles[]
   employees  Employees[]
+  status     Status[]
 
   @@map("companies")
 }
@@ -167,12 +168,17 @@ model Products {
 model Status {
   id   Int    @id @default(autoincrement())
   name String // you mentioned "enum" in the design — consider replacing with an enum in Prisma if you have fixed values
+  type String
+  is_default Boolean @default(false)
+  company_id  Int
 
   // relations
   orders          Orders[]
   invoices        Invoice[]
   purchase_orders purchase_orders[]
   Vehicles        Vehicles[]
+
+  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
 
   @@map("status")
 }
