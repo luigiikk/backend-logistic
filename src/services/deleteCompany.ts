@@ -3,7 +3,7 @@ import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repos
 
 
 
-export async function deleteCompanieservice(id: number) {
+export async function deleteCompanyService(id: number) {
   const company = await prisma.companies.findFirst({
     where: {
       id,
