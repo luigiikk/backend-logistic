@@ -4,17 +4,13 @@ import { registerStatusService } from "@/services/status/registerStatus.js";
 import { getAllStatusService } from "@/services/status/getAllStatus.js";
 import { getStatusService } from "@/services/status/getStatus.js";
 import { deleteStatusService } from "@/services/status/deleteStatus.js";
+import { clearDatabase } from "../helpers/db.js";
 
 describe("Status Services", () => {
   let companyId: number;
 
   beforeEach(async () => {
-    await prisma.products.deleteMany();
-    await prisma.orders.deleteMany();
-    await prisma.vehicles.deleteMany();
-    await prisma.status.deleteMany();
-    await prisma.client.deleteMany();
-    await prisma.companies.deleteMany();
+    await clearDatabase()
 
     const company = await prisma.companies.create({
       data: {

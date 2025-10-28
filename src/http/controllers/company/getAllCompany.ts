@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { getAllUsersService } from "@/services/getAllCompanies.js";
+import { getAllCompaniesService } from "@/services/getAllCompanies.js";
 
 
 export async function getAllCompanies(
@@ -8,8 +8,8 @@ export async function getAllCompanies(
 ) {
 
   try {
-    const users = await getAllCompaniesService();
-    return reply.status(200).send(users);
+    const companies = await getAllCompaniesService();
+    return reply.status(200).send(companies);
   } catch (error) {
     return reply.status(409).send();
   }  

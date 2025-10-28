@@ -1,10 +1,10 @@
 import z from "zod";
 import type { FastifyTypedInstance } from "./types.js";
-import {companyRegisterBodySchema,register,} from "./http/controllers/register.js";
-import { getCompany } from "./http/controllers/getCompany.js";
-import { getAllCompanies } from "./http/controllers/getAllCompany.js";
-import { deleteCompany } from "./http/controllers/deleteCompany.js";
-import {companyUpdateBodySchema,updateCompany,} from "./http/controllers/updateCompany.js";
+import {companyRegisterBodySchema,register,} from "./http/controllers/company/register.js";
+import { getCompany } from "./http/controllers/company/getCompany.js";
+import { getAllCompanies } from "./http/controllers/company/getAllCompany.js";
+import { deleteCompany } from "./http/controllers/company/deleteCompany.js";
+import {companyUpdateBodySchema,updateCompany,} from "./http/controllers/company/updateCompany.js";
 import {registerProduct,productRegisterBodySchema,} from "./http/controllers/products/registerProduct.js";
 import { getAllProducts } from "./http/controllers/products/getAllProduct.js";
 import { getProduct } from "./http/controllers/products/getProduct.js";
