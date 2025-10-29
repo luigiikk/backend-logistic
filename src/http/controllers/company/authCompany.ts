@@ -20,7 +20,7 @@ export async function authCompany(
    const company = await authCompanyService({ CNPJ, password });
 
    const token = await reply.jwtSign(
-    { sub: company.id }, 
+    { sub: company.id, role: 'company' }, 
     { expiresIn: "1d" } 
   );
 
