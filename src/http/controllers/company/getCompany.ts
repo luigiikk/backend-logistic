@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { getCompanyService } from "@/services/getCompany.js";
+import { getCompanyService } from "@/services/company/getCompany.js";
 
 
 export async function getCompany(

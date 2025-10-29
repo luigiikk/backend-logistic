@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma.js";
-import type { CompanyUpdateParams } from "@/services/updateCompany.js";
+import type { CompanyUpdateParams } from "@/services/company/updateCompany.js";
 import { Prisma } from "@prisma/client";
 
 
