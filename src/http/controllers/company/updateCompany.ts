@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
-import { updateCompanyService } from "@/services/updateCompany.js";
+import { updateCompanyService } from "@/services/company/updateCompany.js";
 
 export const companyUpdateBodySchema = z.object({
   name: z.string(),
