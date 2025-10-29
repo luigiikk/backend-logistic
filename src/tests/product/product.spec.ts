@@ -4,6 +4,7 @@ import { registerProductService } from "@/services/products/registerProduct.js";
 import { getProductService } from "@/services/products/getProduct.js";
 import { getAllProductsService } from "@/services/products/getAllProduct.js";
 import { deleteProductService } from "@/services/products/deleteProduct.js";
+import { clearDatabase } from "../helpers/db.js";
 
 describe("Product Services", () => {
   let companyId: number;
@@ -15,12 +16,7 @@ describe("Product Services", () => {
 
   beforeEach(async () => {
 
-    await prisma.products.deleteMany();
-    await prisma.orders.deleteMany();
-    await prisma.vehicles.deleteMany();
-    await prisma.status.deleteMany();
-    await prisma.client.deleteMany();
-    await prisma.companies.deleteMany();
+    await clearDatabase()
 
     const company = await prisma.companies.create({
       data: {

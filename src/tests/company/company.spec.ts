@@ -4,11 +4,12 @@ import { registerService } from "@/services/register.js";
 import { updateCompanyService } from "@/services/updateCompany.js";
 import { getCompanyService } from "@/services/getCompany.js";
 import { getAllCompaniesService } from "@/services/getAllCompanies.js";
-import { deleteCompanieservice } from "@/services/deleteCompany.js";
+import { deleteCompanyService } from "@/services/deleteCompany.js";
+import { clearDatabase, resetDatabase } from "../helpers/db.js";
 
 describe("Company Routes", () => {
   beforeEach(async () => {
-    await prisma.companies.deleteMany();
+    await clearDatabase()
   });
 
   describe("Company register", () => {
@@ -143,14 +144,14 @@ describe("Company Routes", () => {
         password: "123456",
       });
   
-      await deleteCompanieservice(company.id);
+      await deleteCompanyService(company.id);
   
       const deletedCompany = await prisma.companies.findUnique({ where: { id: company.id } });
       expect(deletedCompany).toBeNull();
     });
   
     it("should throw an error if company does not exist", async () => {
-      await expect(deleteCompanieservice(999)).rejects.toThrow("Company not exists");
+      await expect(deleteCompanyService(999)).rejects.toThrow("Company not exists");
     });
   });
 });

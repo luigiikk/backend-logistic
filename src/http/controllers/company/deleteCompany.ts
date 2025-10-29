@@ -1,4 +1,4 @@
-import { deleteUserService } from "@/services/deleteCompany.js";
+import { deleteCompanyService } from "@/services/deleteCompany.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 
