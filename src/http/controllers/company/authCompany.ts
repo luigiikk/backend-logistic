@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
-import { registerService } from "@/services/company/register.js";
 import { authCompanyService } from "@/services/company/authCompany.js";
 
 export const companyAuthBodySchema = z.object({
