@@ -1,5 +1,5 @@
 import z from "zod";
-import type { FastifyTypedInstance } from "./types.js";
+import type { FastifyTypedInstance } from "./@types/types.js";
 import {companyRegisterBodySchema,register,} from "./http/controllers/company/register.js";
 import { getCompany } from "./http/controllers/company/getCompany.js";
 import { getAllCompanies } from "./http/controllers/company/getAllCompany.js";
@@ -114,7 +114,7 @@ export async function routes(app: FastifyTypedInstance) {
         description: "Auth company",
         body: companyAuthBodySchema,
         response: {
-          204: z.null().describe("Auth company"),
+          204: z.object({ token: z.string() }),
         },
       },
     },

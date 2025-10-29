@@ -5,6 +5,7 @@ import { env } from "@/env/index.js";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { routes } from "./route.js";
+import fastifyJwt from "@fastify/jwt";
 
 // input data
 app.setValidatorCompiler(validatorCompiler);
@@ -27,6 +28,9 @@ app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 });
 
+app.register(fastifyJwt, {
+  secret: env.JWT_SECRET,
+});
 app.register(routes);
 
 app.listen({

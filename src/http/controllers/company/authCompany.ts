@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 import { authCompanyService } from "@/services/company/authCompany.js";
+import { InvalidCredentialsError } from "@/services/erros/invalid-credentials-error.js";
 
 export const companyAuthBodySchema = z.object({
   CNPJ: z.string(),
@@ -16,10 +17,19 @@ export async function authCompany(
   const { CNPJ, password } = request.body;
 
   try {
-    await authCompanyService({ CNPJ, password });
-  } catch (error) {
-    return reply.status(409).send();
-  }
+   const company = await authCompanyService({ CNPJ, password });
 
-  return reply.status(201).send(null);
+   const token = await reply.jwtSign(
+    { sub: company.id }, 
+    { expiresIn: "1d" } 
+  );
+
+    return reply.status(200).send({ token });
+  } catch (error) {
+    if(error instanceof InvalidCredentialsError){
+      return reply.status(400).send({message: error.message});
+    }
+    
+    throw error
+  }
 }
