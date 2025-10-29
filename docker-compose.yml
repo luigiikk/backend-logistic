@@ -13,5 +13,18 @@ services:
     volumes:
       - postgres_data:/bitnami/postgresql
 
+  postgres_test:
+    image: bitnami/postgresql:latest
+    container_name: api-bd-test-pg
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRESQL_USERNAME=docker
+      - POSTGRESQL_PASSWORD=docker
+      - POSTGRESQL_DATABASE=api-bd-test-pg
+    volumes:
+      - postgres_test_data:/bitnami/postgresql
+
 volumes:
   postgres_data:
+  postgres_test_data:
