@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma.js";
 import { describe, it, beforeAll, afterAll, expect, test, beforeEach } from "vitest";
-import { registerService } from "@/services/register.js";
-import { updateCompanyService } from "@/services/updateCompany.js";
-import { getCompanyService } from "@/services/getCompany.js";
-import { getAllCompaniesService } from "@/services/getAllCompanies.js";
-import { deleteCompanyService } from "@/services/deleteCompany.js";
-import { clearDatabase, resetDatabase } from "../helpers/db.js";
+import { registerService } from "@/services/company/register.js";
+import { updateCompanyService } from "@/services/company/updateCompany.js";
+import { getCompanyService } from "@/services/company/getCompany.js";
+import { getAllCompaniesService } from "@/services/company/getAllCompanies.js";
+import { deleteCompanyService } from "@/services/company/deleteCompany.js";
+import { clearDatabase } from "../helpers/db.js";
 
 describe("Company Routes", () => {
   beforeEach(async () => {

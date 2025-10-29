@@ -1,5 +1,5 @@
 import z from "zod";
-import type { FastifyTypedInstance } from "./types.js";
+import type { FastifyTypedInstance } from "./@types/types.js";
 import {companyRegisterBodySchema,register,} from "./http/controllers/company/register.js";
 import { getCompany } from "./http/controllers/company/getCompany.js";
 import { getAllCompanies } from "./http/controllers/company/getAllCompany.js";
@@ -13,6 +13,7 @@ import {registerStatus,statusRegisterBodySchema,} from "./http/controllers/statu
 import { getAllStatus } from "./http/controllers/status/getAllStatus.js";
 import { getStatus } from "./http/controllers/status/getStatus.js";
 import { deleteStatus } from "./http/controllers/status/deleteStatus.js";
+import { authCompany, companyAuthBodySchema } from "./http/controllers/company/authCompany.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -62,7 +63,7 @@ export async function routes(app: FastifyTypedInstance) {
     "/company",
     {
       schema: {
-        tags: ["users"],
+        tags: ["companies"],
         description: "Create new company",
         body: companyRegisterBodySchema,
         response: {
@@ -96,16 +97,28 @@ export async function routes(app: FastifyTypedInstance) {
       schema: {
         tags: ["companies"],
         description: "Update company",
-        params: z.object({
-          id: z.coerce.number(),
-        }),
         body: companyUpdateBodySchema,
         response: {
-          204: z.null().describe("company Updated"),
+          204: z.null().describe("company auth"),
         },
       },
     },
     updateCompany
+  );
+
+  app.post(
+    "/auth/company",
+    {
+      schema: {
+        tags: ["companies"],
+        description: "Auth company",
+        body: companyAuthBodySchema,
+        response: {
+          204: z.object({ token: z.string() }),
+        },
+      },
+    },
+    authCompany
   );
 
   app.get(
