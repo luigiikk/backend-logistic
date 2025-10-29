@@ -3,6 +3,7 @@ import type { CompanyUpdateParams } from "@/services/company/updateCompany.js";
 import { Prisma } from "@prisma/client";
 
 
+
 export class PrismaCompaniesRepository {
   async create(data: Prisma.CompaniesCreateInput){
     const company = await prisma.companies.create({
@@ -29,6 +30,16 @@ export class PrismaCompaniesRepository {
     const company = await prisma.companies.findUnique({
       where: {
         id,
+      }
+    });
+
+    return company;
+  }
+
+  async getCompanyByCNPJ(CNPJ: string){
+    const company = await prisma.companies.findUnique({
+      where: {
+        CNPJ,
       }
     });
 
