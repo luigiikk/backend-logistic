@@ -25,7 +25,6 @@ export async function authEmployee(
             id: employee.employee_roles,
         },
     })
-    console.log(employeeRoles)
 
     if(!employeeRoles){
         return reply.status(400).send({message: "role não encontrada"})

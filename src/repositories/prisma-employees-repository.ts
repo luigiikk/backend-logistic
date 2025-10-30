@@ -31,7 +31,6 @@ export class PrismaEmployeesRepository {
         company_id: true,
         email: true,
         phone_number: true,
-        password_hash: true,
       },
     });
   }
@@ -63,5 +62,23 @@ export class PrismaEmployeesRepository {
       where: { id },
       data,
     });
+  }
+
+  async getEmployeesByCompany(company_id:number){
+    const employess = await prisma.employees.findMany({
+      where:{
+        company_id,
+      },
+      select: {
+      id: true,
+      name: true,
+      enrollment: true,
+      employee_roles: true,
+      company_id: true,
+      email: true,
+      phone_number: true,
+    },
+    });
+    return employess;
   }
 }
