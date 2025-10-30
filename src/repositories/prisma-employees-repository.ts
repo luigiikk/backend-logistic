@@ -64,8 +64,8 @@ export class PrismaEmployeesRepository {
     });
   }
 
-  async getEmployeesByCompany(company_id:number){
-    const employess = await prisma.employees.findMany({
+  async getEmployeeByCompany(company_id:number){
+    const employes = await prisma.employees.findMany({
       where:{
         company_id,
       },
@@ -79,6 +79,6 @@ export class PrismaEmployeesRepository {
       phone_number: true,
     },
     });
-    return employess;
+    return employes;
   }
 }

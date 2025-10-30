@@ -21,6 +21,8 @@ import { deleteEmployee } from "./http/controllers/employees/deleteEmployee.js";
 import { getAllEmployees } from "./http/controllers/employees/getAllEmployees.js";
 import { employeeRegisterBodySchema, registerEmployee } from "./http/controllers/employees/registerEmployee.js";
 import { employeeUpdateBodySchema, updateEmployee } from "./http/controllers/employees/updateEmployee.js";
+import { statusUpdateBodySchema, updateStatus } from "./http/controllers/status/updateStatus.js";
+
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -281,10 +283,24 @@ export async function routes(app: FastifyTypedInstance) {
     deleteStatus
   );
 
+  app.put(
+    "/status/:id",
+    {
+      schema: {
+        tags: ["status"],
+        description: "Update status",
+        body: statusUpdateBodySchema,
+        response: {
+          204: z.null().describe("update status"),
+        },
+      },
+    },
+    updateStatus
+  );
+
   app.get(
     "/employee/:id",
     {
-      preHandler: [verifyRole(["admin", "company"])],
       schema: {
         tags: ["employee"],
         description: "List unique employee by id",
@@ -293,8 +309,9 @@ export async function routes(app: FastifyTypedInstance) {
         }),
         response: {
           200: z.object({
+              id: z.number().int(),
               name: z.string(),
-              enroolment: z.string(),
+              enrollment: z.string(),
               employee_roles: z.number().int(),
               company_id: z.number().int(),
               email: z.email(),
@@ -309,15 +326,15 @@ export async function routes(app: FastifyTypedInstance) {
   app.get(
     "/employee",
     {
-      preHandler: [verifyRole(["admin"])],
       schema: {
-        tags: ["employees"],
+        tags: ["employee"],
         description: "List employees",
         response: {
           200: z.array(
             z.object({
+              id: z.number().int(),
               name: z.string(),
-              enroolment: z.string(),
+              enrollment: z.string(),
               employee_roles: z.number().int(),
               company_id: z.number().int(),
               email: z.email(),
@@ -338,7 +355,7 @@ export async function routes(app: FastifyTypedInstance) {
         description: "login employee",
         body: employeeAuthBodySchema,
         response: {
-          200: z.object({ token: z.string() }),
+          204: z.object({ token: z.string() }),
         },
       },
     },
@@ -347,7 +364,7 @@ export async function routes(app: FastifyTypedInstance) {
 app.delete(
     "/employee/:id",
     {
-      preHandler: [verifyRole(["admin", "company"])],
+      preHandler: [verifyRole(["company"])],
       schema: {
         tags: ["employee"],
         description: "Delete employee by id",
@@ -365,7 +382,6 @@ app.delete(
   app.post(
   "/employee",
   {
-    preHandler: [verifyRole(["admin", "company"])],
     schema: {
       tags: ["employee"],
       description: "Create new employee",
@@ -381,7 +397,7 @@ app.delete(
 app.put(
   "/employee/:id",
   {
-    preHandler: [verifyRole(["admin", "company"])],
+    preHandler: [verifyRole(["company"])],
     schema: {
       tags: ["employee"],
       description: "Update employee info",
@@ -393,5 +409,4 @@ app.put(
   },
   updateEmployee
 );
-
 }
