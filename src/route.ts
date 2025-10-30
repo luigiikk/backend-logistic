@@ -14,11 +14,13 @@ import { getAllStatus } from "./http/controllers/status/getAllStatus.js";
 import { getStatus } from "./http/controllers/status/getStatus.js";
 import { deleteStatus } from "./http/controllers/status/deleteStatus.js";
 import { authCompany, companyAuthBodySchema } from "./http/controllers/company/authCompany.js";
+import { verifyRole } from "./http/middleware/verifyRole.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
     "/company",
     {
+      preHandler: [verifyRole(["admin"])],
       schema: {
         tags: ["companies"],
         description: "List companies",
@@ -40,6 +42,7 @@ export async function routes(app: FastifyTypedInstance) {
   app.get(
     "/company/:id",
     {
+      preHandler: [verifyRole(["company", "admin"])],
       schema: {
         tags: ["companies"],
         description: "List unique company by id",
@@ -77,6 +80,7 @@ export async function routes(app: FastifyTypedInstance) {
   app.delete(
     "/company/:id",
     {
+      preHandler: [verifyRole(["admin"])],
       schema: {
         tags: ["companies"],
         description: "Delete company by id",
@@ -94,6 +98,7 @@ export async function routes(app: FastifyTypedInstance) {
   app.put(
     "/company/:id",
     {
+      preHandler: [verifyRole(["company", "admin"])],
       schema: {
         tags: ["companies"],
         description: "Update company",
