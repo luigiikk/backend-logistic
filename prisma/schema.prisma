@@ -42,12 +42,13 @@ model Employees {
   email         String    @unique
   phone_number  String?
   password_hash String
+  employee_roles  Int // FK to Roles.id (single role)
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
   // relations
   company     Companies  @relation(fields: [company_id], references: [id])
-  user_roles  User_roles[]
+  role            Roles     @relation("EmployeeRoleRelation", fields: [employee_roles], references: [id])
 
   @@map("employees")
 }
@@ -72,22 +73,6 @@ model Vehicles {
   @@map("vehicles")
 }
 
-model User_roles {
-  id           Int       @id @default(autoincrement())
-  employee_id  Int
-  roles_id     Int
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  // relations
-  employee Employees @relation(fields: [employee_id], references: [id])
-  role     Roles     @relation(fields: [roles_id], references: [id])
-
-  @@index([employee_id])
-  @@index([roles_id])
-  @@map("user_roles")
-}
-
 model Roles {
   id         Int      @id @default(autoincrement())
   name       String?
@@ -95,8 +80,8 @@ model Roles {
   updated_at DateTime @updatedAt
 
   // relations
-  user_roles User_roles[]
   clients    Client[]     @relation("ClientRoleRelation")
+  employees Employees[] @relation("EmployeeRoleRelation")
 
   @@map("roles")
 }

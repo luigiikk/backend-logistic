@@ -15,6 +15,14 @@ import { getStatus } from "./http/controllers/status/getStatus.js";
 import { deleteStatus } from "./http/controllers/status/deleteStatus.js";
 import { authCompany, companyAuthBodySchema } from "./http/controllers/company/authCompany.js";
 import { verifyRole } from "./http/middleware/verifyRole.js";
+import { getEmployee } from "./http/controllers/employees/getEmployee.js";
+import {authEmployee, employeeAuthBodySchema} from "./http/controllers/employees/authEmployee.js"
+import { deleteEmployee } from "./http/controllers/employees/deleteEmployee.js";
+import { getAllEmployees } from "./http/controllers/employees/getAllEmployees.js";
+import { employeeRegisterBodySchema, registerEmployee } from "./http/controllers/employees/registerEmployee.js";
+import { employeeUpdateBodySchema, updateEmployee } from "./http/controllers/employees/updateEmployee.js";
+import { statusUpdateBodySchema, updateStatus } from "./http/controllers/status/updateStatus.js";
+
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -274,4 +282,131 @@ export async function routes(app: FastifyTypedInstance) {
     },
     deleteStatus
   );
+
+  app.put(
+    "/status/:id",
+    {
+      schema: {
+        tags: ["status"],
+        description: "Update status",
+        body: statusUpdateBodySchema,
+        response: {
+          204: z.null().describe("update status"),
+        },
+      },
+    },
+    updateStatus
+  );
+
+  app.get(
+    "/employee/:id",
+    {
+      schema: {
+        tags: ["employee"],
+        description: "List unique employee by id",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.object({
+              id: z.number().int(),
+              name: z.string(),
+              enrollment: z.string(),
+              employee_roles: z.number().int(),
+              company_id: z.number().int(),
+              email: z.email(),
+              phone_number: z.string(),
+          }),
+        },
+      },
+    },
+    getEmployee
+  );
+
+  app.get(
+    "/employee",
+    {
+      schema: {
+        tags: ["employee"],
+        description: "List employees",
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number().int(),
+              name: z.string(),
+              enrollment: z.string(),
+              employee_roles: z.number().int(),
+              company_id: z.number().int(),
+              email: z.email(),
+              phone_number: z.string(),
+            })
+          ),
+        },
+      },
+    },
+    getAllEmployees
+  );
+
+  app.post(
+    "/auth/employee",
+    {
+      schema: {
+        tags: ["employee"],
+        description: "login employee",
+        body: employeeAuthBodySchema,
+        response: {
+          204: z.object({ token: z.string() }),
+        },
+      },
+    },
+    authEmployee
+  );
+app.delete(
+    "/employee/:id",
+    {
+      preHandler: [verifyRole(["company"])],
+      schema: {
+        tags: ["employee"],
+        description: "Delete employee by id",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.string(),
+        },
+      },
+    },
+    deleteEmployee
+  );
+
+  app.post(
+  "/employee",
+  {
+    schema: {
+      tags: ["employee"],
+      description: "Create new employee",
+      body: employeeRegisterBodySchema,
+      response: {
+        201: z.null().describe("Employee created"),
+      },
+    },
+  },
+  registerEmployee
+);
+
+app.put(
+  "/employee/:id",
+  {
+    preHandler: [verifyRole(["company"])],
+    schema: {
+      tags: ["employee"],
+      description: "Update employee info",
+      body: employeeUpdateBodySchema,
+      response: {
+        204: z.null().describe("Employee updated"),
+      },
+    },
+  },
+  updateEmployee
+);
 }
