@@ -10,7 +10,7 @@ export async function deleteEmployeeService(id: number) {
   })
   
   if(!employees){
-    throw new Error('employees not exists');
+    throw new Error('employee not exists');
   }
 
   const prismaEmployeesRepository = new PrismaEmployeesRepository;

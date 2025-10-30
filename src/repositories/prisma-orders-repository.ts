@@ -40,14 +40,14 @@ export class PrismaOrdersRepository {
   }
 
   async updateOrder(id: number, data: OrderUpdateParams) {
-      const orderExists = await prisma.employees.findUnique({ where: { id } });
-      
-      if (!orderExists) {
-        throw new Error("order not found");
-      }
-      await prisma.orders.update({
-        where: { id },
-        data,
-      });
+    const orderExists = await prisma.orders.findUnique({ where: { id } });
+
+    if (!orderExists) {
+      throw new Error("order not found");
     }
+    await prisma.orders.update({
+      where: { id },
+      data,
+    });
+  }
 }
