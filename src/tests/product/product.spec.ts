@@ -47,11 +47,14 @@ describe("Product Services", () => {
     });
     vehicleId = vehicle.id;
 
+      const senderRole = await prisma.roles.create({ data: { name: "sender" } });
+      const receiverRole = await prisma.roles.create({ data: { name: "receiver" } });
+
     const sender = await prisma.client.create({
       data: {
         name: "Sender Client",
         email: "sender@test.com",
-        client_roles: 1,
+        client_roles: senderRole.id,
         password_hash: "hash123",
       },
     });
@@ -61,7 +64,7 @@ describe("Product Services", () => {
       data: {
         name: "Receiver Client",
         email: "receiver@test.com",
-        client_roles: 1,
+        client_roles: receiverRole.id,
         password_hash: "hash123",
       },
     });
