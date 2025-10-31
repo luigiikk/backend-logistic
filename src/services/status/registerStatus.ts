@@ -1,6 +1,6 @@
 import { PrismaStatusRepository } from "@/repositories/prisma-status-repository.js";
 
-interface RegisterStatusParams {
+interface StatusRegisterParams {
   name: string;
   type: "order" | "vehicle" | "invoice" | "purchase_order";
   is_default?: boolean;
@@ -12,7 +12,7 @@ export async function registerStatusService({
   type,
   is_default = false,
   company_id,
-}: RegisterStatusParams) {
+}: StatusRegisterParams) {
   const prismaStatusRepository = new PrismaStatusRepository();
 
   if (is_default) {

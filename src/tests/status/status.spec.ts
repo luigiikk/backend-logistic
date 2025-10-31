@@ -4,6 +4,7 @@ import { registerStatusService } from "@/services/status/registerStatus.js";
 import { getAllStatusService } from "@/services/status/getAllStatus.js";
 import { getStatusService } from "@/services/status/getStatus.js";
 import { deleteStatusService } from "@/services/status/deleteStatus.js";
+import { updateStatusService } from "@/services/status/updateStatus.js";
 import { clearDatabase } from "../helpers/db.js";
 
 describe("Status Services", () => {
@@ -111,6 +112,40 @@ describe("Status Services", () => {
       expect(statuses).toEqual([]);
     });
   });
+
+describe("updateStatusService", () => {
+  it("Sucesso: should update a status successfully", async () => {
+    const status = await registerStatusService({
+      name: "Pending",
+      type: "order",
+      company_id: companyId,
+    });
+
+    await updateStatusService(status.id, {
+      name: "Updated Status",
+      type: "order",
+      is_default: false,
+      company_id: companyId,
+    });
+
+    const updated = await prisma.status.findUnique({ where: { id: status.id } });
+    expect(updated).not.toBeNull();
+    expect(updated?.name).toBe("Updated Status");
+    expect(updated?.type).toBe("order");
+    expect(updated?.is_default).toBe(false);
+  });
+
+  it("Falha: should throw error if status does not exist", async () => {
+    await expect(
+      updateStatusService(9999, {
+        name: "Nonexistent",
+        type: "order",
+        is_default: false,
+        company_id: companyId,
+      })
+    ).rejects.toThrow("status not found");
+  });
+});
 
   describe("deleteStatusService", () => {
     it("Sucesso: should delete a status successfully", async () => {

@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma.js";
 import { Prisma } from "@prisma/client";
+import { StatusUpdateParams } from "@/services/status/updateStatus.js";
 
 export class PrismaStatusRepository {
   async create(data: Prisma.StatusCreateInput) {
-    const status = await prisma.status.create({ 
-      data 
+    const status = await prisma.status.create({
+      data,
     });
 
     return status;
@@ -49,9 +50,21 @@ export class PrismaStatusRepository {
 
   async deleteStatus(id: number) {
     await prisma.status.delete({
-      where: { 
-        id 
+      where: {
+        id,
       },
+    });
+  }
+
+  async updateStatus(id: number, data: StatusUpdateParams) {
+    const statusExists = await prisma.status.findUnique({ where: { id } });
+
+    if (!statusExists) {
+      throw new Error("status not found");
+    }
+    await prisma.status.update({
+      where: { id },
+      data,
     });
   }
 }

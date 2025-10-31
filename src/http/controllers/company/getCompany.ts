@@ -9,8 +9,6 @@ export async function getCompany(
   const { id } = request.params as {id: number};
 
   try {
-    await request.jwtVerify();
-
     const company = await getCompanyService(id);
 
     const response = {
