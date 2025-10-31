@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma.js";
 import { describe, it, beforeAll, afterAll, expect, test, beforeEach } from "vitest";
 import { clearDatabase } from "../helpers/db.js";
-import { registerClientService } from "@/services/client/registerCient.js"
+import { registerClientService } from "@/services/client/registerClient.js"
 import { authClientService } from "@/services/client/authClient.js";
 import { updateClientService } from "@/services/client/updateCliente.js";
 import { getClientService } from "@/services/client/getClient.js";

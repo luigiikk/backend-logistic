@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
-import { registerClientService } from "@/services/client/registerCient.js";
+import { registerClientService } from "@/services/client/registerClient.js";
 
 export const clientRegisterBodySchema = z.object({
 
@@ -16,7 +16,7 @@ export const clientRegisterBodySchema = z.object({
 
 type RegisterBody = z.infer<typeof clientRegisterBodySchema>;
 
-export async function register(
+export async function registerClient(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
