@@ -11,12 +11,11 @@ describe("Product Services", () => {
   let statusId: number;
   let vehicleId: number;
   let senderClientId: number;
-  let receiverClientId: number;
+  let recipientId: number;
   let orderId: number;
 
   beforeEach(async () => {
-
-    await clearDatabase()
+    await clearDatabase();
 
     const company = await prisma.companies.create({
       data: {
@@ -47,8 +46,7 @@ describe("Product Services", () => {
     });
     vehicleId = vehicle.id;
 
-      const senderRole = await prisma.roles.create({ data: { name: "sender" } });
-      const receiverRole = await prisma.roles.create({ data: { name: "receiver" } });
+    const senderRole = await prisma.roles.create({ data: { name: "sender" } });
 
     const sender = await prisma.client.create({
       data: {
@@ -60,22 +58,22 @@ describe("Product Services", () => {
     });
     senderClientId = sender.id;
 
-    const receiver = await prisma.client.create({
+    const recipient = await prisma.recipient.create({
       data: {
-        name: "Receiver Client",
+        name: "Receiver Recipient",
+        cpf: "12345678901",
         email: "receiver@test.com",
-        client_roles: receiverRole.id,
-        password_hash: "hash123",
       },
     });
-    receiverClientId = receiver.id;
+    recipientId = recipient.id;
 
     const order = await prisma.orders.create({
       data: {
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       },
     });
     orderId = order.id;
@@ -120,7 +118,9 @@ describe("Product Services", () => {
           quantity: 5,
           order_id: orderId,
         })
-      ).rejects.toThrow("Product with this name and description already exists in this order");
+      ).rejects.toThrow(
+        "Product with this name and description already exists in this order"
+      );
     });
   });
 

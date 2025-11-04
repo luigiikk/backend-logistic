@@ -28,7 +28,11 @@ import { updateClient, clientUpdateBodySchema } from "./http/controllers/client/
 import { getClient } from "./http/controllers/client/getClient.js";
 import { getAllClients } from "./http/controllers/client/getAllClient.js";
 import { deleteClient } from "./http/controllers/client/deleteClient.js";
-
+import { orderRegisterBodySchema, registerOrder } from "./http/controllers/order/registerOrder.js";
+import { getOrder } from "./http/controllers/order/getOrder.js";
+import { getAllOrders } from "./http/controllers/order/getAllOrders.js";
+import { deleteOrder } from "./http/controllers/order/deleteOrder.js";
+import { orderUpdateBodySchema, updateOrder } from "./http/controllers/order/updateOrder.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -539,4 +543,102 @@ export async function routes(app: FastifyTypedInstance) {
     deleteClient
   );
 
+  app.get(
+  "/order/:id",
+  {
+    schema: {
+      tags: ["order"],
+      description: "Get order by id",
+      params: z.object({
+        id: z.coerce.number(),
+      }),
+      response: {
+        200: z.object({
+          id: z.number().int(),
+          code: z.string(),
+          sender_client_id: z.number().int(),
+          recipient_id: z.number().int(),
+          status_id: z.number().int(),
+          vehicle_id: z.number().int(),
+        }),
+      },
+    },
+  },
+  getOrder
+);
+
+app.get(
+  "/order",
+  {
+    schema: {
+      tags: ["order"],
+      description: "List all orders",
+      response: {
+        200: z.array(
+          z.object({
+            id: z.number().int(),
+            code: z.string(),
+            sender_client_id: z.number().int(),
+            recipient_id: z.number().int(),
+            status_id: z.number().int(),
+            vehicle_id: z.number().int(),
+          })
+        ),
+      },
+    },
+  },
+  getAllOrders
+);
+
+app.post(
+  "/order",
+  {
+    schema: {
+      tags: ["order"],
+      description: "Create new order",
+      body: orderRegisterBodySchema,
+      response: {
+        201: z.null().describe("Order created"),
+      },
+    },
+  },
+  registerOrder
+);
+
+app.put(
+  "/order/:id",
+  {
+    schema: {
+      tags: ["order"],
+      description: "Update order info",
+      params: z.object({
+        id: z.coerce.number(),
+      }),
+      body: orderUpdateBodySchema,
+      response: {
+        204: z.null().describe("Order updated"),
+      },
+    },
+  },
+  updateOrder
+);
+
+app.delete(
+  "/order/:id",
+  {
+    schema: {
+      tags: ["order"],
+      description: "Delete order by id",
+      params: z.object({
+        id: z.coerce.number(),
+      }),
+      response: {
+        200: z.string().describe("Order deleted"),
+      },
+    },
+  },
+  deleteOrder
+);
+
 }
+

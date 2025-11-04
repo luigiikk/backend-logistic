@@ -12,11 +12,12 @@ describe("Order Services", () => {
   let statusId: number;
   let vehicleId: number;
   let senderClientId: number;
-  let receiverClientId: number;
+  let recipientId: number;
 
   beforeEach(async () => {
     await clearDatabase();
 
+    // Cria Company
     const company = await prisma.companies.create({
       data: {
         name: "Test Company",
@@ -28,6 +29,7 @@ describe("Order Services", () => {
     });
     companyId = company.id;
 
+    // Cria Status
     const status = await prisma.status.create({
       data: {
         name: "Pending",
@@ -37,6 +39,7 @@ describe("Order Services", () => {
     });
     statusId = status.id;
 
+    // Cria Vehicle
     const vehicle = await prisma.vehicles.create({
       data: {
         plate: "TEST-1234",
@@ -46,11 +49,10 @@ describe("Order Services", () => {
     });
     vehicleId = vehicle.id;
 
+    // Cria Role do Sender
     const senderRole = await prisma.roles.create({ data: { name: "sender" } });
-    const receiverRole = await prisma.roles.create({
-      data: { name: "receiver" },
-    });
 
+    // Cria Sender Client
     const sender = await prisma.client.create({
       data: {
         name: "Sender Client",
@@ -61,38 +63,42 @@ describe("Order Services", () => {
     });
     senderClientId = sender.id;
 
-    const receiver = await prisma.client.create({
+    // Cria Recipient
+    const recipient = await prisma.recipient.create({
       data: {
-        name: "Receiver Client",
+        name: "Receiver Recipient",
+        cpf: "12345678901",
         email: "receiver@test.com",
-        client_roles: receiverRole.id,
-        password_hash: "hash123",
       },
     });
-    receiverClientId = receiver.id;
+    recipientId = recipient.id;
   });
 
   describe("Register order", () => {
     it("should create a new order successfully", async () => {
       const order = await registerOrderService({
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId, // necessário
       });
 
       expect(order).toHaveProperty("id");
       expect(order.sender_client_id).toBe(senderClientId);
-      expect(order.receiver_client_id).toBe(receiverClientId);
+      expect(order.recipient_id).toBe(recipientId);
+      expect(order.company_id).toBe(companyId);
+      expect(order.code).toBeDefined(); 
     });
 
     it("should throw error if sender_client_id is invalid", async () => {
       await expect(
         registerOrderService({
           sender_client_id: 9999,
-          receiver_client_id: receiverClientId,
+          recipient_id: recipientId,
           status_id: statusId,
           vehicle_id: vehicleId,
+          company_id: companyId,
         })
       ).rejects.toThrow();
     });
@@ -102,9 +108,10 @@ describe("Order Services", () => {
     it("should get an order by id successfully", async () => {
       const order = await registerOrderService({
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       });
 
       const foundOrder = await getOrderService(order.id);
@@ -121,9 +128,10 @@ describe("Order Services", () => {
     it("should return all orders", async () => {
       await registerOrderService({
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       });
 
       const orders = await getAllOrdersService();
@@ -138,41 +146,42 @@ describe("Order Services", () => {
 
   describe("Update order", () => {
     it("should update an order successfully", async () => {
-      // Cria uma ordem antes de atualizar
       const order = await registerOrderService({
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       });
 
-      // Atualiza a ordem usando os mesmos IDs (pode alterar se quiser testar mudanças)
       await updateOrderService(order.id, {
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       });
 
-      // Busca a ordem atualizada no banco
       const updatedOrder = await prisma.orders.findUnique({
         where: { id: order.id },
       });
 
       expect(updatedOrder).not.toBeNull();
       expect(updatedOrder?.sender_client_id).toBe(senderClientId);
-      expect(updatedOrder?.receiver_client_id).toBe(receiverClientId);
+      expect(updatedOrder?.recipient_id).toBe(recipientId);
       expect(updatedOrder?.status_id).toBe(statusId);
       expect(updatedOrder?.vehicle_id).toBe(vehicleId);
+      expect(updatedOrder?.company_id).toBe(companyId);
     });
 
     it("should throw error if order does not exist", async () => {
       await expect(
         updateOrderService(9999, {
           sender_client_id: senderClientId,
-          receiver_client_id: receiverClientId,
+          recipient_id: recipientId,
           status_id: statusId,
           vehicle_id: vehicleId,
+          company_id: companyId,
         })
       ).rejects.toThrow("order not found");
     });
@@ -182,9 +191,10 @@ describe("Order Services", () => {
     it("should delete an order successfully", async () => {
       const order = await registerOrderService({
         sender_client_id: senderClientId,
-        receiver_client_id: receiverClientId,
+        recipient_id: recipientId,
         status_id: statusId,
         vehicle_id: vehicleId,
+        company_id: companyId,
       });
 
       await deleteOrderService(order.id);
@@ -192,6 +202,7 @@ describe("Order Services", () => {
       const deletedOrder = await prisma.orders.findUnique({
         where: { id: order.id },
       });
+
       expect(deletedOrder).toBeNull();
     });
 

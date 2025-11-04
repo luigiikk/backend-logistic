@@ -30,6 +30,7 @@ model Companies {
   vehicles   Vehicles[]
   employees  Employees[]
   status     Status[]
+  orders Orders[]
 
   @@map("companies")
 }
@@ -103,7 +104,6 @@ model Client {
   role            Roles     @relation("ClientRoleRelation", fields: [client_roles], references: [id])
   addres          Addres?   @relation(fields: [addres_id], references: [id])
   orders_sent     Orders[]  @relation("SenderOrders")
-  orders_received Orders[]  @relation("ReceiverOrders")
   invoices        Invoice[]
 
   @@index([client_roles])
@@ -113,8 +113,10 @@ model Client {
 
 model Orders {
   id                 Int      @id @default(autoincrement())
+  code               String?   @unique
+  company_id         Int    
   sender_client_id   Int
-  receiver_client_id Int
+  recipient_id       Int
   status_id          Int
   vehicle_id         Int
   created_at         DateTime @default(now())
@@ -122,16 +124,19 @@ model Orders {
 
   // relations
   sender_client   Client     @relation("SenderOrders", fields: [sender_client_id], references: [id])
-  receiver_client Client     @relation("ReceiverOrders", fields: [receiver_client_id], references: [id])
+  recipient       Recipient  @relation("RecipientOrders", fields: [recipient_id], references: [id])
   status          Status     @relation(fields: [status_id], references: [id])
   vehicle         Vehicles   @relation("VehicleOrders", fields: [vehicle_id], references: [id])
   products        Products[]
+  company  Companies @relation(fields: [company_id], references: [id])
 
   @@index([sender_client_id])
-  @@index([receiver_client_id])
+  @@index([recipient_id])
   @@index([status_id])
   @@index([vehicle_id])
+  @@index([company_id])
   @@map("orders")
+  
 }
 
 model Products {
@@ -326,4 +331,15 @@ model Addres {
   warehouses Warehouses[]
 
   @@map("addres")
+}
+
+model Recipient{
+  id        Int      @id @default(autoincrement())
+  name      String
+  cpf       String   @unique
+  email     String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+   orders    Orders[]  @relation("RecipientOrders")
 }
