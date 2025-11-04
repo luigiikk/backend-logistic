@@ -60,7 +60,6 @@ export async function routes(app: FastifyTypedInstance) {
   app.get(
     "/company/:id",
     {
-      preHandler: [verifyRole(["company", "admin"])],
       schema: {
         tags: ["companies"],
         description: "List unique company by id",
@@ -72,7 +71,7 @@ export async function routes(app: FastifyTypedInstance) {
             name: z.string(),
             email: z.email(),
             phone_number: z.string(),
-            CNPJ: z.string(),
+            cnpj: z.string(),
           }),
         },
       },

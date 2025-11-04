@@ -10,13 +10,14 @@ export async function getCompany(
 
   try {
     const company = await getCompanyService(id);
-
     const response = {
       name: company.name,
       email: company.email,
       phone_number: company.phone_number,
       cnpj: company.CNPJ, 
     }; 
+
+
     return reply.status(200).send(response);
   } catch (error) {
     return reply.status(409).send(error);
