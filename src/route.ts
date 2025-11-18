@@ -692,11 +692,11 @@ export async function routes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/order/:id",
+    "/addres/:id",
     {
       schema: {
-        tags: ["order"],
-        description: "Get order by id",
+        tags: ["addres"],
+        description: "Get addres by id",
         params: z.object({
           id: z.coerce.number(),
         }),
