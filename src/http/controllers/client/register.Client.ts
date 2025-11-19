@@ -1,17 +1,19 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 import { registerClientService } from "@/services/client/registerClient.js";
+import { addresRegisterBodySchema } from "@/http/controllers/addres/registerAddres.js";
+
 
 export const clientRegisterBodySchema = z.object({
 
   name: z.string(),
   email: z.email(),
   password: z.string().min(6),
-   CPF: z.string(),
+  CPF: z.string(),
   phone_number: z.string(),
   CNPJ: z.string(),
-  addres_id: z.number().int(),
   client_roles: z.number().int(),
+  addressData: addresRegisterBodySchema ,
 });
 
 type RegisterBody = z.infer<typeof clientRegisterBodySchema>;
@@ -20,10 +22,10 @@ export async function registerClient(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, email, password, CPF, phone_number, CNPJ, addres_id, client_roles } = request.body;
+  const { name, email, password, CPF, phone_number, CNPJ,client_roles, addressData } = request.body;
 
   try {
-    await registerClientService({ name, email, password, CPF, phone_number, CNPJ, addres_id, client_roles });
+    await registerClientService({ name, email, password, CPF, phone_number, CNPJ, client_roles, addressData, });
   } catch (error) {
     return reply.status(409).send();
   }

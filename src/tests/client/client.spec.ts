@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma.js";
-import { describe, it, beforeAll, afterAll, expect, test, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { clearDatabase } from "../helpers/db.js";
 import { registerClientService } from "@/services/client/registerClient.js"
 import { authClientService } from "@/services/client/authClient.js";
@@ -8,12 +8,20 @@ import { getClientService } from "@/services/client/getClient.js";
 import { getAllClientsService } from "@/services/client/getAllClient.js"; 
 import { deleteClientService } from "@/services/client/deleteClient.js";
 
-
 describe("Client Services", () => {
   let roleId: number;
 
+  const mockAddress = {
+    country: "Brasil",
+    state: "SP",
+    city: "São Paulo",
+    street: "Rua Teste",
+    number: 123,
+    zipcode: "00000-000",
+    complement: "Casa",
+  };
+
   beforeEach(async () => {
-    
     await clearDatabase();
 
     const role = await prisma.roles.create({
@@ -35,7 +43,7 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       expect(client).toHaveProperty("id");
@@ -53,7 +61,7 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       await expect(
@@ -61,11 +69,11 @@ describe("Client Services", () => {
           name: "Test Client 2",
           email: "duplicate@test.com", 
           CPF: "222.222.222-22",
-          CNPJ: "11.111.111/0001-11",
+          CNPJ: "22.222.222/0001-22", 
           phone_number: "1234",
           password: "123456",
           client_roles: roleId,
-          addres_id: null,
+          addressData: mockAddress, 
         })
       ).rejects.toThrow("Email already exists");
     });
@@ -79,20 +87,19 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
-    
       await expect(
         registerClientService({
           name: "Test Client 2",
           email: "client2test@gamail.com",
           CPF: "111.111.111-11", 
-          CNPJ: "11.111.111/0001-11",
+          CNPJ: "22.222.222/0001-22", 
           phone_number: "888888",
           password: "654321",
           client_roles: roleId,
-          addres_id: null,
+          addressData: mockAddress, 
         })
       ).rejects.toThrow("CPF already exists");
     });
@@ -106,19 +113,19 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       await expect(
         registerClientService({
           name: "Test Client 2",
           email: "client2@test.com",
-          CPF: "111.111.111-11",
+          CPF: "222.222.222-22", 
           CNPJ: "11.111.111/0001-11",
           phone_number: "888888",
           password: "654321",
           client_roles: roleId,
-          addres_id: null,
+          addressData: mockAddress, 
         })
       ).rejects.toThrow("CNPJ already exists");
     });
@@ -133,7 +140,7 @@ describe("Client Services", () => {
           phone_number: "999999",
           password: "123456",
           client_roles: 9999,
-          addres_id: null,
+          addressData: mockAddress, 
         })
       ).rejects.toThrow("Role not found");
     });
@@ -153,7 +160,7 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "password123", 
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress,
       });
       clientId = client.id;
       clientEmail = client.email ;
@@ -162,7 +169,7 @@ describe("Client Services", () => {
     it("should authenticate successfully with CPF", async () => {
       const { client } = await authClientService({
         CPF: "123.456.789-00", 
-        CNPJ:"12.345.878/0001-99",
+        CNPJ:"12.345.878/0001-99", 
         password: "password123", 
       });
 
@@ -173,7 +180,7 @@ describe("Client Services", () => {
     it("should authenticate successfully with CNPJ", async () => {
       const { client } = await authClientService({
         CPF: "123.456.789-00", 
-        CNPJ: "12.345.678/5001-99", 
+        CNPJ: "12.345.698/0001-99", 
         password: "password123", 
       });
 
@@ -214,7 +221,7 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       await updateClientService(client.id, {
@@ -246,7 +253,7 @@ describe("Client Services", () => {
         phone_number: "999999",
         password: "123456",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       const foundClient = await getClientService(client.id);
@@ -271,7 +278,7 @@ describe("Client Services", () => {
         phone_number: "111",
         password: "123",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
       await registerClientService({
         name: "Client 2",
@@ -281,7 +288,7 @@ describe("Client Services", () => {
         phone_number: "222",
         password: "123",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress,
       });
 
       const clients = await getAllClientsService();
@@ -307,7 +314,7 @@ describe("Client Services", () => {
         phone_number: "111",
         password: "123",
         client_roles: roleId,
-        addres_id: null,
+        addressData: mockAddress, 
       });
 
       await deleteClientService(client.id);

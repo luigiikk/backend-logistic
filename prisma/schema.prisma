@@ -329,6 +329,7 @@ model Addres {
   clients    Client[]
   suppliers  Supplier[]
   warehouses Warehouses[]
+  recipient  Recipient[]
 
   @@map("addres")
 }
@@ -338,8 +339,10 @@ model Recipient{
   name      String
   cpf       String   @unique
   email     String   @unique
+  addres_id Int?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
    orders    Orders[]  @relation("RecipientOrders")
+   addres    Addres?     @relation(fields: [addres_id], references: [id])
 }

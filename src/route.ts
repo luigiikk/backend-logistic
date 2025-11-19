@@ -1,38 +1,90 @@
 import z from "zod";
 import type { FastifyTypedInstance } from "./@types/types.js";
-import { companyRegisterBodySchema, register} from "./http/controllers/company/register.js";
+import {
+  companyRegisterBodySchema,
+  register,
+} from "./http/controllers/company/register.js";
 import { getCompany } from "./http/controllers/company/getCompany.js";
 import { getAllCompanies } from "./http/controllers/company/getAllCompany.js";
 import { deleteCompany } from "./http/controllers/company/deleteCompany.js";
-import { companyUpdateBodySchema, updateCompany} from "./http/controllers/company/updateCompany.js";
-import { registerProduct, productRegisterBodySchema} from "./http/controllers/products/registerProduct.js";
+import {
+  companyUpdateBodySchema,
+  updateCompany,
+} from "./http/controllers/company/updateCompany.js";
+import {
+  registerProduct,
+  productRegisterBodySchema,
+} from "./http/controllers/products/registerProduct.js";
 import { getAllProducts } from "./http/controllers/products/getAllProduct.js";
 import { getProduct } from "./http/controllers/products/getProduct.js";
 import { deleteProduct } from "./http/controllers/products/deleteProduct.js";
-import { registerStatus, statusRegisterBodySchema} from "./http/controllers/status/registerStatus.js";
+import {
+  registerStatus,
+  statusRegisterBodySchema,
+} from "./http/controllers/status/registerStatus.js";
 import { getAllStatus } from "./http/controllers/status/getAllStatus.js";
 import { getStatus } from "./http/controllers/status/getStatus.js";
 import { deleteStatus } from "./http/controllers/status/deleteStatus.js";
-import { authCompany, companyAuthBodySchema} from "./http/controllers/company/authCompany.js";
+import {
+  authCompany,
+  companyAuthBodySchema,
+} from "./http/controllers/company/authCompany.js";
 import { verifyRole } from "./http/middleware/verifyRole.js";
 import { getEmployee } from "./http/controllers/employees/getEmployee.js";
-import {authEmployee, employeeAuthBodySchema } from "./http/controllers/employees/authEmployee.js";
+import {
+  authEmployee,
+  employeeAuthBodySchema,
+} from "./http/controllers/employees/authEmployee.js";
 import { deleteEmployee } from "./http/controllers/employees/deleteEmployee.js";
 import { getAllEmployees } from "./http/controllers/employees/getAllEmployees.js";
-import { employeeRegisterBodySchema, registerEmployee } from "./http/controllers/employees/registerEmployee.js";
-import { employeeUpdateBodySchema, updateEmployee } from "./http/controllers/employees/updateEmployee.js";
-import { statusUpdateBodySchema, updateStatus } from "./http/controllers/status/updateStatus.js";
-import { authClient, clientAuthBodySchema } from "./http/controllers/client/authClient.js";
-import { registerClient, clientRegisterBodySchema } from "./http/controllers/client/register.Client.js";
-import { updateClient, clientUpdateBodySchema } from "./http/controllers/client/updateClient.js";
+import {
+  employeeRegisterBodySchema,
+  registerEmployee,
+} from "./http/controllers/employees/registerEmployee.js";
+import {
+  employeeUpdateBodySchema,
+  updateEmployee,
+} from "./http/controllers/employees/updateEmployee.js";
+import {
+  statusUpdateBodySchema,
+  updateStatus,
+} from "./http/controllers/status/updateStatus.js";
+import {
+  authClient,
+  clientAuthBodySchema,
+} from "./http/controllers/client/authClient.js";
+import {
+  registerClient,
+  clientRegisterBodySchema,
+} from "./http/controllers/client/register.Client.js";
+import {
+  updateClient,
+  clientUpdateBodySchema,
+} from "./http/controllers/client/updateClient.js";
 import { getClient } from "./http/controllers/client/getClient.js";
 import { getAllClients } from "./http/controllers/client/getAllClient.js";
 import { deleteClient } from "./http/controllers/client/deleteClient.js";
-import { orderRegisterBodySchema, registerOrder } from "./http/controllers/order/registerOrder.js";
+import {
+  orderRegisterBodySchema,
+  registerOrder,
+} from "./http/controllers/order/registerOrder.js";
 import { getOrder } from "./http/controllers/order/getOrder.js";
 import { getAllOrders } from "./http/controllers/order/getAllOrders.js";
 import { deleteOrder } from "./http/controllers/order/deleteOrder.js";
-import { orderUpdateBodySchema, updateOrder } from "./http/controllers/order/updateOrder.js";
+import {
+  orderUpdateBodySchema,
+  updateOrder,
+} from "./http/controllers/order/updateOrder.js";
+import { getAllAddres } from "./http/controllers/addres/getAllAddres.js";
+import {
+  addresRegisterBodySchema,
+  registerAddres,
+} from "./http/controllers/addres/registerAddres.js";
+import {
+  addresUpdateBodySchema,
+  updateAddres,
+} from "./http/controllers/addres/updateAddres.js";
+import { deleteAddres } from "./http/controllers/addres/deleteAddres.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -465,13 +517,13 @@ export async function routes(app: FastifyTypedInstance) {
         response: {
           200: z.object({
             id: z.number().int(),
-            name: z.string().nullable(),
-            email: z.string().email().nullable(),
-            phone_number: z.string().nullable(),
-            CPF: z.string().nullable(),
-            CNPJ: z.string().nullable(),
+            name: z.string(),
+            email: z.email(),
+            phone_number: z.string(),
+            CPF: z.string(),
+            CNPJ: z.string(),
             client_roles: z.number().int(),
-            addres_id: z.number().int().nullable(),
+            addres_id: z.number().int(),
           }),
         },
       },
@@ -490,13 +542,13 @@ export async function routes(app: FastifyTypedInstance) {
           200: z.array(
             z.object({
               id: z.number().int(),
-              name: z.string().nullable(),
-              email: z.string().email().nullable(),
-              phone_number: z.string().nullable(),
-              CPF: z.string().nullable(),
-              CNPJ: z.string().nullable(),
+              name: z.string(),
+              email: z.email(),
+              phone_number: z.string(),
+              CPF: z.string(),
+              CNPJ: z.string(),
               client_roles: z.number().int(),
-              addres_id: z.number().int().nullable(),
+              addres_id: z.number().int(),
             })
           ),
         },
@@ -543,101 +595,200 @@ export async function routes(app: FastifyTypedInstance) {
   );
 
   app.get(
-  "/order/:id",
-  {
-    schema: {
-      tags: ["order"],
-      description: "Get order by id",
-      params: z.object({
-        id: z.coerce.number(),
-      }),
-      response: {
-        200: z.object({
-          id: z.number().int(),
-          code: z.string(),
-          sender_client_id: z.number().int(),
-          recipient_id: z.number().int(),
-          status_id: z.number().int(),
-          vehicle_id: z.number().int(),
+    "/order/:id",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Get order by id",
+        params: z.object({
+          id: z.coerce.number(),
         }),
-      },
-    },
-  },
-  getOrder
-);
-
-app.get(
-  "/order",
-  {
-    schema: {
-      tags: ["order"],
-      description: "List all orders",
-      response: {
-        200: z.array(
-          z.object({
+        response: {
+          200: z.object({
             id: z.number().int(),
             code: z.string(),
             sender_client_id: z.number().int(),
             recipient_id: z.number().int(),
             status_id: z.number().int(),
             vehicle_id: z.number().int(),
-          })
-        ),
+          }),
+        },
       },
     },
-  },
-  getAllOrders
-);
+    getOrder
+  );
 
-app.post(
-  "/order",
-  {
-    schema: {
-      tags: ["order"],
-      description: "Create new order",
-      body: orderRegisterBodySchema,
-      response: {
-        201: z.null().describe("Order created"),
+  app.get(
+    "/order",
+    {
+      schema: {
+        tags: ["order"],
+        description: "List all orders",
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number().int(),
+              code: z.string(),
+              sender_client_id: z.number().int(),
+              recipient_id: z.number().int(),
+              status_id: z.number().int(),
+              vehicle_id: z.number().int(),
+            })
+          ),
+        },
       },
     },
-  },
-  registerOrder
-);
+    getAllOrders
+  );
 
-app.put(
-  "/order/:id",
-  {
-    schema: {
-      tags: ["order"],
-      description: "Update order info",
-      params: z.object({
-        id: z.coerce.number(),
-      }),
-      body: orderUpdateBodySchema,
-      response: {
-        204: z.null().describe("Order updated"),
+  app.post(
+    "/order",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Create new order",
+        body: orderRegisterBodySchema,
+        response: {
+          201: z.null().describe("Order created"),
+        },
       },
     },
-  },
-  updateOrder
-);
+    registerOrder
+  );
 
-app.delete(
-  "/order/:id",
-  {
-    schema: {
-      tags: ["order"],
-      description: "Delete order by id",
-      params: z.object({
-        id: z.coerce.number(),
-      }),
-      response: {
-        200: z.string().describe("Order deleted"),
+  app.put(
+    "/order/:id",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Update order info",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        body: orderUpdateBodySchema,
+        response: {
+          204: z.null().describe("Order updated"),
+        },
       },
     },
-  },
-  deleteOrder
-);
+    updateOrder
+  );
 
+  app.delete(
+    "/order/:id",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Delete order by id",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.string().describe("Order deleted"),
+        },
+      },
+    },
+    deleteOrder
+  );
+
+  app.get(
+    "/addres/:id",
+    {
+      schema: {
+        tags: ["addres"],
+        description: "Get addres by id",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.object({
+            id: z.number().int(),
+            country: z.string(),
+            state: z.string(),
+            city: z.string(),
+            street: z.string(),
+            number: z.number().int(),
+            zipcode: z.string(),
+            complement: z.string(),
+          }),
+        },
+      },
+    },
+    getOrder
+  );
+
+  app.get(
+    "/addres",
+    {
+      schema: {
+        tags: ["addres"],
+        description: "List all addres",
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number().int(),
+              country: z.string(),
+              state: z.string(),
+              city: z.string(),
+              street: z.string(),
+              number: z.number().int(),
+              zipcode: z.string(),
+              complement: z.string(),
+            })
+          ),
+        },
+      },
+    },
+    getAllAddres
+  );
+
+  app.post(
+    "/addres",
+    {
+      schema: {
+        tags: ["addres"],
+        description: "Create new addres",
+        body: addresRegisterBodySchema,
+        response: {
+          201: z.null().describe("Addres created"),
+        },
+      },
+    },
+    registerAddres
+  );
+
+  app.put(
+    "/addres/:id",
+    {
+      schema: {
+        tags: ["addres"],
+        description: "Update addres info",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        body: addresUpdateBodySchema,
+        response: {
+          204: z.null().describe("Addres updated"),
+        },
+      },
+    },
+    updateAddres
+  );
+
+  app.delete(
+    "/addres/:id",
+    {
+      schema: {
+        tags: ["addres"],
+        description: "Delete addres by id",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.string().describe("Addres deleted"),
+        },
+      },
+    },
+    deleteAddres
+  );
 }
-
