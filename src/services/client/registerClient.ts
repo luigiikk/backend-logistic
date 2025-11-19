@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma.js";
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
 import { hash } from "bcryptjs";
+import { registerAddresService, AddresRegisterParams } from "../addres/registerAddres.js";
 
 interface ClientRegisterParams {
   name: string;
@@ -10,7 +11,7 @@ interface ClientRegisterParams {
   phone_number: string;
   password: string;
   client_roles: number;
-  addres_id:  number | null;
+  addressData: AddresRegisterParams;
 }
 
 export async function registerClientService({
@@ -21,8 +22,9 @@ export async function registerClientService({
   phone_number,
   password,
   client_roles,
-  addres_id,
+  addressData,
 }: ClientRegisterParams) {
+
   const password_hash = await hash(password, 6);
   
   const roleExists = await prisma.roles.findUnique({
@@ -61,10 +63,14 @@ export async function registerClientService({
     throw new Error("CNPJ already exists");
   }
 
-
-
-  const prismaClientRepository = new PrismaClientRepository();
+  const newAddress = await registerAddresService(addressData);
+  if (!newAddress) {
+    throw new Error("Failed to create address");
+  }
   
+    const addres_id = newAddress.id;
+  
+  const prismaClientRepository = new PrismaClientRepository();
 
   const client = await prismaClientRepository.create({
     name,
@@ -74,7 +80,7 @@ export async function registerClientService({
     phone_number,
     password_hash,
     role: { connect: { id: client_roles } },
-    addres: addres_id ? { connect: { id: addres_id } } : undefined,
+    addres: { connect: { id: addres_id } },
    })
    return client;
     }

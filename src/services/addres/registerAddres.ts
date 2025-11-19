@@ -1,6 +1,6 @@
 import { PrismaAddresRepository } from "@/repositories/prisma-address-repository.js";
 
-interface AddresRegisterParams {
+export interface AddresRegisterParams {
   country: string;
   state: string;
   city: string;
