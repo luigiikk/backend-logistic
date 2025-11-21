@@ -85,6 +85,7 @@ import {
   updateAddres,
 } from "./http/controllers/addres/updateAddres.js";
 import { deleteAddres } from "./http/controllers/addres/deleteAddres.js";
+import { categoryRegister, categoryRegisterBodySchema } from "./http/controllers/resources/category-resources/registerCategory.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -790,5 +791,20 @@ export async function routes(app: FastifyTypedInstance) {
       },
     },
     deleteAddres
+  );
+
+  app.post(
+    "/category-resource",
+    {
+      schema: {
+        tags: ["category-resource"],
+        description: "Create new category for resource",
+        body: categoryRegisterBodySchema,
+        response: {
+          201: z.null().describe("Category created"),
+        },
+      },
+    },
+    categoryRegister
   );
 }
