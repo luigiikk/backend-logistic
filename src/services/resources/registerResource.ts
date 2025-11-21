@@ -33,7 +33,7 @@ export async function registerResourceService({
     throw new Error("Category not exists");
   }
 
-  const resource = await resourceRepository.create({name, description, quantity, category: { connect: { id: category_id } }})
+  const resource = await resourceRepository.create({name, description, quantity, category: { connect: { id: category.id } }})
 
   return resource;
 }
