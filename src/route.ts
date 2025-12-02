@@ -893,7 +893,7 @@ export async function routes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/inventory/:resourceId",
+    "/inventory/resource/:resourceId",
     {
       schema: {
         tags: ["inventory"],
@@ -917,7 +917,7 @@ export async function routes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/inventory/:warehouseId",
+    "/inventory/warehouse/:warehouseId",
     {
       schema: {
         tags: ["inventory"],
