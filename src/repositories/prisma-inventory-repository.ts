@@ -58,9 +58,16 @@ export class PrismaInventoryRepository {
     });
   }
 
-  async decrementQuantity(id: number, quantity: number) {
+  async decrementQuantity(resourceId: number, warehouseId: number, quantity: number) {
+
+    const existingInventory = await this.findByResourceAndWarehouse(resourceId, warehouseId);
+
+    if(!existingInventory){
+      throw new Error();
+    }
+
     return prisma.inventory.update({
-      where: { id },
+      where: { id: existingInventory.id },
       data: {
         quantity: {
           decrement: quantity

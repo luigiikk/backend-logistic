@@ -89,6 +89,7 @@ import { categoryRegister, categoryRegisterBodySchema } from "./http/controllers
 import { resourceRegister, resourceRegisterBodySchema } from "./http/controllers/resources/registerResource.js";
 import { warehousesRegister, warehousesRegisterBodySchema } from "./http/controllers/warehouses/registerWarehouses.js";
 import { inventoryRegister, inventoryRegisterBodySchema } from "./http/controllers/inventory/inventory-register.js";
+import { InventoryDispatch, inventoryDispatchBodySchema } from "./http/controllers/inventory/inventory-dispatch.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -842,17 +843,32 @@ export async function routes(app: FastifyTypedInstance) {
   );
 
   app.post(
-    "/inventory",
+    "/inventory/receive",
     {
       schema: {
         tags: ["inventory"],
         description: "Receive Inventory",
         body: inventoryRegisterBodySchema,
         response: {
-          201: z.null().describe("Inventory created"),
+          201: z.null().describe("Inventory received"),
         },
       },
     },
     inventoryRegister
+  );
+
+  app.post(
+    "/inventory/dispatch",
+    {
+      schema: {
+        tags: ["inventory"],
+        description: "Dispatch Inventory",
+        body: inventoryDispatchBodySchema,
+        response: {
+          201: z.null().describe("Inventory dispatched"),
+        },
+      },
+    },
+    InventoryDispatch
   );
 }
