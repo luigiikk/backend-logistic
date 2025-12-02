@@ -75,4 +75,54 @@ export class PrismaInventoryRepository {
       }
     });
   }
+
+  async moveInventory(inventoryId: number, newWarehouseId: number, quantity: number) {
+   return await prisma.$transaction(async (prisma) => {
+    const originInventory = await prisma.inventory.findUnique({
+      where: {id: inventoryId }
+    });
+
+    if(!originInventory) {
+      throw new Error("inventory not found");
+    }
+
+    if((originInventory.quantity === null) || originInventory.quantity < quantity){
+      throw new Error("Not enough quantity to transfer");
+    }
+
+    await prisma.inventory.update({
+      where: { id: inventoryId },
+      data: {
+        quantity: originInventory.quantity - quantity,
+      },
+    });
+
+    let destinyInventory = await prisma.inventory.findFirst({
+      where: {
+        resource_id: originInventory.resource_id,
+        warehouse_id: newWarehouseId,
+      },
+    });
+
+    if (!destinyInventory) {
+      destinyInventory = await prisma.inventory.create({
+        data: {
+          resource_id: originInventory.resource_id,
+          warehouse_id: newWarehouseId,
+          quantity: quantity,
+        },
+      });
+    } else {
+      destinyInventory = await prisma.inventory.update({
+        where: { id: destinyInventory.id },
+        data: {
+          quantity: (destinyInventory.quantity ?? 0) + quantity,
+        },
+      });
+    }
+
+    return destinyInventory;
+
+   })
+  }
 }

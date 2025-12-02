@@ -90,6 +90,7 @@ import { resourceRegister, resourceRegisterBodySchema } from "./http/controllers
 import { warehousesRegister, warehousesRegisterBodySchema } from "./http/controllers/warehouses/registerWarehouses.js";
 import { inventoryRegister, inventoryRegisterBodySchema } from "./http/controllers/inventory/inventory-register.js";
 import { InventoryDispatch, inventoryDispatchBodySchema } from "./http/controllers/inventory/inventory-dispatch.js";
+import { inventoryTransfer, inventoryTransferBodySchema } from "./http/controllers/inventory/inventory-transfer.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -870,5 +871,20 @@ export async function routes(app: FastifyTypedInstance) {
       },
     },
     InventoryDispatch
+  );
+
+  app.post(
+    "/inventory/transfer",
+    {
+      schema: {
+        tags: ["inventory"],
+        description: "Transfer Inventory",
+        body: inventoryTransferBodySchema,
+        response: {
+          201: z.null().describe("Inventory transferred"),
+        },
+      },
+    },
+    inventoryTransfer
   );
 }
