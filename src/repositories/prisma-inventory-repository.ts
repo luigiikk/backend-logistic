@@ -125,4 +125,38 @@ export class PrismaInventoryRepository {
 
    })
   }
+
+  async getInventoryByResourceId(resourceId: number) {
+    const inventory = await prisma.inventory.findMany({
+      where: { resource_id: resourceId },
+      include: {
+        resource: true,
+        warehouse: true,
+      },
+    });
+  
+    return inventory.map((item) => ({
+      id: item.id,
+      resource_name: item.resource.name,
+      warehouse_name: item.warehouse?.name ?? "Unknown",
+      quantity: item.quantity ?? 0,
+    }));
+  }
+
+  async getInventoryByWarehouseId(warehouseId: number) {
+    const inventory = await prisma.inventory.findMany({
+      where: { warehouse_id: warehouseId },
+      include: {
+        resource: true,
+        warehouse: true,
+      },
+    });
+  
+    return inventory.map((item) => ({
+      id: item.id,
+      resource_name: item.resource.name,
+      warehouse_name: item.warehouse?.name ?? "Unknown",
+      quantity: item.quantity ?? 0,
+    }));
+  }
 }

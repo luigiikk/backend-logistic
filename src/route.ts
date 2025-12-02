@@ -91,6 +91,8 @@ import { warehousesRegister, warehousesRegisterBodySchema } from "./http/control
 import { inventoryRegister, inventoryRegisterBodySchema } from "./http/controllers/inventory/inventory-register.js";
 import { InventoryDispatch, inventoryDispatchBodySchema } from "./http/controllers/inventory/inventory-dispatch.js";
 import { inventoryTransfer, inventoryTransferBodySchema } from "./http/controllers/inventory/inventory-transfer.js";
+import { getInventoryByResourceId } from "./http/controllers/inventory/inventory-by-resourceId.js";
+import { getInventoryByWarehouseId } from "./http/controllers/inventory/inventory-by-warehouseId.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -886,5 +888,53 @@ export async function routes(app: FastifyTypedInstance) {
       },
     },
     inventoryTransfer
+  );
+
+  app.get(
+    "/inventory/:resourceId",
+    {
+      schema: {
+        tags: ["inventory"],
+        description: "Get inventory by resource id",
+        params: z.object({
+          resourceId: z.coerce.number(),
+        }),
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number().int(),
+              resource_name: z.string(),
+              warehouse_name: z.string(),
+              quantity: z.number(),
+            })
+          ),
+        },
+      },
+    },
+    getInventoryByResourceId
+  );
+
+  app.get(
+    "/inventory/:warehouseId",
+    {
+      schema: {
+        tags: ["inventory"],
+        description: "Get inventory by warehouse id",
+        params: z.object({
+          warehouseId: z.coerce.number(),
+        }),
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number().int(),
+              resource_name: z.string(),
+              warehouse_name: z.string(),
+              quantity: z.number(),
+            })
+          ),
+        },
+      },
+    },
+    getInventoryByWarehouseId
   );
 }
