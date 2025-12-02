@@ -93,6 +93,8 @@ import { InventoryDispatch, inventoryDispatchBodySchema } from "./http/controlle
 import { inventoryTransfer, inventoryTransferBodySchema } from "./http/controllers/inventory/inventory-transfer.js";
 import { getInventoryByResourceId } from "./http/controllers/inventory/inventory-by-resourceId.js";
 import { getInventoryByWarehouseId } from "./http/controllers/inventory/inventory-by-warehouseId.js";
+import { purchaseOrders, purchaseOrdersBodySchema } from "./http/controllers/purchaseOrders/purchase-orders.js";
+import { purchaseOrdersItems, purchaseOrdersItemsBodySchema } from "./http/controllers/purchaseOrders/purchaseOrdersItems/purchase-orders-items.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -936,5 +938,38 @@ export async function routes(app: FastifyTypedInstance) {
       },
     },
     getInventoryByWarehouseId
+  );
+
+  app.post(
+    "/purchase-orders",
+    {
+      schema: {
+        tags: ["purchase-orders"],
+        description: "Purchase Orders",
+        body: purchaseOrdersBodySchema,
+        response: {
+          201: z.null().describe("Purchase Order"),
+        },
+      },
+    },
+    purchaseOrders
+  );
+
+  app.post(
+    "/purchase-orders/:purchaseOrdersId/items",
+    {
+      schema: {
+        tags: ["purchase-orders-items"],
+        description: "Purchase Orders",
+        params: z.object({
+          purchaseOrdersId: z.coerce.number(),
+        }),
+        body: purchaseOrdersItemsBodySchema,
+        response: {
+          201: z.null().describe("Purchase Order item"),
+        },
+      },
+    },
+    purchaseOrdersItems
   );
 }
