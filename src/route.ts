@@ -88,6 +88,7 @@ import { deleteAddres } from "./http/controllers/addres/deleteAddres.js";
 import { categoryRegister, categoryRegisterBodySchema } from "./http/controllers/resources/category-resources/registerCategory.js";
 import { resourceRegister, resourceRegisterBodySchema } from "./http/controllers/resources/registerResource.js";
 import { warehousesRegister, warehousesRegisterBodySchema } from "./http/controllers/warehouses/registerWarehouses.js";
+import { inventoryRegister, inventoryRegisterBodySchema } from "./http/controllers/inventory/inventory-register.js";
 
 export async function routes(app: FastifyTypedInstance) {
   app.get(
@@ -838,5 +839,20 @@ export async function routes(app: FastifyTypedInstance) {
       },
     },
     warehousesRegister
+  );
+
+  app.post(
+    "/inventory",
+    {
+      schema: {
+        tags: ["inventory"],
+        description: "Receive Inventory",
+        body: inventoryRegisterBodySchema,
+        response: {
+          201: z.null().describe("Inventory created"),
+        },
+      },
+    },
+    inventoryRegister
   );
 }
