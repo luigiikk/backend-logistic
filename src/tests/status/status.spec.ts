@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma.js";
 import { describe, it, beforeEach, expect } from "vitest";
 import { registerStatusService } from "@/services/status/registerStatus.js";
-import { getAllStatusService } from "@/services/status/getAllStatus.js";
+import { getAllStatusService } from "@/services/status/getAllStatusByCompany.js";
 import { getStatusService } from "@/services/status/getStatus.js";
 import { deleteStatusService } from "@/services/status/deleteStatus.js";
 import { updateStatusService } from "@/services/status/updateStatus.js";

@@ -176,7 +176,8 @@ model Status {
 model Invoice {
   id             Int       @id @default(autoincrement())
   client_id      Int?
-  invoice_number Int?
+  recipient_id   Int?
+  invoice_number Int?      @unique
   issue_date     DateTime?
   due_date       DateTime?
   total_amount   Float?
@@ -188,10 +189,12 @@ model Invoice {
 
   // relations
   client Client? @relation(fields: [client_id], references: [id])
+  recipient Recipient? @relation(fields: [recipient_id], references: [id])
   status Status  @relation(fields: [status_id], references: [id])
 
   @@index([client_id])
   @@index([status_id])
+  @@index([recipient_id])
   @@map("invoice")
 }
 
@@ -345,4 +348,5 @@ model Recipient{
 
    orders    Orders[]  @relation("RecipientOrders")
    addres    Addres?     @relation(fields: [addres_id], references: [id])
+   invoices  Invoice[]
 }

@@ -3,7 +3,6 @@ import z from "zod";
 import { registerClientService } from "@/services/client/registerClient.js";
 import { addresRegisterBodySchema } from "@/http/controllers/addres/registerAddres.js";
 
-
 export const clientRegisterBodySchema = z.object({
 
   name: z.string(),
@@ -22,7 +21,7 @@ export async function registerClient(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, email, password, CPF, phone_number, CNPJ,client_roles, addressData } = request.body;
+  const { name, email, password, CPF, phone_number, CNPJ, client_roles, addressData } = request.body;
 
   try {
     await registerClientService({ name, email, password, CPF, phone_number, CNPJ, client_roles, addressData, });
