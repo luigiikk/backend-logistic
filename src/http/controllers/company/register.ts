@@ -12,7 +12,7 @@ export const companyRegisterBodySchema = z.object({
 
 type RegisterBody = z.infer<typeof companyRegisterBodySchema>;
 
-export async function register(
+export async function registerCompany(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
