@@ -5,7 +5,6 @@ import { registerEmployeeService } from "@/services/employees/registerEmployee.j
 export const employeeRegisterBodySchema = z.object({
   name: z.string(),
   employee_roles: z.number().int(),
-  company_id: z.number().int(),
   email: z.email(),
   phone_number: z.string(),
   password: z.string().min(6),
@@ -17,7 +16,11 @@ export async function registerEmployee(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, employee_roles, company_id, email, phone_number, password } = request.body;
+  const { name, employee_roles, email, phone_number, password } = request.body;
+
+  await request.jwtVerify();
+  const user = request.user;
+  const company_id = user.sub;
 
   try {
     await registerEmployeeService({ name, employee_roles, company_id, email, phone_number, password });

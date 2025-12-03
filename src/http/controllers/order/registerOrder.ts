@@ -6,7 +6,6 @@ export const orderRegisterBodySchema = z.object({
     sender_client_id: z.number().int(),
     recipient_id: z.number().int(),
     status_id: z.number().int(),
-    company_id: z.number().int(),
     vehicle_id: z.number().int(),
 });
 
@@ -16,7 +15,11 @@ export async function registerOrder(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const {sender_client_id, recipient_id, status_id, company_id, vehicle_id } = request.body;
+  const {sender_client_id, recipient_id, status_id, vehicle_id } = request.body;
+
+  await request.jwtVerify();
+  const user = request.user;
+  const company_id = user.sub;
 
   try {
     await registerOrderService({sender_client_id, recipient_id, status_id, company_id, vehicle_id });

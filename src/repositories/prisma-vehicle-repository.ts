@@ -11,24 +11,32 @@ export class PrismaVehiclesRepository {
     return vehicle;
   }
 
-  async getAllVehicles() {
-    return await prisma.vehicles.findMany({
-      select: {
-        id: true,
-        plate: true,
-        model: true,
-        capacity: true,
-        status_id: true,
-        company_id: true
+  async getAllVehiclesByCompany() {
+  return await prisma.vehicles.findMany({
+    select: {
+      id: true,
+      plate: true,
+      model: true,
+      capacity: true,
+      company_id: true,
+      status: {
+        select: {
+          name: true,
+        },
       },
-    });
-  }
+    },
+  });
+}
 
-  async getVehicle(id: number) {
+  async getVehicle(id: number, company_id: number) {
     const vehicle = await prisma.vehicles.findUnique({
       where: {
         id,
+        company_id,
       },
+      include: {
+      status: true, 
+    },
     });
 
     return vehicle;
@@ -42,15 +50,24 @@ export class PrismaVehiclesRepository {
     });
   }
 
-  async updateVehicle(id: number, data: VehicleUpdateParams) {
-      const vehicleExists = await prisma.vehicles.findUnique({ where: { id } });
-  
-      if (!vehicleExists) {
-        throw new Error("vehicle not found");
-      }
-      await prisma.vehicles.update({
-        where: { id },
-        data,
-      });
+  async updateVehicle(
+    id: number,
+    company_id: number,
+    data: VehicleUpdateParams
+  ) {
+    const vehicleExists = await prisma.vehicles.findUnique({ where: { id } });
+
+    if (!vehicleExists) {
+      throw new Error("vehicle not found");
     }
+
+    if (company_id != vehicleExists.company_id) {
+      throw new Error("vehicle not update");
+    }
+
+    await prisma.vehicles.update({
+      where: { id },
+      data,
+    });
+  }
 }

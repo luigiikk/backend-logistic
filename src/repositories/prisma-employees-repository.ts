@@ -21,24 +21,30 @@ export class PrismaEmployeesRepository {
     return employee;
   }
 
-  async getAllEmployees() {
-    return await prisma.employees.findMany({
-      select: {
-        id: true,
-        name: true,
-        enrollment: true,
-        employee_roles: true,
-        company_id: true,
-        email: true,
-        phone_number: true,
-      },
-    });
-  }
-  async getEmployee(id: number) {
+  async getAllEmployeesByCompany() {
+  return await prisma.employees.findMany({
+    select: {
+      name: true,
+      enrollment: true,
+      email: true,
+      phone_number: true,
+          role: { 
+        select: {
+          name: true 
+        }
+      }
+    },
+  });
+}
+  async getEmployee(id: number, company_id: number) {
     const employee = await prisma.employees.findUnique({
       where: {
         id,
+        company_id,
       },
+      include: {
+      role: true, 
+  },
     });
     return employee;
   }
@@ -52,33 +58,19 @@ export class PrismaEmployeesRepository {
     return employee;
   }
 
-  async updateEmployee(id: number, data: EmployeeUpdateParams) {
+  async updateEmployee(id: number, company_id: number, data: EmployeeUpdateParams) {
     const employeeExists = await prisma.employees.findUnique({ where: { id } });
     
     if (!employeeExists) {
       throw new Error("employee not found");
     }
+
+    if(company_id != employeeExists.company_id){
+      throw new Error("employee not update");
+    }
     await prisma.employees.update({
       where: { id },
       data,
     });
-  }
-
-  async getEmployeeByCompany(company_id:number){
-    const employes = await prisma.employees.findMany({
-      where:{
-        company_id,
-      },
-      select: {
-      id: true,
-      name: true,
-      enrollment: true,
-      employee_roles: true,
-      company_id: true,
-      email: true,
-      phone_number: true,
-    },
-    });
-    return employes;
   }
 }

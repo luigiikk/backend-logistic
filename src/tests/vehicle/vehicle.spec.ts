@@ -5,7 +5,7 @@ import { registerVehicleService } from "@/services/vehicle/registerVehicle.js";
 import { updateVehicleService } from "@/services/vehicle/updateVehicle.js";
 import { deleteVehicleService } from "@/services/vehicle/deleteVehicle.js";
 import { getVehicleService } from "@/services/vehicle/getVehicle.js";
-import { getAllVehiclesService } from "@/services/vehicle/getAllVehicles.js";
+import { getAllVehiclesService } from "@/services/vehicle/getAllVehiclesByCompany.js";
 
 import { clearDatabase } from "../helpers/db.js";
 

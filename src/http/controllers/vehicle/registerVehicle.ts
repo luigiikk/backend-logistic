@@ -7,7 +7,6 @@ export const vehicleRegisterBodySchema = z.object({
   model: z.string(),
   capacity: z.number().int(),
   status_id: z.number().int(),
-  company_id: z.number().int(),
 });
 
 type RegisterBody = z.infer<typeof vehicleRegisterBodySchema>;
@@ -16,7 +15,11 @@ export async function registerVehicle(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { plate, model, capacity, status_id,  company_id } = request.body;
+  const { plate, model, capacity, status_id } = request.body;
+
+  await request.jwtVerify();
+  const user = request.user;
+  const company_id = user.sub
 
   try {
     await registerVehicleService({ plate, model, capacity, status_id, company_id });

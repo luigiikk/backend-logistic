@@ -10,17 +10,16 @@ export class PrismaOrdersRepository {
     return order;
   }
 
-  async getAllOrders() {
+  async getAllOrdersByCompany() {
     return await prisma.orders.findMany({
       select: {
-        id: true,
         code: true,
-        sender_client_id: true,
-        recipient_id: true,
-        status_id: true,
-        company_id: true,
-        vehicle_id: true,
+      sender_client: { select: { name: true } },
+      recipient: { select: { name: true } },
+      status: { select: { name: true } },
+      vehicle: { select: { plate: true } },
       },
+      
     });
   }
 
@@ -42,21 +41,17 @@ export class PrismaOrdersRepository {
     return orders;
   }
 
-  async getOrdersByCompany(company_id: number){
-    const orders = await prisma.orders.findMany({
-      where:{
-        company_id,
-      }
-    })
-    return orders;
-  }
-
-  async getOrder(id: number) {
-    const order = await prisma.orders.findUnique({
-      where: {
-        id,
-      },
-    });
+  async getOrder(id: number, company_id: number) {
+   const order = await prisma.orders.findUnique({
+    where: { id, company_id },
+    select: {
+      code: true,
+      sender_client: { select: { name: true } },
+      recipient: { select: { name: true } },
+      status: { select: { name: true } },
+      vehicle: { select: { plate: true } },
+    },
+  });
     return order;
   }
 
@@ -69,11 +64,15 @@ export class PrismaOrdersRepository {
     return order;
   }
 
-  async updateOrder(id: number, data: OrderUpdateParams) {
+  async updateOrder(id: number, company_id: number, data: OrderUpdateParams) {
     const orderExists = await prisma.orders.findUnique({ where: { id } });
 
     if (!orderExists) {
       throw new Error("order not found");
+    }
+
+    if(company_id != orderExists.company_id){
+      throw new Error("order not update");
     }
     await prisma.orders.update({
       where: { id },

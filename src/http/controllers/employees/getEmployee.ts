@@ -9,17 +9,18 @@ export async function getEmployee(
 
   try {
     await request.jwtVerify();
+    const company_id = request.user.sub;
 
     if(request.user.role != "company"){
       return reply.status(409).send();
     }
 
-    const employee = await getEmployeeService(id);
+    const employee = await getEmployeeService(id, company_id)
 
     const response = {
       name: employee.name,
       enrollment: employee.enrollment, 
-      employee_roles: employee.employee_roles,
+      role_name: employee.role.name,
       company_id: employee.company_id,
       email: employee.email,
       phone_number: employee.phone_number,
