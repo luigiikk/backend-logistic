@@ -21,24 +21,31 @@ export class PrismaEmployeesRepository {
     return employee;
   }
 
-  async getAllEmployees() {
-    return await prisma.employees.findMany({
-      select: {
-        id: true,
-        name: true,
-        enrollment: true,
-        employee_roles: true,
-        company_id: true,
-        email: true,
-        phone_number: true,
-      },
-    });
-  }
-  async getEmployee(id: number) {
-    const employee = await prisma.employees.findUnique({
+  async getAllEmployeesByCompany(company_id: number) {
+  return await prisma.employees.findMany({
+    where: { company_id }, 
+    select: {
+      name: true,
+      enrollment: true,
+      email: true,
+      phone_number: true,
+      role: { 
+        select: {
+          name: true 
+        }
+      }
+    },
+  });
+}
+  async getEmployee(id: number, company_id: number) {
+    const employee = await prisma.employees.findFirst({
       where: {
         id,
+        company_id,
       },
+      include: {
+      role: true, 
+  },
     });
     return employee;
   }
@@ -52,33 +59,22 @@ export class PrismaEmployeesRepository {
     return employee;
   }
 
-  async updateEmployee(id: number, data: EmployeeUpdateParams) {
-    const employeeExists = await prisma.employees.findUnique({ where: { id } });
-    
-    if (!employeeExists) {
-      throw new Error("employee not found");
-    }
-    await prisma.employees.update({
-      where: { id },
-      data,
-    });
+  async updateEmployee(id: number, company_id: number, data: EmployeeUpdateParams) {
+  const employee = await prisma.employees.update({
+    where: {
+      id,
+      company_id,
+    },
+    data,
+  });
+
+  if (!employee) {
+    throw new Error("Employee not found or does not belong to this company");
   }
 
-  async getEmployeeByCompany(company_id:number){
-    const employes = await prisma.employees.findMany({
-      where:{
-        company_id,
-      },
-      select: {
-      id: true,
-      name: true,
-      enrollment: true,
-      employee_roles: true,
-      company_id: true,
-      email: true,
-      phone_number: true,
-    },
-    });
-    return employes;
-  }
+  await prisma.employees.update({
+    where: { id, company_id },
+    data,
+  });
+}
 }

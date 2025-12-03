@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma.js";
 import { describe, it, beforeEach, expect } from "vitest";
 import { registerOrderService } from "@/services/order/registerOrder.js";
 import { getOrderService } from "@/services/order/getOrder.js";
-import { getAllOrdersService } from "@/services/order/getAllOrders.js";
+import { getAllOrdersService } from "@/services/order/getAllOrdersByCompany.js";
 import { deleteOrderService } from "@/services/order/deleteOrder.js";
 import { updateOrderService } from "@/services/order/updateOrder.js";
 import { clearDatabase } from "../helpers/db.js";

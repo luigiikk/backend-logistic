@@ -7,7 +7,7 @@ export interface EmployeeUpdateParams {
   phone_number: string;
 }
 
-export async function updateEmployeeService(id:number, {
+export async function updateEmployeeService(id:number, company_id: number,{
   name,
   employee_roles,
   email,
@@ -16,7 +16,7 @@ export async function updateEmployeeService(id:number, {
  
   const prismaEmployeesRepository = new PrismaEmployeesRepository;
 
-  await prismaEmployeesRepository.updateEmployee(id, {
+  await prismaEmployeesRepository.updateEmployee(id, company_id,{
     name,
     employee_roles,
     email,

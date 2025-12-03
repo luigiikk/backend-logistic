@@ -23,25 +23,23 @@ export class PrismaStatusRepository {
     return status;
   }
 
-  async getAllStatus() {
-    return await prisma.status.findMany({
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        is_default: true,
-        company_id: true,
-      },
-      orderBy: {
-        id: "asc",
-      },
-    });
-  }
+  async getAllStatusByCompany(company_id: number) {
+  return await prisma.status.findMany({
+    where: { company_id }, 
+    select: {
+      name: true,
+      type: true,
+      is_default: true,
+    },
+  });
+}
 
-  async getStatus(id: number) {
+
+  async getStatus(id: number, company_id: number) {
     const status = await prisma.status.findUnique({
       where: {
         id,
+        company_id,
       },
     });
 
@@ -56,12 +54,17 @@ export class PrismaStatusRepository {
     });
   }
 
-  async updateStatus(id: number, data: StatusUpdateParams) {
+  async updateStatus(id: number, company_id: number, data: StatusUpdateParams) {
     const statusExists = await prisma.status.findUnique({ where: { id } });
 
     if (!statusExists) {
       throw new Error("status not found");
     }
+
+    if(company_id != statusExists.company_id){
+      throw new Error("status not update");
+    }
+
     await prisma.status.update({
       where: { id },
       data,

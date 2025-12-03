@@ -4,19 +4,17 @@ export interface StatusUpdateParams {
   name: string;
   type: "order" | "vehicle" | "invoice" | "purchase_order";
   is_default: boolean;
-  company_id: number;
 }
 
 export async function updateStatusService(
-  id: number,
-  { name, type, is_default, company_id }: StatusUpdateParams
+  id: number, company_id: number,
+  { name, type, is_default }: StatusUpdateParams
 ) {
   const prismaStatusRepository = new PrismaStatusRepository();
 
-  await prismaStatusRepository.updateStatus(id, {
+  await prismaStatusRepository.updateStatus(id, company_id, {
     name,
     type,
     is_default,
-    company_id,
   });
 }
