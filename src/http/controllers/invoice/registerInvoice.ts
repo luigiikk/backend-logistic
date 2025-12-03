@@ -5,7 +5,6 @@ import { registerInvoiceService } from "@/services/invoice/registerInvoice.js";
 export const invoiceRegisterBodySchema = z.object({
   client_id: z.number().int(),
   recipient_id: z.number().int(),
-  invoice_number: z.number().int(),
   issue_date: z.string().transform((s) => new Date(s)),
   due_date: z.string().transform((s) => new Date(s)),
   total_amount: z.number(),
@@ -23,7 +22,6 @@ export async function registerInvoice(
   const {
     client_id,
     recipient_id,
-    invoice_number,
     issue_date,
     due_date,
     total_amount,
@@ -36,7 +34,6 @@ export async function registerInvoice(
     await registerInvoiceService({
       client_id,
       recipient_id,
-      invoice_number,
       issue_date,
       due_date,
       total_amount,
