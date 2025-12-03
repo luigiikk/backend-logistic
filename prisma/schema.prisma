@@ -23,10 +23,12 @@ model Companies {
   phone_number  String?
   CNPJ          String?  @unique
   password_hash String
+  addres_id Int?
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
   // relations
+  addres    Addres?     @relation(fields: [addres_id], references: [id])
   vehicles   Vehicles[]
   employees  Employees[]
   status     Status[]
@@ -333,6 +335,7 @@ model Addres {
   suppliers  Supplier[]
   warehouses Warehouses[]
   recipient  Recipient[]
+  companies Companies[]
 
   @@map("addres")
 }

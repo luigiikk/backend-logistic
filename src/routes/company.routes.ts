@@ -43,9 +43,16 @@ export async function companyRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.object({
             name: z.string(),
-            email: z.email(),
+            email: z.string().email(),
             phone_number: z.string(),
             cnpj: z.string(),
+            street: z.string().nullable().optional(),
+            number: z.number().nullable().optional(),
+            complement: z.string().nullable().optional(),
+            city: z.string().nullable().optional(),
+            state: z.string().nullable().optional(),
+            country: z.string().nullable().optional(),
+            zipcode: z.string().nullable().optional(),
           }),
         },
       },
