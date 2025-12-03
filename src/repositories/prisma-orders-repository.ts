@@ -10,18 +10,18 @@ export class PrismaOrdersRepository {
     return order;
   }
 
-  async getAllOrdersByCompany() {
-    return await prisma.orders.findMany({
-      select: {
-        code: true,
+  async getAllOrdersByCompany(company_id: number) {
+  return await prisma.orders.findMany({
+    where: { company_id }, 
+    select: {
+      code: true,
       sender_client: { select: { name: true } },
       recipient: { select: { name: true } },
       status: { select: { name: true } },
       vehicle: { select: { plate: true } },
-      },
-      
-    });
-  }
+    },
+  });
+}
 
   async getOrdersByRecipient(recipient_id: number){
     const orders = await prisma.orders.findMany({

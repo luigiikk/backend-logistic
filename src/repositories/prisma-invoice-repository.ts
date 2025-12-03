@@ -14,7 +14,6 @@ export class PrismaInvoicesRepository {
   async getAllInvoices() {
     return await prisma.invoice.findMany({
       select: {
-        id: true,
         recipient_id: true,
         client_id: true,
         invoice_number: true,

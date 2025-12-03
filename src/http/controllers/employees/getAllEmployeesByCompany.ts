@@ -8,7 +8,14 @@ export async function getAllEmployeesByCompany(
 ) {
 
   try {
-    const employees = await getAllEmployeesByCompanyService();
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if(request.user.role != "company"){
+      return reply.status(409).send();
+    }
+
+    const employees = await getAllEmployeesByCompanyService(company_id);
     const formattedEmployees = employees.map((emp) => {
       return {
         ...emp, 

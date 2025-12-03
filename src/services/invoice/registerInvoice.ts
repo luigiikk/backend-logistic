@@ -1,10 +1,9 @@
-import { prisma } from "@/lib/prisma.js";
 import { PrismaInvoicesRepository } from "@/repositories/prisma-invoice-repository.js";
+import { generateInvoiceNumber } from "@/util/generateInvoiceNumber.js";
 
 interface InvoiceRegisterParams {
   client_id: number;
   recipient_id: number;
-  invoice_number: number;
   issue_date: Date;
   due_date: Date;
   total_amount: number;
@@ -16,7 +15,6 @@ interface InvoiceRegisterParams {
 export async function registerInvoiceService({
     client_id,
     recipient_id,
-    invoice_number,
     issue_date,
     due_date,
     total_amount,
@@ -25,15 +23,7 @@ export async function registerInvoiceService({
     link_file,
 }: InvoiceRegisterParams) {
 
-  const invoiceWithSameNumber = await prisma.invoice.findUnique({
-    where: {
-      invoice_number,
-    },
-  });
-
-  if (invoiceWithSameNumber) {
-    throw new Error("Number already exists");
-  }
+  const invoice_number = await generateInvoiceNumber();
 
   const prismaInvoicesRepository = new PrismaInvoicesRepository();
 

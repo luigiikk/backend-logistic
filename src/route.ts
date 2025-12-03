@@ -758,11 +758,10 @@ export async function routes(app: FastifyTypedInstance) {
         }),
         response: {
           200: z.object({
-            id: z.number().int(),
             client_id: z.number().int(),
             invoice_number: z.number().int(),
-            issue_date: z.string(),
-            due_date: z.string(),
+            issue_date: z.coerce.date(),
+            due_date: z.coerce.date(),
             total_amount: z.number(),
             tax_amount: z.number(),
             status_id: z.number(),
@@ -783,11 +782,10 @@ export async function routes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
-              id: z.number().int(),
               client_id: z.number().int(),
               invoice_number: z.number().int(),
-              issue_date: z.string(),
-              due_date: z.string(),
+              issue_date: z.coerce.date(),
+              due_date: z.coerce.date(),
               total_amount: z.number(),
               tax_amount: z.number(),
               status_id: z.number(),

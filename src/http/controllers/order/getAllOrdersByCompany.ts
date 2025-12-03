@@ -6,7 +6,14 @@ export async function getAllOrdersByCompany(
   reply: FastifyReply
 ) {
   try {
-    const orders = await getAllOrdersByCompanyService();
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if(request.user.role != "company"){
+      return reply.status(409).send();
+    }
+
+    const orders = await getAllOrdersByCompanyService(company_id);
     const formattedOrders = orders.map((ord) => ({
       code: ord.code ?? "",
       sender_client: ord.sender_client?.name ?? "",

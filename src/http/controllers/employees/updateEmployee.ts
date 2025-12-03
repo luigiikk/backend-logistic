@@ -16,13 +16,13 @@ export async function updateEmployee(
   reply: FastifyReply
 ) {
   const { name, employee_roles, email, phone_number } = request.body;
-  const { id } = request.params;
-
-  await request.jwtVerify();
-  const user = request.user;
-  const company_id = user.sub;
+  const id = Number(request.params.id);
 
   try {
+    await request.jwtVerify();
+    const user = request.user;
+    const company_id = user.sub;
+
     await updateEmployeeService(id, company_id, { name, employee_roles, email, phone_number });
   } catch (error) {
     return reply.status(409).send();

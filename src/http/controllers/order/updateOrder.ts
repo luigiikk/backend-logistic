@@ -18,11 +18,11 @@ export async function updateOrder(
   const {sender_client_id, recipient_id, status_id, vehicle_id } = request.body;
   const { id } = request.params;
 
-  await request.jwtVerify();
-  const user = request.user;
-  const company_id = user.sub;
-
   try {
+    await request.jwtVerify();
+    const user = request.user;
+    const company_id = user.sub;
+
     await updateOrderService(id, company_id,{
       sender_client_id,
       recipient_id,

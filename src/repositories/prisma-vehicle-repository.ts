@@ -11,8 +11,9 @@ export class PrismaVehiclesRepository {
     return vehicle;
   }
 
-  async getAllVehiclesByCompany() {
+  async getAllVehiclesByCompany(company_id: number) {
   return await prisma.vehicles.findMany({
+    where: { company_id }, 
     select: {
       id: true,
       plate: true,
@@ -27,6 +28,7 @@ export class PrismaVehiclesRepository {
     },
   });
 }
+
 
   async getVehicle(id: number, company_id: number) {
     const vehicle = await prisma.vehicles.findUnique({

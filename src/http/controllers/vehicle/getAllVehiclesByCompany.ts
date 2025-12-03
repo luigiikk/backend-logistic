@@ -6,7 +6,14 @@ export async function getAllVehiclesByCompany(
   reply: FastifyReply
 ) {
   try {
-    const vehicle = await getAllVehiclesByCompanyService();
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if(request.user.role != "company"){
+      return reply.status(409).send();
+    }
+
+    const vehicle = await getAllVehiclesByCompanyService(company_id);
     const formattedVehicles = vehicle.map((vehicle) => ({
       plate: vehicle.plate ?? "",
       model: vehicle.model ?? "",

@@ -5,8 +5,8 @@ import { registerInvoiceService } from "@/services/invoice/registerInvoice.js";
 export const invoiceRegisterBodySchema = z.object({
   client_id: z.number().int(),
   recipient_id: z.number().int(),
-  issue_date: z.string().transform((s) => new Date(s)),
-  due_date: z.string().transform((s) => new Date(s)),
+  issue_date: z.coerce.date(), 
+  due_date: z.coerce.date(),  
   total_amount: z.number(),
   tax_amount: z.number(),
   status_id: z.number(),

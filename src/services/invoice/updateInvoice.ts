@@ -3,7 +3,6 @@ import { PrismaInvoicesRepository } from "@/repositories/prisma-invoice-reposito
 export interface InvoiceUpdateParams {
   client_id: number;
   recipient_id: number;
-  invoice_number: number;
   issue_date: Date;
   due_date: Date;
   total_amount: number;
@@ -17,7 +16,6 @@ export async function updateInvoiceService(
   {
     client_id,
     recipient_id,
-    invoice_number,
     issue_date,
     due_date,
     total_amount,
@@ -31,7 +29,6 @@ export async function updateInvoiceService(
   await prismaInvoicesRepository.updateInvoice(id, {
     client_id,
     recipient_id,
-    invoice_number,
     issue_date,
     due_date,
     total_amount,

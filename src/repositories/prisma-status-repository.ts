@@ -23,18 +23,17 @@ export class PrismaStatusRepository {
     return status;
   }
 
-  async getAllStatusByCompany() {
-    return await prisma.status.findMany({
-      select: {
-        name: true,
-        type: true,
-        is_default: true,
-      },
-      orderBy: {
-        id: "asc",
-      },
-    });
-  }
+  async getAllStatusByCompany(company_id: number) {
+  return await prisma.status.findMany({
+    where: { company_id }, 
+    select: {
+      name: true,
+      type: true,
+      is_default: true,
+    },
+  });
+}
+
 
   async getStatus(id: number, company_id: number) {
     const status = await prisma.status.findUnique({

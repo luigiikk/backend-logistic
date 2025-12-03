@@ -6,7 +6,14 @@ export async function getAllStatusByCompany(
   reply: FastifyReply
 ) {
   try {
-    const status = await getAllStatusByCompanyService();
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if(request.user.role != "company"){
+      return reply.status(409).send();
+    }
+
+    const status = await getAllStatusByCompanyService(company_id);
     const formattedStatuses = status.map((status) => ({
       name: status.name ?? "",
       type: status.type ?? "",

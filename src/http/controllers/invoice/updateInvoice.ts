@@ -5,7 +5,6 @@ import { updateInvoiceService } from "@/services/invoice/updateInvoice.js";
 export const invoiceUpdateBodySchema = z.object({
   client_id: z.number().int(),
   recipient_id: z.number().int(),
-  invoice_number: z.number().int(),
   issue_date: z.string().transform((s) => new Date(s)),
   due_date: z.string().transform((s) => new Date(s)),
   total_amount: z.number(),
@@ -23,7 +22,6 @@ export async function updateInvoice(
   const {
     client_id,
     recipient_id,
-    invoice_number,
     issue_date,
     due_date,
     total_amount,
@@ -37,7 +35,6 @@ export async function updateInvoice(
     await updateInvoiceService(id, {
       client_id,
       recipient_id,
-      invoice_number,
       issue_date,
       due_date,
       total_amount,
