@@ -45,6 +45,7 @@ export class PrismaEmployeesRepository {
       },
       include: {
       role: true, 
+      addres: true
   },
     });
     return employee;
