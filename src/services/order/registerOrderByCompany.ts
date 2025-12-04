@@ -1,10 +1,9 @@
-import { prisma } from "@/lib/prisma.js";
 import { PrismaOrdersRepository } from "@/repositories/prisma-orders-repository.js";
-import { generateTrackingCode } from "@/util/generateTrackingCode.js";
 
-export interface OrderRegisterParams {
-  sender_client_id: number;
+
+export interface OrderRegisterCompanyParams {
   company_id: number;
+  vehicle_id: number;
 
   recipient: {
     name: string;
@@ -28,15 +27,15 @@ export interface OrderRegisterParams {
   }[];
 }
 
-export async function registerOrderByClientService({
-  sender_client_id,
+export async function registerOrderByCompanyService({
   company_id,
+  vehicle_id,
   recipient,
   products,
-}: OrderRegisterParams) {
+}: OrderRegisterCompanyParams) {
   const prismaOrderRepository = new PrismaOrdersRepository;
 
-  const order = await prismaOrderRepository.createOrderByClient({sender_client_id, company_id, recipient, products});
+  const order = await prismaOrderRepository.createOrderByCompany({company_id, vehicle_id, recipient, products});
 
   return order;
 }

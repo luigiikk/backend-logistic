@@ -112,23 +112,23 @@ model Client {
 }
 
 model Orders {
-  id                 Int      @id @default(autoincrement())
-  code               String?   @unique
-  company_id         Int    
-  sender_client_id   Int
-  recipient_id       Int
-  status_id          Int
-  vehicle_id         Int
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  id               Int        @id @default(autoincrement())
+  code             String?     @unique
+  company_id       Int    
+  sender_client_id Int?
+  recipient_id     Int
+  status_id        Int
+  vehicle_id       Int?        // ⬅️ Agora é opcional
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
 
   // relations
-  sender_client   Client     @relation("SenderOrders", fields: [sender_client_id], references: [id])
-  recipient       Recipient  @relation("RecipientOrders", fields: [recipient_id], references: [id])
-  status          Status     @relation(fields: [status_id], references: [id])
-  vehicle         Vehicles   @relation("VehicleOrders", fields: [vehicle_id], references: [id])
-  products        Products[]
-  company  Companies @relation(fields: [company_id], references: [id])
+  sender_client Client?    @relation("SenderOrders", fields: [sender_client_id], references: [id])
+  recipient     Recipient @relation("RecipientOrders", fields: [recipient_id], references: [id])
+  status        Status    @relation(fields: [status_id], references: [id])
+  vehicle       Vehicles? @relation("VehicleOrders", fields: [vehicle_id], references: [id])
+  products      Products[]
+  company       Companies @relation(fields: [company_id], references: [id])
 
   @@index([sender_client_id])
   @@index([recipient_id])
@@ -136,7 +136,6 @@ model Orders {
   @@index([vehicle_id])
   @@index([company_id])
   @@map("orders")
-  
 }
 
 model Products {

@@ -1,13 +1,219 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
-import type { OrderUpdateParams } from "@/services/order/updateOrder.js";
+import type { OrderUpdateCompanyParams } from "@/services/order/updateOrderByCompany.js";
+import { generateTrackingCode } from "@/util/generateTrackingCode.js";
+
+export interface CreateOrderByClientParams {
+  sender_client_id: number;
+  company_id: number;
+
+  recipient: {
+    name: string;
+    cpf: string;
+    email: string;
+    address: {
+      street?: string | null;
+      number?: number | null;
+      complement?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      zipcode?: string | null;
+    };
+  };
+
+  products: {
+    name?: string | null;
+    description?: string | null;
+    quantity?: number | null;
+  }[];
+}
+
+export interface CreateOrderByCompanyParams {
+  company_id: number;
+  vehicle_id: number;
+
+  recipient: {
+    name: string;
+    cpf: string;
+    email: string;
+    address: {
+      street?: string | null;
+      number?: number | null;
+      complement?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      zipcode?: string | null;
+    };
+  };
+
+  products: {
+    name?: string | null;
+    description?: string | null;
+    quantity?: number | null;
+  }[];
+}
 
 export class PrismaOrdersRepository {
-  async create(data: Prisma.OrdersCreateInput) {
-    const order = await prisma.orders.create({
-      data,
+  async createOrderByClient({
+    sender_client_id,
+    company_id,
+    recipient,
+    products,
+  }: CreateOrderByClientParams) {
+    return await prisma.$transaction(async (tx) => {
+
+      let newRecipient: any = null;
+  
+      const newRecipientAddress = await tx.addres.create({
+        data: {
+          street: recipient.address.street,
+          number: recipient.address.number,
+          complement: recipient.address.complement,
+          city: recipient.address.city,
+          state: recipient.address.state,
+          country: recipient.address.country,
+          zipcode: recipient.address.zipcode,
+        },
+      });
+  
+      const exist_recipient = await tx.recipient.findUnique({
+        where: {
+          cpf: recipient.cpf
+        }
+      })
+
+      if(!exist_recipient){
+        const newRecipient = await tx.recipient.create({
+          data: {
+            name: recipient.name,
+            cpf: recipient.cpf,
+            email: recipient.email,
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
+      const recipientId = newRecipient?.id ?? exist_recipient!.id;
+  
+      const trackingCode = await generateTrackingCode();
+
+      const status = await tx.status.findFirstOrThrow({
+        where: {
+          is_default: true
+        }
+      });
+  
+      const newOrder = await tx.orders.create({
+        data: {
+          code: trackingCode,
+          sender_client: { connect: { id: sender_client_id } },
+          recipient: { connect: { id: recipientId } },
+          status: { connect: { id: status.id } },
+          company: { connect: { id: company_id } },
+        },
+      });
+  
+      if (products.length > 0) {
+        await tx.products.createMany({
+          data: products.map((p) => ({
+            order_id: newOrder.id,
+            name: p.name ?? null,
+            description: p.description ?? null,
+            quantity: p.quantity ?? null,
+          })),
+        });
+      }
+  
+      return {
+        order: newOrder,
+        recipient: newRecipient,
+      };
     });
-    return order;
+  }
+
+  async createOrderByCompany({
+    company_id,
+    vehicle_id,
+    recipient,
+    products,
+  }: CreateOrderByCompanyParams) {
+    return await prisma.$transaction(async (tx) => {
+      let newRecipient: any = null;
+  
+      const newRecipientAddress = await tx.addres.create({
+        data: {
+          street: recipient.address.street,
+          number: recipient.address.number,
+          complement: recipient.address.complement,
+          city: recipient.address.city,
+          state: recipient.address.state,
+          country: recipient.address.country,
+          zipcode: recipient.address.zipcode,
+        },
+      });
+  
+      const exist_recipient = await tx.recipient.findUnique({
+        where: {
+          cpf: recipient.cpf
+        }
+      })
+
+      if(!exist_recipient){
+        const newRecipient = await tx.recipient.create({
+          data: {
+            name: recipient.name,
+            cpf: recipient.cpf,
+            email: recipient.email,
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
+      const recipientId = newRecipient?.id ?? exist_recipient!.id;
+      
+  
+      const trackingCode = await generateTrackingCode();
+
+      const status = await tx.status.findFirstOrThrow({
+        where: {
+          is_default: true
+        }
+      });
+
+      const vehicle = await tx.vehicles.findFirstOrThrow({
+        where: {
+          id: vehicle_id
+        }
+      })
+  
+      const newOrder = await tx.orders.create({
+        data: {
+          code: trackingCode,
+          vehicle: { connect: { id: vehicle.id } },
+          recipient: { connect: { id: recipientId } },
+          status: { connect: { id: status.id } },
+          company: { connect: { id: company_id } },
+        },
+      });
+  
+      if (products.length > 0) {
+        await tx.products.createMany({
+          data: products.map((p) => ({
+            order_id: newOrder.id,
+            name: p.name ?? null,
+            description: p.description ?? null,
+            quantity: p.quantity ?? null,
+          })),
+        });
+      }
+  
+      return {
+        order: newOrder,
+        recipient: newRecipient,
+      };
+    });
   }
 
   async getAllOrdersByCompany(company_id: number) {
@@ -64,19 +270,92 @@ export class PrismaOrdersRepository {
     return order;
   }
 
-  async updateOrder(id: number, company_id: number, data: OrderUpdateParams) {
-    const orderExists = await prisma.orders.findUnique({ where: { id } });
-
+  async updateOrderByCompany({
+    order_id,
+    company_id,
+    vehicle_id,
+    status_id,
+    recipient,
+    products,
+  }: OrderUpdateCompanyParams) {
+    const orderExists = await prisma.orders.findUnique({
+      where: { id: order_id },
+      include: {
+        recipient: true,
+      },
+    });
+  
     if (!orderExists) {
       throw new Error("order not found");
     }
-
-    if(company_id != orderExists.company_id){
-      throw new Error("order not update");
+  
+    if (company_id !== orderExists.company_id) {
+      throw new Error("order not allowed to update");
     }
-    await prisma.orders.update({
-      where: { id },
-      data,
+  
+    if (products && products.length > 0) {
+      for (const product of products) {
+        if (!product.id) continue;
+  
+        const { id, ...fields } = product;
+  
+        await prisma.products.update({
+          where: { id },
+          data: fields,
+        });
+      }
+    }
+  
+    if (recipient) {
+      const recipient_id = orderExists.recipient_id;
+  
+      await prisma.recipient.update({
+        where: { id: recipient_id },
+        data: {
+          name: recipient.name,
+          cpf: recipient.cpf,
+          email: recipient.email,
+        },
+      });
+  
+      if (recipient.address) {
+        const addressId = orderExists.recipient.addres_id;
+      
+        if (!addressId) {
+          
+          const newAddress = await prisma.addres.create({
+            data: recipient.address,
+          });
+      
+          
+          await prisma.recipient.update({
+            where: { id: orderExists.recipient_id },
+            data: { addres_id: newAddress.id },
+          });
+        } else {
+         
+          await prisma.addres.update({
+            where: { id: addressId },
+            data: recipient.address,
+          });
+        }
+      }
+    }
+  
+    const updatedOrder = await prisma.orders.update({
+      where: { id: order_id },
+      data: {
+        vehicle_id,
+        status_id,
+      },
+      include: {
+        recipient: true,
+        products: true,
+        vehicle: true,
+        status: true,
+      },
     });
+  
+    return updatedOrder;
   }
 }

@@ -2,8 +2,9 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
-import { orderRegisterBodySchema, registerOrder } from "@/http/controllers/order/registerOrder.js";
-import { orderUpdateBodySchema, updateOrder } from "@/http/controllers/order/updateOrder.js";
+import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
+import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
+import { orderUpdateByCompanyBodySchema, updateOrderByCompany } from "@/http/controllers/order/updateOrderByCompany.js";
 import z from "zod";
 
 
@@ -55,22 +56,37 @@ export async function orderRoutes(app: FastifyTypedInstance) {
   );
 
   app.post(
-    "",
+    "/client",
     {
       schema: {
         tags: ["order"],
-        description: "Create new order",
-        body: orderRegisterBodySchema,
+        description: "Create new order by client",
+        body: orderRegisterByClientBodySchema,
         response: {
           201: z.null().describe("Order created"),
         },
       },
     },
-    registerOrder
+    registerOrderByClient
+  );
+
+  app.post(
+    "/company",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Create new order by client",
+        body: orderRegisterByCompanyBodySchema,
+        response: {
+          201: z.null().describe("Order created"),
+        },
+      },
+    },
+    registerOrderByCompany
   );
 
   app.put(
-    "/:id",
+    "/:orderId",
     {
       schema: {
         tags: ["order"],
@@ -78,13 +94,13 @@ export async function orderRoutes(app: FastifyTypedInstance) {
         params: z.object({
           id: z.coerce.number(),
         }),
-        body: orderUpdateBodySchema,
+        body: orderUpdateByCompanyBodySchema,
         response: {
           204: z.null().describe("Order updated"),
         },
       },
     },
-    updateOrder
+    updateOrderByCompany
   );
 
   app.delete(

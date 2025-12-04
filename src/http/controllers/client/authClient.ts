@@ -21,17 +21,9 @@ export async function authClient(
 
   try {
    const { client } = await authClientService({ CNPJ, CPF, password });
-    const client_roles = await prisma.roles.findUnique({
-        where: {
-            id: client.client_roles,
-        },
-    })
-
-    if(!client_roles){
-        return reply.status(400).send({message: "role não encontrada"})
-    }
+  
     const token = await reply.jwtSign(
-      { sub: client.id, role: client_roles.name ?? "empregado" },
+      { sub: client.id, role: ''},
       { expiresIn: "1d" }
     );
     
