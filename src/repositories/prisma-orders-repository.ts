@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
-import type { OrderUpdateParams } from "@/services/order/updateOrder.js";
+import type { OrderUpdateCompanyParams } from "@/services/order/updateOrderByCompany.js";
 import { generateTrackingCode } from "@/util/generateTrackingCode.js";
 
 export interface CreateOrderByClientParams {
@@ -270,19 +270,92 @@ export class PrismaOrdersRepository {
     return order;
   }
 
-  async updateOrder(id: number, company_id: number, data: OrderUpdateParams) {
-    const orderExists = await prisma.orders.findUnique({ where: { id } });
-
+  async updateOrderByCompany({
+    order_id,
+    company_id,
+    vehicle_id,
+    status_id,
+    recipient,
+    products,
+  }: OrderUpdateCompanyParams) {
+    const orderExists = await prisma.orders.findUnique({
+      where: { id: order_id },
+      include: {
+        recipient: true,
+      },
+    });
+  
     if (!orderExists) {
       throw new Error("order not found");
     }
-
-    if(company_id != orderExists.company_id){
-      throw new Error("order not update");
+  
+    if (company_id !== orderExists.company_id) {
+      throw new Error("order not allowed to update");
     }
-    await prisma.orders.update({
-      where: { id },
-      data,
+  
+    if (products && products.length > 0) {
+      for (const product of products) {
+        if (!product.id) continue;
+  
+        const { id, ...fields } = product;
+  
+        await prisma.products.update({
+          where: { id },
+          data: fields,
+        });
+      }
+    }
+  
+    if (recipient) {
+      const recipient_id = orderExists.recipient_id;
+  
+      await prisma.recipient.update({
+        where: { id: recipient_id },
+        data: {
+          name: recipient.name,
+          cpf: recipient.cpf,
+          email: recipient.email,
+        },
+      });
+  
+      if (recipient.address) {
+        const addressId = orderExists.recipient.addres_id;
+      
+        if (!addressId) {
+          
+          const newAddress = await prisma.addres.create({
+            data: recipient.address,
+          });
+      
+          
+          await prisma.recipient.update({
+            where: { id: orderExists.recipient_id },
+            data: { addres_id: newAddress.id },
+          });
+        } else {
+         
+          await prisma.addres.update({
+            where: { id: addressId },
+            data: recipient.address,
+          });
+        }
+      }
+    }
+  
+    const updatedOrder = await prisma.orders.update({
+      where: { id: order_id },
+      data: {
+        vehicle_id,
+        status_id,
+      },
+      include: {
+        recipient: true,
+        products: true,
+        vehicle: true,
+        status: true,
+      },
     });
+  
+    return updatedOrder;
   }
 }

@@ -4,7 +4,7 @@ import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCo
 import { getOrder } from "@/http/controllers/order/getOrder.js";
 import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
 import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
-import { orderUpdateBodySchema, updateOrder } from "@/http/controllers/order/updateOrder.js";
+import { orderUpdateByCompanyBodySchema, updateOrderByCompany } from "@/http/controllers/order/updateOrderByCompany.js";
 import z from "zod";
 
 
@@ -86,7 +86,7 @@ export async function orderRoutes(app: FastifyTypedInstance) {
   );
 
   app.put(
-    "/:id",
+    "/:orderId",
     {
       schema: {
         tags: ["order"],
@@ -94,13 +94,13 @@ export async function orderRoutes(app: FastifyTypedInstance) {
         params: z.object({
           id: z.coerce.number(),
         }),
-        body: orderUpdateBodySchema,
+        body: orderUpdateByCompanyBodySchema,
         response: {
           204: z.null().describe("Order updated"),
         },
       },
     },
-    updateOrder
+    updateOrderByCompany
   );
 
   app.delete(
