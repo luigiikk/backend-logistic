@@ -10,4 +10,11 @@ export class PrismaSupplierRepository {
 
     return supplier;
   }
+
+  async update(id: number, data: Prisma.SupplierUpdateInput) {
+    return prisma.supplier.update({
+      where: { id },
+      data
+    });
+  }
 }

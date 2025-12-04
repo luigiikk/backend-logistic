@@ -46,7 +46,7 @@ export class PrismaAddresRepository {
     })
   }
 
-  async updateAddres(id: number, data: AddresUpdateParams) {
+  async updateAddres(id: number, data: Prisma.AddresUpdateInput) {
     const addresExists = await prisma.addres.findUnique({ where: { id } });
     if (!addresExists) {
       throw new Error('addres not found');

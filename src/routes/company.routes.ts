@@ -102,7 +102,7 @@ export async function companyRoutes(app: FastifyTypedInstance) {
         description: "Update company",
         body: companyUpdateBodySchema,
         response: {
-          204: z.null().describe("company auth"),
+          204: z.null().describe("company updated"),
         },
       },
     },
