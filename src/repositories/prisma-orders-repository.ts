@@ -261,6 +261,22 @@ export class PrismaOrdersRepository {
     return order;
   }
 
+  async getOrderByCode(code: string) {
+
+    const order = await prisma.orders.findUnique({
+     where: { code: code },
+     select: {
+       code: true,
+       sender_client: { select: { name: true } },
+       recipient: { select: { name: true } },
+       status: { select: { name: true } },
+       vehicle: { select: { plate: true } },
+     },
+   });
+   
+     return order;
+   }
+
   async deleteOrder(id: number) {
     const order = await prisma.orders.delete({
       where: {

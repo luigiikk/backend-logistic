@@ -2,6 +2,7 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
+import { getOrderByCode } from "@/http/controllers/order/getOrderByCode.js";
 import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
 import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
 import { orderUpdateByCompanyBodySchema, updateOrderByCompany } from "@/http/controllers/order/updateOrderByCompany.js";
@@ -53,6 +54,31 @@ export async function orderRoutes(app: FastifyTypedInstance) {
       },
     },
     getAllOrdersByCompany
+  );
+
+  app.get(
+    "/code/:code",
+    {
+      schema: {
+        tags: ["order"],
+        description: "List order by code",
+        response: {
+          200: z.object({
+            code: z.string(),
+            sender_client: z.object({
+              name: z.string(),
+            }),
+            recipient: z.object({
+              name: z.string(),
+            }),
+            status: z.object({
+              name: z.string(),
+            }),
+          }),
+        },
+      },
+    },
+    getOrderByCode
   );
 
   app.post(
