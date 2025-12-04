@@ -29,6 +29,31 @@ export interface CreateOrderByClientParams {
   }[];
 }
 
+export interface CreateOrderByCompanyParams {
+  company_id: number;
+  vehicle_id: number;
+
+  recipient: {
+    name: string;
+    cpf: string;
+    email: string;
+    address: {
+      street?: string | null;
+      number?: number | null;
+      complement?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      zipcode?: string | null;
+    };
+  };
+
+  products: {
+    name?: string | null;
+    description?: string | null;
+    quantity?: number | null;
+  }[];
+}
 
 export class PrismaOrdersRepository {
   async createOrderByClient({
@@ -39,6 +64,8 @@ export class PrismaOrdersRepository {
   }: CreateOrderByClientParams) {
     return await prisma.$transaction(async (tx) => {
 
+      let newRecipient: any = null;
+  
       const newRecipientAddress = await tx.addres.create({
         data: {
           street: recipient.address.street,
@@ -51,15 +78,24 @@ export class PrismaOrdersRepository {
         },
       });
   
-      const newRecipient = await tx.recipient.create({
-        data: {
-          name: recipient.name,
-          cpf: recipient.cpf,
-          email: recipient.email,
-          addres: { connect: { id: newRecipientAddress.id } },
-        },
-      });
-  
+      const exist_recipient = await tx.recipient.findUnique({
+        where: {
+          cpf: recipient.cpf
+        }
+      })
+
+      if(!exist_recipient){
+        const newRecipient = await tx.recipient.create({
+          data: {
+            name: recipient.name,
+            cpf: recipient.cpf,
+            email: recipient.email,
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
+      const recipientId = newRecipient?.id ?? exist_recipient!.id;
   
       const trackingCode = await generateTrackingCode();
 
@@ -73,7 +109,90 @@ export class PrismaOrdersRepository {
         data: {
           code: trackingCode,
           sender_client: { connect: { id: sender_client_id } },
-          recipient: { connect: { id: newRecipient.id } },
+          recipient: { connect: { id: recipientId } },
+          status: { connect: { id: status.id } },
+          company: { connect: { id: company_id } },
+        },
+      });
+  
+      if (products.length > 0) {
+        await tx.products.createMany({
+          data: products.map((p) => ({
+            order_id: newOrder.id,
+            name: p.name ?? null,
+            description: p.description ?? null,
+            quantity: p.quantity ?? null,
+          })),
+        });
+      }
+  
+      return {
+        order: newOrder,
+        recipient: newRecipient,
+      };
+    });
+  }
+
+  async createOrderByCompany({
+    company_id,
+    vehicle_id,
+    recipient,
+    products,
+  }: CreateOrderByCompanyParams) {
+    return await prisma.$transaction(async (tx) => {
+      let newRecipient: any = null;
+  
+      const newRecipientAddress = await tx.addres.create({
+        data: {
+          street: recipient.address.street,
+          number: recipient.address.number,
+          complement: recipient.address.complement,
+          city: recipient.address.city,
+          state: recipient.address.state,
+          country: recipient.address.country,
+          zipcode: recipient.address.zipcode,
+        },
+      });
+  
+      const exist_recipient = await tx.recipient.findUnique({
+        where: {
+          cpf: recipient.cpf
+        }
+      })
+
+      if(!exist_recipient){
+        const newRecipient = await tx.recipient.create({
+          data: {
+            name: recipient.name,
+            cpf: recipient.cpf,
+            email: recipient.email,
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
+      const recipientId = newRecipient?.id ?? exist_recipient!.id;
+      
+  
+      const trackingCode = await generateTrackingCode();
+
+      const status = await tx.status.findFirstOrThrow({
+        where: {
+          is_default: true
+        }
+      });
+
+      const vehicle = await tx.vehicles.findFirstOrThrow({
+        where: {
+          id: vehicle_id
+        }
+      })
+  
+      const newOrder = await tx.orders.create({
+        data: {
+          code: trackingCode,
+          vehicle: { connect: { id: vehicle.id } },
+          recipient: { connect: { id: recipientId } },
           status: { connect: { id: status.id } },
           company: { connect: { id: company_id } },
         },

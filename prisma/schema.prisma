@@ -115,7 +115,7 @@ model Orders {
   id               Int        @id @default(autoincrement())
   code             String?     @unique
   company_id       Int    
-  sender_client_id Int
+  sender_client_id Int?
   recipient_id     Int
   status_id        Int
   vehicle_id       Int?        // ⬅️ Agora é opcional
@@ -123,7 +123,7 @@ model Orders {
   updated_at       DateTime    @updatedAt
 
   // relations
-  sender_client Client    @relation("SenderOrders", fields: [sender_client_id], references: [id])
+  sender_client Client?    @relation("SenderOrders", fields: [sender_client_id], references: [id])
   recipient     Recipient @relation("RecipientOrders", fields: [recipient_id], references: [id])
   status        Status    @relation(fields: [status_id], references: [id])
   vehicle       Vehicles? @relation("VehicleOrders", fields: [vehicle_id], references: [id])

@@ -34,7 +34,7 @@ export const orderRegisterByClientBodySchema = z.object({
 
 type RegisterBody = z.infer<typeof orderRegisterByClientBodySchema>;
 
-export async function registerOrder(
+export async function registerOrderByClient(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {

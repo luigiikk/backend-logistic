@@ -2,7 +2,8 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
-import { orderRegisterByClientBodySchema, registerOrder } from "@/http/controllers/order/registerOrder.js";
+import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
+import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
 import { orderUpdateBodySchema, updateOrder } from "@/http/controllers/order/updateOrder.js";
 import z from "zod";
 
@@ -66,7 +67,22 @@ export async function orderRoutes(app: FastifyTypedInstance) {
         },
       },
     },
-    registerOrder
+    registerOrderByClient
+  );
+
+  app.post(
+    "/company",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Create new order by client",
+        body: orderRegisterByCompanyBodySchema,
+        response: {
+          201: z.null().describe("Order created"),
+        },
+      },
+    },
+    registerOrderByCompany
   );
 
   app.put(
