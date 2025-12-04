@@ -19,6 +19,7 @@ import { invoiceRoutes } from "./routes/invoice.routes.js";
 import { purchaseOrdersRoutes } from "./routes/purchase-orders.routes.js";
 import { vehicleRoutes } from "./routes/vehicle.routes.js";
 import { roulesRoutes } from "./routes/roule.routes.js";
+import { supplierRoutes } from "./routes/supplier.route.js";
 
 // input data
 app.setValidatorCompiler(validatorCompiler);
@@ -59,7 +60,8 @@ app.register(inventoryRoutes, {prefix: "inventory"});
 app.register(invoiceRoutes, {prefix: "invoice"});
 app.register(purchaseOrdersRoutes, {prefix: "purchase-orders"});
 app.register(vehicleRoutes, {prefix: "vehicle"});
-app.register(roulesRoutes, {prefix: "roules"})
+app.register(roulesRoutes, {prefix: "roules"});
+app.register(supplierRoutes, {prefix: "supplier"});
 
 app.listen({
   host: '0.0.0.0',
