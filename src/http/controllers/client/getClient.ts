@@ -19,6 +19,14 @@ export async function getClient(
       addres_id: client.addres_id,
       CPF: client.CPF,
       client_roles: client.client_roles,
+
+      street: client.addres?.street,
+      number: client.addres?.number,
+      complement: client.addres?.complement,
+      city: client.addres?.city,
+      state: client.addres?.state,
+      country: client.addres?.country,
+      zipcode: client.addres?.zipcode,
     }; 
     return reply.status(200).send(response);
   } catch (error) {

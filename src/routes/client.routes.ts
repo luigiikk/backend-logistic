@@ -25,7 +25,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
   );
 
   app.post(
-    "/client",
+    "",
     {
       schema: {
         tags: ["client"],
@@ -58,7 +58,13 @@ export async function clientRoutes(app: FastifyTypedInstance) {
             CPF: z.string(),
             CNPJ: z.string(),
             client_roles: z.number().int(),
-            addres_id: z.number().int(),
+            street: z.string().nullable().optional(),
+            number: z.number().nullable().optional(),
+            complement: z.string().nullable().optional(),
+            city: z.string().nullable().optional(),
+            state: z.string().nullable().optional(),
+            country: z.string().nullable().optional(),
+            zipcode: z.string().nullable().optional(),
           }),
         },
       },
