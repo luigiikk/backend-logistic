@@ -24,8 +24,6 @@ export async function getAllEmployeesByCompany(
       };
     });
 
-    console.log(formattedEmployees)
-
     return reply.status(200).send(formattedEmployees);
   } catch (error) {
     return reply.status(409).send();
