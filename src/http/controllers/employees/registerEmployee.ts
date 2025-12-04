@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 import { registerEmployeeService } from "@/services/employees/registerEmployee.js";
+import { addresRegisterBodySchema } from "../addres/registerAddres.js";
 
 export const employeeRegisterBodySchema = z.object({
   name: z.string(),
@@ -8,6 +9,7 @@ export const employeeRegisterBodySchema = z.object({
   email: z.email(),
   phone_number: z.string(),
   password: z.string().min(6),
+  addressData: addresRegisterBodySchema,
 });
 
 type RegisterBody = z.infer<typeof employeeRegisterBodySchema>;
@@ -16,14 +18,14 @@ export async function registerEmployee(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, employee_roles, email, phone_number, password } = request.body;
+  const { name, employee_roles, email, phone_number, password, addressData } = request.body;
 
   await request.jwtVerify();
   const user = request.user;
   const company_id = user.sub;
 
   try {
-    await registerEmployeeService({ name, employee_roles, company_id, email, phone_number, password });
+    await registerEmployeeService({ name, employee_roles, company_id, email, phone_number, password, addressData });
   } catch (error) {
     return reply.status(409).send();
   }

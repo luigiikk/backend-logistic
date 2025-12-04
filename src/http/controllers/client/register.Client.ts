@@ -11,8 +11,7 @@ export const clientRegisterBodySchema = z.object({
   CPF: z.string(),
   phone_number: z.string(),
   CNPJ: z.string(),
-  client_roles: z.number().int(),
-  addressData: addresRegisterBodySchema ,
+  addressData: addresRegisterBodySchema,
 });
 
 type RegisterBody = z.infer<typeof clientRegisterBodySchema>;
@@ -21,11 +20,12 @@ export async function registerClient(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, email, password, CPF, phone_number, CNPJ, client_roles, addressData } = request.body;
+  const { name, email, password, CPF, phone_number, CNPJ, addressData } = request.body;
 
   try {
-    await registerClientService({ name, email, password, CPF, phone_number, CNPJ, client_roles, addressData, });
+    await registerClientService({ name, email, password, CPF, phone_number, CNPJ, addressData, });
   } catch (error) {
+    console.log(error)
     return reply.status(409).send();
   }
 

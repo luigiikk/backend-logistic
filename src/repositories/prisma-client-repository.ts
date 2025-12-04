@@ -34,6 +34,7 @@ export class PrismaClientRepository {
       where: {
         id,
       },
+      include: { addres: true }
     });
 
     return client;

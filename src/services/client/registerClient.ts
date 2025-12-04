@@ -10,7 +10,6 @@ interface ClientRegisterParams {
   email: string;
   phone_number: string;
   password: string;
-  client_roles: number;
   addressData: AddresRegisterParams;
 }
 
@@ -21,18 +20,11 @@ export async function registerClientService({
   email,
   phone_number,
   password,
-  client_roles,
   addressData,
 }: ClientRegisterParams) {
 
   const password_hash = await hash(password, 6);
   
-  const roleExists = await prisma.roles.findUnique({
-    where: { id: client_roles },
-  });
-  if (!roleExists) {
-    throw new Error("Role not found");
-  } 
   const clientWithSameEmail = await prisma.client.findUnique({
     where: {
       email,
@@ -79,8 +71,7 @@ export async function registerClientService({
     email,
     phone_number,
     password_hash,
-    role: { connect: { id: client_roles } },
     addres: { connect: { id: addres_id } },
    })
    return client;
-    }
+}

@@ -23,10 +23,12 @@ model Companies {
   phone_number  String?
   CNPJ          String?  @unique
   password_hash String
+  addres_id Int?
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
   // relations
+  addres    Addres?     @relation(fields: [addres_id], references: [id])
   vehicles   Vehicles[]
   employees  Employees[]
   status     Status[]
@@ -44,12 +46,14 @@ model Employees {
   phone_number  String?
   password_hash String
   employee_roles  Int // FK to Roles.id (single role)
+  addres_id Int?
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
   // relations
   company     Companies  @relation(fields: [company_id], references: [id])
   role            Roles     @relation("EmployeeRoleRelation", fields: [employee_roles], references: [id])
+  addres    Addres?     @relation(fields: [addres_id], references: [id])
 
   @@map("employees")
 }
@@ -81,7 +85,6 @@ model Roles {
   updated_at DateTime @updatedAt
 
   // relations
-  clients    Client[]     @relation("ClientRoleRelation")
   employees Employees[] @relation("EmployeeRoleRelation")
 
   @@map("roles")
@@ -95,18 +98,15 @@ model Client {
   email         String?  @unique
   phone_number  String?
   password_hash String?
-  client_roles  Int // FK to Roles.id (single role)
   addres_id     Int?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
   // relations
-  role            Roles     @relation("ClientRoleRelation", fields: [client_roles], references: [id])
   addres          Addres?   @relation(fields: [addres_id], references: [id])
   orders_sent     Orders[]  @relation("SenderOrders")
   invoices        Invoice[]
 
-  @@index([client_roles])
   @@index([addres_id])
   @@map("client")
 }
@@ -333,6 +333,8 @@ model Addres {
   suppliers  Supplier[]
   warehouses Warehouses[]
   recipient  Recipient[]
+  companies Companies[]
+  employees Employees[]
 
   @@map("addres")
 }
