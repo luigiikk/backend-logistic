@@ -55,9 +55,17 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
             z.object({
               name: z.string(),
               enrollment: z.string(),
-              role: z.string(),
-              email: z.email(),
+              email: z.string().email(),
               phone_number: z.string(),
+              role: z.string(),
+              address: z.object({
+                street: z.string().nullable().optional(),
+                number: z.number().nullable().optional(),
+                city: z.string().nullable().optional(),
+                state: z.string().nullable().optional(),
+                complement: z.string().nullable().optional(),
+                zipcode: z.string().nullable().optional(),
+              }),
             })
           ),
         },

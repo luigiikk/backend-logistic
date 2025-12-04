@@ -22,21 +22,33 @@ export class PrismaEmployeesRepository {
   }
 
   async getAllEmployeesByCompany(company_id: number) {
-  return await prisma.employees.findMany({
-    where: { company_id }, 
-    select: {
-      name: true,
-      enrollment: true,
-      email: true,
-      phone_number: true,
-      role: { 
-        select: {
-          name: true 
+    return await prisma.employees.findMany({
+      where: { company_id },
+      select: {
+        name: true,
+        enrollment: true,
+        email: true,
+        phone_number: true,
+        role: { 
+          select: { name: true }
+        },
+        company: {
+          select: {
+            addres: {
+              select: {
+                street: true,
+                number: true,
+                city: true,
+                state: true,
+                complement: true,
+                zipcode: true,
+              }
+            }
+          }
         }
-      }
-    },
-  });
-}
+      },
+    });
+  }
   async getEmployee(id: number, company_id: number) {
     const employee = await prisma.employees.findFirst({
       where: {
