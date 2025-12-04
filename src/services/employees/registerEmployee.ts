@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma.js";
 import { PrismaEmployeesRepository } from "@/repositories/prisma-employees-repository.js";
 import { hash } from "bcryptjs";
 import { generateEnrollmentNumber } from "@/util/generateEnrollmentNumber.js";
+import { registerAddresService, type AddresRegisterParams } from "../addres/registerAddres.js";
+import { connect } from "http2";
 
 interface EmployeesRegisterParams {
   name: string;
@@ -10,6 +12,7 @@ interface EmployeesRegisterParams {
   email: string;
   phone_number: string;
   password: string;
+  addressData: AddresRegisterParams;
 }
 
 export async function registerEmployeeService({
@@ -19,6 +22,7 @@ export async function registerEmployeeService({
   email,
   phone_number,
   password,
+  addressData,
 }: EmployeesRegisterParams) {
   const password_hash = await hash(password, 6);
 
@@ -36,6 +40,12 @@ export async function registerEmployeeService({
 
   const enrollment = await generateEnrollmentNumber();
 
+  const newAddress = await registerAddresService(addressData);
+  if (!newAddress) {
+    throw new Error("Failed to create address");
+  }
+  
+
   const employee = await prismaEmployeesRepository.create({
     name,
     enrollment,
@@ -44,6 +54,9 @@ export async function registerEmployeeService({
     },
     company: {
       connect: { id: company_id },
+    },
+    addres: {
+      connect: {id: newAddress.id}
     },
     email,
     phone_number,

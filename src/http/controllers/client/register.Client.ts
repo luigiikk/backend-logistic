@@ -11,7 +11,7 @@ export const clientRegisterBodySchema = z.object({
   CPF: z.string(),
   phone_number: z.string(),
   CNPJ: z.string(),
-  addressData: addresRegisterBodySchema ,
+  addressData: addresRegisterBodySchema,
 });
 
 type RegisterBody = z.infer<typeof clientRegisterBodySchema>;

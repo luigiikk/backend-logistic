@@ -91,7 +91,7 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
   );
 
   app.post(
-    "/employee",
+    "",
     {
       preHandler: [verifyRole(["company"])],
       schema: {
