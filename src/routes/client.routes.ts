@@ -42,7 +42,6 @@ export async function clientRoutes(app: FastifyTypedInstance) {
   app.get(
     "/:id",
     {
-      preHandler: [verifyRole(["admin", "client"])],
       schema: {
         tags: ["client"],
         description: "List unique client by id",
@@ -53,11 +52,12 @@ export async function clientRoutes(app: FastifyTypedInstance) {
           200: z.object({
             id: z.number().int(),
             name: z.string(),
-            email: z.email(),
+            email: z.string().email(),
             phone_number: z.string(),
-            CPF: z.string(),
-            CNPJ: z.string(),
-            client_roles: z.number().int(),
+  
+            CPF: z.string().nullable().optional(),
+            CNPJ: z.string().nullable().optional(),
+  
             street: z.string().nullable().optional(),
             number: z.number().nullable().optional(),
             complement: z.string().nullable().optional(),

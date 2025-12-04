@@ -12,22 +12,22 @@ export async function getClient(
     const client = await getClientService(id);
 
     const response = {
+      id: client.id,
       name: client.name,
       email: client.email,
       phone_number: client.phone_number,
-      CNPJ: client.CNPJ,
+      CPF: client.CPF ?? null,
+      CNPJ: client.CNPJ ?? null,
       addres_id: client.addres_id,
-      CPF: client.CPF,
-      client_roles: client.client_roles,
-
-      street: client.addres?.street,
-      number: client.addres?.number,
-      complement: client.addres?.complement,
-      city: client.addres?.city,
-      state: client.addres?.state,
-      country: client.addres?.country,
-      zipcode: client.addres?.zipcode,
-    }; 
+    
+      street: client.addres?.street ?? null,
+      number: client.addres?.number ?? null,
+      complement: client.addres?.complement ?? null,
+      city: client.addres?.city ?? null,
+      state: client.addres?.state ?? null,
+      country: client.addres?.country ?? null,
+      zipcode: client.addres?.zipcode ?? null,
+    };
     return reply.status(200).send(response);
   } catch (error) {
     return reply.status(409).send(error);
