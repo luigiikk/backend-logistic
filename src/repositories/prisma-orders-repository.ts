@@ -1,13 +1,100 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
 import type { OrderUpdateParams } from "@/services/order/updateOrder.js";
+import { generateTrackingCode } from "@/util/generateTrackingCode.js";
+
+export interface CreateOrderByClientParams {
+  sender_client_id: number;
+  company_id: number;
+
+  recipient: {
+    name: string;
+    cpf: string;
+    email: string;
+    address: {
+      street?: string | null;
+      number?: number | null;
+      complement?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      zipcode?: string | null;
+    };
+  };
+
+  products: {
+    name?: string | null;
+    description?: string | null;
+    quantity?: number | null;
+  }[];
+}
+
 
 export class PrismaOrdersRepository {
-  async create(data: Prisma.OrdersCreateInput) {
-    const order = await prisma.orders.create({
-      data,
+  async createOrderByClient({
+    sender_client_id,
+    company_id,
+    recipient,
+    products,
+  }: CreateOrderByClientParams) {
+    return await prisma.$transaction(async (tx) => {
+
+      const newRecipientAddress = await tx.addres.create({
+        data: {
+          street: recipient.address.street,
+          number: recipient.address.number,
+          complement: recipient.address.complement,
+          city: recipient.address.city,
+          state: recipient.address.state,
+          country: recipient.address.country,
+          zipcode: recipient.address.zipcode,
+        },
+      });
+  
+      const newRecipient = await tx.recipient.create({
+        data: {
+          name: recipient.name,
+          cpf: recipient.cpf,
+          email: recipient.email,
+          addres: { connect: { id: newRecipientAddress.id } },
+        },
+      });
+  
+  
+      const trackingCode = await generateTrackingCode();
+
+      const status = await tx.status.findFirstOrThrow({
+        where: {
+          is_default: true
+        }
+      });
+  
+      const newOrder = await tx.orders.create({
+        data: {
+          code: trackingCode,
+          sender_client: { connect: { id: sender_client_id } },
+          recipient: { connect: { id: newRecipient.id } },
+          status: { connect: { id: status.id } },
+          company: { connect: { id: company_id } },
+        },
+      });
+  
+      if (products.length > 0) {
+        await tx.products.createMany({
+          data: products.map((p) => ({
+            order_id: newOrder.id,
+            name: p.name ?? null,
+            description: p.description ?? null,
+            quantity: p.quantity ?? null,
+          })),
+        });
+      }
+  
+      return {
+        order: newOrder,
+        recipient: newRecipient,
+      };
     });
-    return order;
   }
 
   async getAllOrdersByCompany(company_id: number) {

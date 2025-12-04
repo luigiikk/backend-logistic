@@ -2,7 +2,7 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
-import { orderRegisterBodySchema, registerOrder } from "@/http/controllers/order/registerOrder.js";
+import { orderRegisterByClientBodySchema, registerOrder } from "@/http/controllers/order/registerOrder.js";
 import { orderUpdateBodySchema, updateOrder } from "@/http/controllers/order/updateOrder.js";
 import z from "zod";
 
@@ -55,12 +55,12 @@ export async function orderRoutes(app: FastifyTypedInstance) {
   );
 
   app.post(
-    "",
+    "/client",
     {
       schema: {
         tags: ["order"],
-        description: "Create new order",
-        body: orderRegisterBodySchema,
+        description: "Create new order by client",
+        body: orderRegisterByClientBodySchema,
         response: {
           201: z.null().describe("Order created"),
         },
