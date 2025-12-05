@@ -1,3 +1,4 @@
+import { PrismaAddresRepository } from "@/repositories/prisma-address-repository.js";
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
 
 export interface ClientUpdateParams {
@@ -5,9 +6,15 @@ export interface ClientUpdateParams {
   name?: string;
   email?: string;
   phone_number?: string;
-  CPF: string;
-  addres_id?: number;
-  client_roles?: number;
+  company_id: number
+  
+  street: string | null | undefined;
+  number: number | null | undefined;
+  complement: string | null | undefined;
+  city: string | null | undefined;
+  state: string | null | undefined;
+  country: string | null | undefined;
+  zipcode: string | null | undefined;
 }
 
 export async function updateClientService(id:number, {
@@ -15,21 +22,38 @@ export async function updateClientService(id:number, {
   email,
   CNPJ,
   phone_number,
-  CPF,
-  addres_id,
-  client_roles,
-  
+  company_id,
+
+  street, 
+  number,
+  complement, 
+  city, 
+  country, 
+  state, 
+  zipcode
 }: ClientUpdateParams) {
  
-  const prismaClientRepository = new PrismaClientRepository;
+  const prismaClientRepository = new PrismaClientRepository();
+  const prismaAddresRepository = new PrismaAddresRepository();
 
-  await prismaClientRepository.updateClient(id, {
+  const client = await prismaClientRepository.updateClient(id, company_id, {
     name,
     email,
     CNPJ,
     phone_number,
-    CPF,
-    addres_id,
-    client_roles,
   });
+
+  if(client.addres_id)
+  {
+    await prismaAddresRepository.updateAddres(client.addres_id, {
+      number,
+      street,
+      complement,
+      city,
+      country,
+      state,
+      zipcode
+    });
+  }
+ 
 }

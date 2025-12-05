@@ -3,21 +3,17 @@ import { compare } from "bcryptjs";
 import { InvalidCredentialsError } from "../erros/invalid-credentials-error.js";
 
 interface ClientAuthParams {
-  CPF?: string;
-  CNPJ?: string;
+  CNPJ: string;
   password: string;
 }
 
-export async function authClientService({ CNPJ, CPF, password }: ClientAuthParams) {
+export async function authClientService({ CNPJ, password }: ClientAuthParams) {
   const prismaClientRepository = new PrismaClientRepository();
 
   let client = null;
 
-  if (CPF) {
-    client = await prismaClientRepository.getClientByCPF(CPF);
-  }           else if (CNPJ) {
-     client = await prismaClientRepository.getClientByCNPJ(CNPJ);
-  }
+  client = await prismaClientRepository.getClientByCNPJ(CNPJ);
+ 
 
   if (!client) {
     throw new InvalidCredentialsError();
