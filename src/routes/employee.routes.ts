@@ -1,6 +1,7 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
 import { authEmployee, employeeAuthBodySchema } from "@/http/controllers/employees/authEmployee.js";
 import { deleteEmployee } from "@/http/controllers/employees/deleteEmployee.js";
+import { getAllEmployeesByName } from "@/http/controllers/employees/getAllEmployeeByName.js";
 import { getAllEmployeesByCompany } from "@/http/controllers/employees/getAllEmployeesByCompany.js";
 import { getEmployee } from "@/http/controllers/employees/getEmployee.js";
 import { employeeRegisterBodySchema, registerEmployee } from "@/http/controllers/employees/registerEmployee.js";
@@ -43,6 +44,41 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
     getEmployee
   );
 
+  app.get(
+    "/search_name",
+    {
+      preHandler: [verifyRole(["company"])],
+      schema: {
+        tags: ["employee"],
+        description: "List employees by name",
+        querystring: z.object({
+          name: z.string().min(1),
+        }),
+        response: {
+          200: z.array(
+            z.object({
+              name: z.string(),
+              enrollment: z.string(),
+              email: z.string().email(),
+              phone_number: z.string(),
+              role: z.string(),
+              address: z.object({
+                street: z.string().nullable().optional(),
+                number: z.number().nullable().optional(),
+                city: z.string().nullable().optional(),
+                state: z.string().nullable().optional(),
+                complement: z.string().nullable().optional(),
+                zipcode: z.string().nullable().optional(),
+              }),
+            })
+          ),
+        },
+      },
+    },
+    getAllEmployeesByName
+  );
+
+  
   app.get(
     "",
     {
