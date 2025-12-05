@@ -39,6 +39,7 @@ model Companies {
   supplier Supplier[]
   warehouses Warehouses[]
   inventory Inventory[]
+  client Client[]
 
   @@map("companies")
 }
@@ -104,12 +105,14 @@ model Client {
   phone_number  String?
   password_hash String?
   addres_id     Int?
+  company_id    Int
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
   // relations
   addres          Addres?   @relation(fields: [addres_id], references: [id])
   orders_sent     Orders[]  @relation("SenderOrders")
+  company       Companies @relation(fields: [company_id], references: [id])
   invoices        Invoice[]
 
   @@index([addres_id])

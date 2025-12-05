@@ -9,6 +9,7 @@ interface ClientRegisterParams {
   email: string;
   phone_number: string;
   password: string;
+  company_id: number;
   addressData: AddresRegisterParams;
 }
 
@@ -18,6 +19,7 @@ export async function registerClientService({
   email,
   phone_number,
   password,
+  company_id,
   addressData,
 }: ClientRegisterParams) {
 
@@ -26,12 +28,14 @@ export async function registerClientService({
   const clientWithSameEmail = await prisma.client.findUnique({
     where: {
       email,
+      company_id
     },
   });
 
   const clientWithSameCNPJ = await prisma.client.findUnique({
     where: {
       CNPJ,
+      company_id
     },
   });
 
@@ -48,7 +52,7 @@ export async function registerClientService({
     throw new Error("Failed to create address");
   }
   
-    const addres_id = newAddress.id;
+  const addres_id = newAddress.id;
   
   const prismaClientRepository = new PrismaClientRepository();
 
@@ -58,6 +62,11 @@ export async function registerClientService({
     email,
     phone_number,
     password_hash,
+    company: {
+      connect: {
+        id: company_id,
+      },
+    },
     addres: { connect: { id: addres_id } },
    })
    return client;
