@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma.js";
 
 export const clientAuthBodySchema = z.object({
   CNPJ: z.string(),
-  CPF: z.string(),
   password: z.string().min(6),
 });
 
@@ -17,10 +16,10 @@ export async function authClient(
   request: FastifyRequest<{ Body: ClientAuthBody }>,
   reply: FastifyReply
 ) {
-  const { CNPJ, CPF, password } = request.body;
+  const { CNPJ, password } = request.body;
 
   try {
-   const { client } = await authClientService({ CNPJ, CPF, password });
+   const { client } = await authClientService({ CNPJ, password });
   
     const token = await reply.jwtSign(
       { sub: client.id, role: ''},

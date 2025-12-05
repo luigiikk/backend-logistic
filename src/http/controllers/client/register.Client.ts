@@ -20,7 +20,7 @@ export async function registerClient(
   reply: FastifyReply
 ) {
   const { name, email, password, phone_number, CNPJ, addressData } = request.body;
-  console.log('teste')
+
   try {
     await registerClientService({ name, email, password, phone_number, CNPJ, addressData, });
   } catch (error) {
