@@ -5,7 +5,6 @@ import { registerAddresService, AddresRegisterParams } from "../addres/registerA
 
 interface ClientRegisterParams {
   name: string;
-  CPF: string;
   CNPJ: string; 
   email: string;
   phone_number: string;
@@ -15,7 +14,6 @@ interface ClientRegisterParams {
 
 export async function registerClientService({
   name,
-  CPF,
   CNPJ, 
   email,
   phone_number,
@@ -37,16 +35,6 @@ export async function registerClientService({
     },
   });
 
-  const clientWithSameCPF = await prisma.client.findUnique({
-    where: {
-      CPF,
-    },
-  });
-
-  if (clientWithSameCPF) {
-    throw new Error("CPF already exists");
-  }
-
   if (clientWithSameEmail) {
     throw new Error("Email already exists");
   }
@@ -66,7 +54,6 @@ export async function registerClientService({
 
   const client = await prismaClientRepository.create({
     name,
-    CPF,
     CNPJ, 
     email,
     phone_number,

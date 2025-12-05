@@ -98,7 +98,6 @@ model Roles {
 
 model Client {
   id            Int      @id @default(autoincrement())
-  CPF           String?  @unique
   CNPJ          String?  @unique
   name          String?
   email         String?  @unique

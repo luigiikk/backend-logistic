@@ -20,7 +20,6 @@ export class PrismaClientRepository {
         CPF: true,
         CNPJ: true, 
         phone_number: true,
-        client_roles: true,
         addres_id: true,
       },
       orderBy: {

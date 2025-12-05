@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma.js";
 import { Prisma } from "@prisma/client";
-import { AddresUpdateParams } from "@/services/addres/updateAddres.js";
+
 
 
 export class PrismaAddresRepository {
