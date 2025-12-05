@@ -22,7 +22,7 @@ export async function authClient(
    const { client } = await authClientService({ CNPJ, password });
   
     const token = await reply.jwtSign(
-      { sub: client.id, role: ''},
+      { sub: client.id, role: 'client'},
       { expiresIn: "1d" }
     );
     

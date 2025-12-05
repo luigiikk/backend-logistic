@@ -71,13 +71,14 @@ async getClientByCPF(CPF: string){
     }); 
   }
 
-    async updateClient(id: number, data: ClientUpdateParams) {
+    async updateClient(id: number, data:  Prisma.ClientUpdateInput) {
         const clientExists = await prisma.client.findUnique({ where: { id } });
         if (!clientExists) {
           throw new Error('Client not found');
         }
-        await prisma.client.update({
-          where: { id }, 
+        return await prisma.client.update({
+          where: { id },
+          include: { addres: true }, 
           data,            
         });
       }
