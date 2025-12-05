@@ -17,4 +17,11 @@ export class PrismaSupplierRepository {
       data
     });
   }
+
+  async getAllSupplierByCompany(company_id: number){
+    return prisma.supplier.findMany({
+      where: {company_id: company_id },
+      include: { addres: true }
+    });
+  }
 }
