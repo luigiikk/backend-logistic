@@ -69,8 +69,8 @@ export async function registerSupplierService({
     throw new Error("Company not exists");
   }
 
-  const prismaSupplierRepository = new PrismaSupplierRepository;
-  const prismaAddresRepository = new PrismaAddresRepository;
+  const prismaSupplierRepository = new PrismaSupplierRepository();
+  const prismaAddresRepository = new PrismaAddresRepository();
 
   const addres = await prismaAddresRepository.create({
     number, 

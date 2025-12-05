@@ -9,8 +9,6 @@ export async function getAllSupplierByCompany(
   await request.jwtVerify();
   const company_id = request.user.sub;
 
-  console.log(company_id);
-
   try {
    const supplier =  await getAllSupplierByCompanyService(company_id);
 

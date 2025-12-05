@@ -24,4 +24,11 @@ export class PrismaSupplierRepository {
       include: { addres: true }
     });
   }
+
+  async getSupplierById(id: number, company_id: number){
+    return prisma.supplier.findUnique({
+      where:{company_id, id},
+      include: {addres: true}
+    })
+  }
 }
