@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma.js";
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
 
-export async function deleteClientService(id: number) {
+export async function deleteClientService(id: number, company_id: number) {
   const client = await prisma.client.findFirst({
     where: {
       id,
+      company_id,
     },
   });
 

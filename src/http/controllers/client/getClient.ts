@@ -9,14 +9,16 @@ export async function getClient(
   const { id } = request.params as {id: number};
 
   try {
-    const client = await getClientService(id);
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    const client = await getClientService(id, company_id);
 
     const response = {
       id: client.id,
       name: client.name,
       email: client.email,
       phone_number: client.phone_number,
-      CPF: client.CPF ?? null,
       CNPJ: client.CNPJ ?? null,
       addres_id: client.addres_id,
     

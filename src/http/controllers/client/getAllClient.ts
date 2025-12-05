@@ -6,7 +6,11 @@ export async function getAllClients(
   reply: FastifyReply
 ) {
   try {
-    const clients = await getAllClientsService();
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    const clients = await getAllClientsService(company_id);
+    
     return reply.status(200).send(clients);
   } catch (error) {
     return reply.status(500).send();

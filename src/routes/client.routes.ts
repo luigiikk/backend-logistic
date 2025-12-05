@@ -83,13 +83,23 @@ export async function clientRoutes(app: FastifyTypedInstance) {
           200: z.array(
             z.object({
               id: z.number().int(),
-              name: z.string(),
-              email: z.email(),
-              phone_number: z.string(),
-              CPF: z.string(),
               CNPJ: z.string(),
-              client_roles: z.number().int(),
+              name: z.string(),
+              email: z.string().email(),
+              phone_number: z.string(),
               addres_id: z.number().int(),
+              company_id: z.number().int(),
+  
+              addres: z.object({
+                id: z.number().int(),
+                street: z.string(),
+                number: z.number().int(),
+                complement: z.string().nullable(),
+                city: z.string(),
+                state: z.string(),
+                country: z.string(),
+                zipcode: z.string(),
+              }),
             })
           ),
         },
@@ -101,7 +111,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
   app.put(
     "/:id",
     {
-      preHandler: [verifyRole(["admin", "client"])],
+      preHandler: [verifyRole(["admin", "client", "company"])],
       schema: {
         tags: ["client"],
         description: "Update client info",
@@ -120,7 +130,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
   app.delete(
     "/:id",
     {
-      preHandler: [verifyRole(["admin"])],
+      preHandler: [verifyRole(["admin", "company"])],
       schema: {
         tags: ["client"],
         description: "Delete client by id",

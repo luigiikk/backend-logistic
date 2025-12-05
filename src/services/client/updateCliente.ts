@@ -6,6 +6,7 @@ export interface ClientUpdateParams {
   name?: string;
   email?: string;
   phone_number?: string;
+  company_id: number
   
   street: string | null | undefined;
   number: number | null | undefined;
@@ -21,6 +22,7 @@ export async function updateClientService(id:number, {
   email,
   CNPJ,
   phone_number,
+  company_id,
 
   street, 
   number,
@@ -34,7 +36,7 @@ export async function updateClientService(id:number, {
   const prismaClientRepository = new PrismaClientRepository();
   const prismaAddresRepository = new PrismaAddresRepository();
 
-  const client = await prismaClientRepository.updateClient(id, {
+  const client = await prismaClientRepository.updateClient(id, company_id, {
     name,
     email,
     CNPJ,
