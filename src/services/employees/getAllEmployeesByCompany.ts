@@ -6,4 +6,5 @@ export async function getAllEmployeesByCompanyService(company_id: number) {
   const employees = await prismaEmployeesRepository.getAllEmployeesByCompany(company_id);
 
   return employees;
+  
 }

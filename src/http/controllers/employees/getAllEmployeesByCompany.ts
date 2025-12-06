@@ -15,16 +15,9 @@ export async function getAllEmployeesByCompany(
     }
 
     const employees = await getAllEmployeesByCompanyService(company_id);
+    console.log(employees)
 
-    const formattedEmployees = employees.map((emp) => {
-      return {
-        ...emp,
-        role: emp.role?.name || "Sem Cargo",
-        address: emp.company?.addres || null,
-      };
-    });
-
-    return reply.status(200).send(formattedEmployees);
+    return reply.status(200).send(employees);
   } catch (error) {
     return reply.status(409).send();
   }

@@ -1,6 +1,8 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
 import type { EmployeeUpdateParams } from "@/services/employees/updateEmployee.js";
+import { AddresRegisterParams } from "@/services/addres/registerAddres.js";
+import { AddresUpdateParams } from "@/services/addres/updateAddres.js";
 
 export class PrismaEmployeesRepository {
   async create(data: Prisma.EmployeesCreateInput) {
@@ -25,17 +27,17 @@ export class PrismaEmployeesRepository {
     return await prisma.employees.findMany({
       where: { company_id },
       select: {
+        id: true,
         name: true,
         enrollment: true,
         email: true,
         phone_number: true,
         role: { 
-          select: { name: true }
+          select: { id: true, name: true }
         },
-        company: {
-          select: {
-            addres: {
+        addres: {
               select: {
+                country: true,
                 street: true,
                 number: true,
                 city: true,
@@ -44,8 +46,6 @@ export class PrismaEmployeesRepository {
                 zipcode: true,
               }
             }
-          }
-        }
       },
     });
   }
@@ -65,6 +65,7 @@ export class PrismaEmployeesRepository {
           select: {
             addres: {
               select: {
+                country: true,
                 street: true,
                 number: true,
                 city: true,
@@ -102,7 +103,8 @@ export class PrismaEmployeesRepository {
     return employee;
   }
 
-  async updateEmployee(id: number, company_id: number, data: EmployeeUpdateParams) {
+  async updateEmployee(id: number, company_id: number, data: EmployeeUpdateParams, addressData: AddresUpdateParams) {
+    console.log(data,id,company_id)
   const employee = await prisma.employees.update({
     where: {
       id,
@@ -110,13 +112,31 @@ export class PrismaEmployeesRepository {
     },
     data,
   });
-
   if (!employee) {
     throw new Error("Employee not found or does not belong to this company");
   }
 
+  if (employee.addres_id !== null) {
+  await prisma.addres.update({
+    where: {
+      id: employee.addres_id,
+    },
+
+    data: {
+      street: addressData.street,
+      city: addressData.city,
+      zipcode: addressData.zipcode,
+      country: addressData.country,
+      complement: addressData.complement,
+      number: addressData.number,
+
+    },
+  });
+}
+
+
   await prisma.employees.update({
-    where: { id, company_id },
+    where: { id, company_id },  
     data,
   });
 }

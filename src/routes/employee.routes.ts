@@ -30,39 +30,8 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
             email: z.email(),
             phone_number: z.string(),
 
-            street: z.string().nullable().optional(),
-            number: z.number().nullable().optional(),
-            complement: z.string().nullable().optional(),
-            city: z.string().nullable().optional(),
-            state: z.string().nullable().optional(),
-            country: z.string().nullable().optional(),
-            zipcode: z.string().nullable().optional(),
-          }),
-        },
-      },
-    },
-    getEmployee
-  );
-
-  app.get(
-    "/search_name",
-    {
-      preHandler: [verifyRole(["company"])],
-      schema: {
-        tags: ["employee"],
-        description: "List employees by name",
-        querystring: z.object({
-          name: z.string().min(1),
-        }),
-        response: {
-          200: z.array(
-            z.object({
-              name: z.string(),
-              enrollment: z.string(),
-              email: z.string().email(),
-              phone_number: z.string(),
-              role: z.string(),
-              address: z.object({
+            addres: z.object({
+                country: z.string().nullable().optional(),
                 street: z.string().nullable().optional(),
                 number: z.number().nullable().optional(),
                 city: z.string().nullable().optional(),
@@ -70,12 +39,11 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
                 complement: z.string().nullable().optional(),
                 zipcode: z.string().nullable().optional(),
               }),
-            })
-          ),
+          }),
         },
       },
     },
-    getAllEmployeesByName
+    getEmployee
   );
 
   
@@ -89,12 +57,17 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number(),
               name: z.string(),
               enrollment: z.string(),
               email: z.string().email(),
               phone_number: z.string(),
-              role: z.string(),
-              address: z.object({
+              role: z.object({ 
+                id: z.number(),
+                name: z.string(),
+              }),
+              addres: z.object({
+                country: z.string().nullable().optional(),
                 street: z.string().nullable().optional(),
                 number: z.number().nullable().optional(),
                 city: z.string().nullable().optional(),
@@ -125,7 +98,7 @@ export async function employeeRoutes(app: FastifyTypedInstance) {
     authEmployee
   );
   app.delete(
-    ":id",
+    "/:id",
     {
       preHandler: [verifyRole(["company"])],
       schema: {

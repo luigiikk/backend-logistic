@@ -1,4 +1,5 @@
 import { PrismaEmployeesRepository } from "@/repositories/prisma-employees-repository.js";
+import { AddresUpdateParams } from "../addres/updateAddres.js";
 
 export interface EmployeeUpdateParams {
   name: string;
@@ -12,7 +13,7 @@ export async function updateEmployeeService(id:number, company_id: number,{
   employee_roles,
   email,
   phone_number,
-}: EmployeeUpdateParams) {
+}: EmployeeUpdateParams, addressData: AddresUpdateParams) {
  
   const prismaEmployeesRepository = new PrismaEmployeesRepository;
 
@@ -21,5 +22,5 @@ export async function updateEmployeeService(id:number, company_id: number,{
     employee_roles,
     email,
     phone_number
-  });
+  }, addressData);
 }

@@ -25,13 +25,15 @@ export async function getEmployee(
       email: employee.email,
       phone_number: employee.phone_number,
 
-      street: employee.addres?.street ?? null,
-      number: employee.addres?.number ?? null,
-      complement: employee.addres?.complement ?? null,
-      city: employee.addres?.city ?? null,
-      state: employee.addres?.state ?? null,
-      country: employee.addres?.country ?? null,
-      zipcode: employee.addres?.zipcode ?? null,
+      addres: {
+        street: employee.addres?.street ?? null,
+        number: employee.addres?.number ?? null,
+        complement: employee.addres?.complement ?? null,
+        city: employee.addres?.city ?? null,
+        state: employee.addres?.state ?? null,
+        country: employee.addres?.country ?? null,
+        zipcode: employee.addres?.zipcode ?? null,
+      }
     }; 
     return reply.status(200).send(response);
   } catch (error) {
