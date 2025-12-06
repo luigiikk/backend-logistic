@@ -13,9 +13,8 @@ export async function getAllEmployeesByCompany(
     if (request.user.role != "company") {
       return reply.status(409).send();
     }
-
+    
     const employees = await getAllEmployeesByCompanyService(company_id);
-    console.log(employees)
 
     return reply.status(200).send(employees);
   } catch (error) {
