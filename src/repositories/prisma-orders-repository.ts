@@ -140,38 +140,38 @@ export class PrismaOrdersRepository {
     products,
   }: CreateOrderByCompanyParams) {
     return await prisma.$transaction(async (tx) => {
-      let newRecipient: any = null;
-  
-      const newRecipientAddress = await tx.addres.create({
-        data: {
-          street: recipient.address.street,
-          number: recipient.address.number,
-          complement: recipient.address.complement,
-          city: recipient.address.city,
-          state: recipient.address.state,
-          country: recipient.address.country,
-          zipcode: recipient.address.zipcode,
-        },
-      });
-  
-      const exist_recipient = await tx.recipient.findUnique({
-        where: {
-          cpf: recipient.cpf
-        }
-      })
+     let newRecipient: any = null;
 
-      if(!exist_recipient){
-        const newRecipient = await tx.recipient.create({
-          data: {
-            name: recipient.name,
-            cpf: recipient.cpf,
-            email: recipient.email,
-            addres: { connect: { id: newRecipientAddress.id } },
-          },
-        });
-      }
+const newRecipientAddress = await tx.addres.create({
+  data: {
+    street: recipient.address.street,
+    number: recipient.address.number,
+    complement: recipient.address.complement,
+    city: recipient.address.city,
+    state: recipient.address.state,
+    country: recipient.address.country,
+    zipcode: recipient.address.zipcode,
+  },
+});
 
-      const recipientId = newRecipient?.id ?? exist_recipient!.id;
+const exist_recipient = await tx.recipient.findUnique({
+  where: {
+    cpf: recipient.cpf
+  }
+});
+
+if (!exist_recipient) {
+  newRecipient = await tx.recipient.create({
+    data: {
+      name: recipient.name,
+      cpf: recipient.cpf,
+      email: recipient.email,
+      addres: { connect: { id: newRecipientAddress.id } },
+    },
+  });
+}
+
+const recipientId = newRecipient?.id ?? exist_recipient!.id;
       
   
       const trackingCode = await generateTrackingCode();
