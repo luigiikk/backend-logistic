@@ -7,6 +7,7 @@ import { updatePurchaseOrdersItemsService } from "@/services/purchaseOrders/purc
 export const purchaseOrdersItemsUpdateBodySchema = z.object({
   purchase_order_id: z.number(),
   resource_id: z.number(),
+  warehouse_id: z.number(),
   quantity: z.number(),
   unit_price: z.number(),
 });
@@ -21,7 +22,8 @@ export async function updatePurchaseOrderItems(
     purchase_order_id,
     resource_id,
     quantity,
-    unit_price
+    unit_price,
+    warehouse_id
   } = request.body;
 
   const { id } = request.params;
@@ -38,9 +40,11 @@ export async function updatePurchaseOrderItems(
       purchase_order_id,
       resource_id,
       quantity,
-      unit_price
+      unit_price,
+      warehouse_id
     );
   } catch (error) {
+    console.log(error)
     return reply.status(409).send();
   }
 

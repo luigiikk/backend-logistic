@@ -19,6 +19,7 @@ export async function purchaseOrdersItemsRoutes(app: FastifyTypedInstance) {
               purchase_order_id: z.number(),
               resource_id: z.number(),
               company_id: z.number(),
+              warehouse_id: z.number(),
               quantity: z.number(),
               unit_price: z.float32(),
               total_price: z.float32(),
@@ -58,6 +59,7 @@ export async function purchaseOrdersItemsRoutes(app: FastifyTypedInstance) {
               purchase_order_id: z.number(),
               resource_id: z.number(),
               company_id: z.number(),
+              warehouse_id: z.number(),
               quantity: z.number(),
               unit_price: z.float32(),
               total_price: z.float32(),
@@ -85,7 +87,7 @@ export async function purchaseOrdersItemsRoutes(app: FastifyTypedInstance) {
     "/:id",
     {
       schema: {
-        tags: ["purchase-orders"],
+        tags: ["purchase-orders-items"],
         description: "Update Purchase Orders",
         params: z.object({
           id: z.coerce.number(),
