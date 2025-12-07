@@ -9,6 +9,7 @@ export async function getInventoryByResourceId(
 
   try {
     const list = await getInventoryByResourceIdService(resourceId);
+    console.log(list);
     return reply.status(200).send(list);
   } catch (error) {
     return reply.status(500).send(error);
