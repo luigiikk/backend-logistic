@@ -83,21 +83,48 @@ export class PrismaInventoryRepository {
     });
   }
 
-  async decrementQuantity(resourceId: number, warehouseId: number, quantity: number) {
-
-    const existingInventory = await this.findByResourceAndWarehouse(resourceId, warehouseId);
-
-    if(!existingInventory){
-      throw new Error();
-    }
-
-    return prisma.inventory.update({
-      where: { id: existingInventory.id },
-      data: {
-        quantity: {
-          decrement: quantity
-        }
+  async decrementQuantity(
+    company_id: number,
+    resourceId: number,
+    warehouseId: number,
+    quantity: number
+  ) {
+    return await prisma.$transaction(async (tx) => {
+      const existingInventory = await tx.inventory.findFirst({
+        where: {
+          resource_id: resourceId,
+          warehouse_id: warehouseId,
+          company_id,
+        },
+      });
+  
+      if (!existingInventory) {
+        throw new Error("Inventory record not found.");
       }
+  
+      if ((existingInventory.quantity ?? 0) < quantity) {
+        throw new Error("Not enough inventory to decrement.");
+      }
+  
+      // Atualiza Inventory
+      const updatedInventory = await tx.inventory.update({
+        where: { id: existingInventory.id },
+        data: {
+          quantity: {
+            decrement: quantity,
+          },
+        },
+      });
+  
+      // Atualiza Resources também
+      await tx.resources.update({
+        where: { id: resourceId, company_id },
+        data: {
+          quantity: { decrement: quantity },
+        },
+      });
+  
+      return updatedInventory;
     });
   }
 

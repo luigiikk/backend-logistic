@@ -9,7 +9,7 @@ interface InventoryBodySchema {
   quantity: number,
 }
 
-export async function dispatchInventoryService({
+export async function dispatchInventoryService(company_id: number, {
   resource_id,
   warehouse_id,
   quantity,
@@ -17,7 +17,7 @@ export async function dispatchInventoryService({
 
   const inventoryRepository = new PrismaInventoryRepository();
 
-  const inventory = await inventoryRepository.decrementQuantity(resource_id, warehouse_id, quantity);
+  const inventory = await inventoryRepository.decrementQuantity(company_id, resource_id, warehouse_id, quantity);
 
   return inventory;
 }
