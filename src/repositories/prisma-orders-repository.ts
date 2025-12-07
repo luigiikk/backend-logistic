@@ -63,9 +63,8 @@ export class PrismaOrdersRepository {
     products,
   }: CreateOrderByClientParams) {
     return await prisma.$transaction(async (tx) => {
-
       let newRecipient: any = null;
-  
+
       const newRecipientAddress = await tx.addres.create({
         data: {
           street: recipient.address.street,
@@ -77,14 +76,14 @@ export class PrismaOrdersRepository {
           zipcode: recipient.address.zipcode,
         },
       });
-  
+
       const exist_recipient = await tx.recipient.findUnique({
         where: {
-          cpf: recipient.cpf
-        }
-      })
+          cpf: recipient.cpf,
+        },
+      });
 
-      if(!exist_recipient){
+      if (!exist_recipient) {
         const newRecipient = await tx.recipient.create({
           data: {
             name: recipient.name,
@@ -95,16 +94,25 @@ export class PrismaOrdersRepository {
         });
       }
 
+      if (exist_recipient) {
+        await tx.recipient.update({
+          where: { id: exist_recipient.id },
+          data: {
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
       const recipientId = newRecipient?.id ?? exist_recipient!.id;
-  
+
       const trackingCode = await generateTrackingCode();
 
       const status = await tx.status.findFirstOrThrow({
         where: {
-          is_default: true
-        }
+          is_default: true,
+        },
       });
-  
+
       const newOrder = await tx.orders.create({
         data: {
           code: trackingCode,
@@ -114,7 +122,7 @@ export class PrismaOrdersRepository {
           company: { connect: { id: company_id } },
         },
       });
-  
+
       if (products.length > 0) {
         await tx.products.createMany({
           data: products.map((p) => ({
@@ -125,7 +133,7 @@ export class PrismaOrdersRepository {
           })),
         });
       }
-  
+
       return {
         order: newOrder,
         recipient: newRecipient,
@@ -140,54 +148,62 @@ export class PrismaOrdersRepository {
     products,
   }: CreateOrderByCompanyParams) {
     return await prisma.$transaction(async (tx) => {
-     let newRecipient: any = null;
+      let newRecipient: any = null;
 
-const newRecipientAddress = await tx.addres.create({
-  data: {
-    street: recipient.address.street,
-    number: recipient.address.number,
-    complement: recipient.address.complement,
-    city: recipient.address.city,
-    state: recipient.address.state,
-    country: recipient.address.country,
-    zipcode: recipient.address.zipcode,
-  },
-});
+      const newRecipientAddress = await tx.addres.create({
+        data: {
+          street: recipient.address.street,
+          number: recipient.address.number,
+          complement: recipient.address.complement,
+          city: recipient.address.city,
+          state: recipient.address.state,
+          country: recipient.address.country,
+          zipcode: recipient.address.zipcode,
+        },
+      });
 
-const exist_recipient = await tx.recipient.findUnique({
-  where: {
-    cpf: recipient.cpf
-  }
-});
+      const exist_recipient = await tx.recipient.findUnique({
+        where: {
+          cpf: recipient.cpf,
+        },
+      });
 
-if (!exist_recipient) {
-  newRecipient = await tx.recipient.create({
-    data: {
-      name: recipient.name,
-      cpf: recipient.cpf,
-      email: recipient.email,
-      addres: { connect: { id: newRecipientAddress.id } },
-    },
-  });
-}
+      if (!exist_recipient) {
+        newRecipient = await tx.recipient.create({
+          data: {
+            name: recipient.name,
+            cpf: recipient.cpf,
+            email: recipient.email,
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
 
-const recipientId = newRecipient?.id ?? exist_recipient!.id;
-      
-  
+      if (exist_recipient) {
+        await tx.recipient.update({
+          where: { id: exist_recipient.id },
+          data: {
+            addres: { connect: { id: newRecipientAddress.id } },
+          },
+        });
+      }
+
+      const recipientId = newRecipient?.id ?? exist_recipient!.id;
+
       const trackingCode = await generateTrackingCode();
 
       const status = await tx.status.findFirstOrThrow({
         where: {
-          is_default: true
-        }
+          is_default: true,
+        },
       });
 
       const vehicle = await tx.vehicles.findFirstOrThrow({
         where: {
-          id: vehicle_id
-        }
-      })
-  
+          id: vehicle_id,
+        },
+      });
+
       const newOrder = await tx.orders.create({
         data: {
           code: trackingCode,
@@ -197,7 +213,7 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
           company: { connect: { id: company_id } },
         },
       });
-  
+
       if (products.length > 0) {
         await tx.products.createMany({
           data: products.map((p) => ({
@@ -208,7 +224,7 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
           })),
         });
       }
-  
+
       return {
         order: newOrder,
         recipient: newRecipient,
@@ -217,90 +233,88 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
   }
 
   async getAllOrdersByCompany(company_id: number) {
-  return await prisma.orders.findMany({
-    where: { company_id }, 
-    select: {
-      code: true,
-      sender_client: { select: { name: true } },
-      recipient: { select: { name: true } },
-      status: { select: { name: true } },
-      vehicle: { select: { plate: true } },
-    },
-  });
-}
+    return await prisma.orders.findMany({
+      where: { company_id },
+      select: {
+        code: true,
+        sender_client: { select: { name: true } },
+        recipient: { select: { name: true } },
+        status: { select: { name: true } },
+        vehicle: { select: { plate: true } },
+      },
+    });
+  }
 
-  async getOrdersByRecipient(recipient_id: number){
+  async getOrdersByRecipient(recipient_id: number) {
     const orders = await prisma.orders.findMany({
-      where:{
+      where: {
         recipient_id,
-      }
-    })
+      },
+    });
     return orders;
   }
 
-  async getOrdersBySender(sender_client_id: number){
+  async getOrdersBySender(sender_client_id: number) {
     const orders = await prisma.orders.findMany({
-      where:{
+      where: {
         sender_client_id,
-      }
-    })
+      },
+    });
     return orders;
   }
 
   async getOrder(id: number, company_id: number) {
-   const order = await prisma.orders.findUnique({
-    where: { id, company_id },
-    select: {
-      code: true,
-      sender_client: { select: { name: true } },
-      recipient: { select: { name: true } },
-      status: { select: { name: true } },
-      vehicle: { select: { plate: true } },
-    },
-  });
+    const order = await prisma.orders.findUnique({
+      where: { id, company_id },
+      select: {
+        code: true,
+        sender_client: { select: { name: true } },
+        recipient: { select: { name: true } },
+        status: { select: { name: true } },
+        vehicle: { select: { plate: true } },
+      },
+    });
     return order;
   }
 
   async getOrderByCode(code: string) {
-
     const order = await prisma.orders.findUnique({
-     where: { code: code },
-     select: {
-       code: true,
-       sender_client: { select: { name: true } },
-       recipient: { select: { name: true } },
-       status: { select: { name: true } },
-       vehicle: { select: { plate: true } },
-     },
-   });
-   
-     return order;
-   }
+      where: { code: code },
+      select: {
+        code: true,
+        sender_client: { select: { name: true } },
+        recipient: { select: { name: true } },
+        status: { select: { name: true } },
+        vehicle: { select: { plate: true } },
+      },
+    });
 
-   async getOrderByCpf(cpf: string) {
+    return order;
+  }
 
+  async getOrderByCpf(cpf: string) {
     const recipient = await prisma.recipient.findUnique({
       where: {
         cpf,
-      }
-    })
-    if(!recipient){
-      throw new Error('Recipent not found');
+      },
+    });
+    if (!recipient) {
+      throw new Error("Recipent not found");
     }
 
     const order = await prisma.orders.findMany({
-     where: { recipient_id: recipient.id },
-     select: {
-       code: true,
-       sender_client: { select: { name: true } },
-       recipient: { select: { name: true } },
-       status: { select: { name: true } },
-       vehicle: { select: { plate: true } },
-     },
-   });
-   
-     return order;
-   }
+      where: { recipient_id: recipient.id },
+      select: {
+        code: true,
+        sender_client: { select: { name: true } },
+        recipient: { select: { name: true } },
+        status: { select: { name: true } },
+        vehicle: { select: { plate: true } },
+      },
+    });
+
+    return order;
+  }
 
   async deleteOrder(id: number) {
     const order = await prisma.orders.delete({
@@ -325,31 +339,31 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
         recipient: true,
       },
     });
-  
+
     if (!orderExists) {
       throw new Error("order not found");
     }
-  
+
     if (company_id !== orderExists.company_id) {
       throw new Error("order not allowed to update");
     }
-  
+
     if (products && products.length > 0) {
       for (const product of products) {
         if (!product.id) continue;
-  
+
         const { id, ...fields } = product;
-  
+
         await prisma.products.update({
           where: { id },
           data: fields,
         });
       }
     }
-  
+
     if (recipient) {
       const recipient_id = orderExists.recipient_id;
-  
+
       await prisma.recipient.update({
         where: { id: recipient_id },
         data: {
@@ -358,23 +372,20 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
           email: recipient.email,
         },
       });
-  
+
       if (recipient.address) {
         const addressId = orderExists.recipient.addres_id;
-      
+
         if (!addressId) {
-          
           const newAddress = await prisma.addres.create({
             data: recipient.address,
           });
-      
-          
+
           await prisma.recipient.update({
             where: { id: orderExists.recipient_id },
             data: { addres_id: newAddress.id },
           });
         } else {
-         
           await prisma.addres.update({
             where: { id: addressId },
             data: recipient.address,
@@ -382,7 +393,7 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
         }
       }
     }
-  
+
     const updatedOrder = await prisma.orders.update({
       where: { id: order_id },
       data: {
@@ -396,7 +407,7 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
         status: true,
       },
     });
-  
+
     return updatedOrder;
   }
 }
