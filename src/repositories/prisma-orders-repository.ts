@@ -277,6 +277,31 @@ const recipientId = newRecipient?.id ?? exist_recipient!.id;
      return order;
    }
 
+   async getOrderByCpf(cpf: string) {
+
+    const recipient = await prisma.recipient.findUnique({
+      where: {
+        cpf,
+      }
+    })
+    if(!recipient){
+      throw new Error('Recipent not found');
+    }
+
+    const order = await prisma.orders.findMany({
+     where: { recipient_id: recipient.id },
+     select: {
+       code: true,
+       sender_client: { select: { name: true } },
+       recipient: { select: { name: true } },
+       status: { select: { name: true } },
+       vehicle: { select: { plate: true } },
+     },
+   });
+   
+     return order;
+   }
+
   async deleteOrder(id: number) {
     const order = await prisma.orders.delete({
       where: {

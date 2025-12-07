@@ -3,6 +3,7 @@ import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
 import { getOrderByCode } from "@/http/controllers/order/getOrderByCode.js";
+import { getOrderByRecepientCpf } from "@/http/controllers/order/getOrderByRecepientCpf.js";
 import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
 import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
 import { orderUpdateByCompanyBodySchema, updateOrderByCompany } from "@/http/controllers/order/updateOrderByCompany.js";
@@ -79,6 +80,47 @@ export async function orderRoutes(app: FastifyTypedInstance) {
       },
     },
     getOrderByCode
+  );
+
+  app.get(
+    "/recepient_cpf",
+    {
+      schema: {
+        tags: ["order"],
+        description: "List order by cpf",
+        querystring: z.object({
+          cpf: z.string(),
+        }),
+        response: {
+          200: z.array(
+            z.object({
+              code: z.string(),
+        
+              sender_client: z
+                .object({
+                  name: z.string(),
+                })
+                .nullable(),
+        
+              recipient: z.object({
+                name: z.string(),
+              }),
+        
+              status: z.object({
+                name: z.string(),
+              }),
+        
+              vehicle: z
+                .object({
+                  plate: z.string(),
+                })
+                .nullable(),
+            })
+          ),
+        },
+      },
+    },
+    getOrderByRecepientCpf
   );
 
   app.post(
