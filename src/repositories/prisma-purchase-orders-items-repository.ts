@@ -17,4 +17,15 @@ export class PrismaPurchaseOrdersItemsRepository {
 
     return item;
   }
+
+  async getAllPurchaseOrdersItems(company_id: number) {
+    return await prisma.purchase_order_items.findMany({
+        where: {
+          company_id,
+        },
+        include: {
+          resource: true,
+        }
+      })
+    }
 }
