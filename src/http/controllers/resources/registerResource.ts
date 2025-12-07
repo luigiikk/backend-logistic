@@ -17,9 +17,18 @@ export async function resourceRegister(
 ) {
   const { name, description, quantity, category_id } = request.body;
 
+  await request.jwtVerify();
+
+  if (request.user.role != "company") {
+    return reply.status(409).send();
+  }
+
+  const company_id = request.user.sub;
+
   try {
-    await registerResourceService({ name, description, quantity, category_id});
+    await registerResourceService(company_id, { name, description, quantity, category_id});
   } catch (error) {
+    console.log(error)
     return reply.status(409).send();
   }
 

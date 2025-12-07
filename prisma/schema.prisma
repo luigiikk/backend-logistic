@@ -40,6 +40,7 @@ model Companies {
   warehouses Warehouses[]
   inventory Inventory[]
   client Client[]
+  invoices Invoice[]
 
   @@map("companies")
 }
@@ -113,7 +114,6 @@ model Client {
   addres          Addres?   @relation(fields: [addres_id], references: [id])
   orders_sent     Orders[]  @relation("SenderOrders")
   company       Companies @relation(fields: [company_id], references: [id])
-  invoices        Invoice[]
 
   @@index([addres_id])
   @@map("client")
@@ -171,7 +171,6 @@ model Status {
 
   // relations
   orders          Orders[]
-  invoices        Invoice[]
   purchase_orders purchase_orders[]
   Vehicles        Vehicles[]
 
@@ -182,28 +181,23 @@ model Status {
 
 model Invoice {
   id             Int       @id @default(autoincrement())
-  client_id      Int?
-  recipient_id   Int?
   invoice_number Int?      @unique
+  purchase_order_id Int 
+  company_id     Int   
   issue_date     DateTime?
   due_date       DateTime?
-  total_amount   Float?
-  tax_amount     Float?
-  status_id      Int
   link_file      String?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
 
   // relations
-  client Client? @relation(fields: [client_id], references: [id])
-  recipient Recipient? @relation(fields: [recipient_id], references: [id])
-  status Status  @relation(fields: [status_id], references: [id])
+  company Companies    @relation(fields: [company_id], references: [id])
+  purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
 
-  @@index([client_id])
-  @@index([status_id])
-  @@index([recipient_id])
+  @@index([purchase_order_id])
   @@map("invoice")
 }
+
 
 model Resources {
   id          Int      @id @default(autoincrement())
@@ -246,12 +240,14 @@ model purchase_order_items {
   unit_price        Float?
   total_price       Float?
   company_id        Int
+  warehouse_id      Int
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
   // relations
   purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
   resource       Resources       @relation(fields: [resource_id], references: [id])
+  Warehouse       Warehouses       @relation(fields: [warehouse_id], references: [id])
   company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
 
   @@index([purchase_order_id])
@@ -273,6 +269,7 @@ model purchase_orders {
   status   Status                 @relation(fields: [status_id], references: [id])
   company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
   items    purchase_order_items[]
+   invoices Invoice[]
 
   @@index([supplier_id])
   @@index([status_id])
@@ -314,6 +311,7 @@ model Warehouses {
   addres    Addres?     @relation(fields: [addres_id], references: [id])
   company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
   inventory Inventory[]
+  purchase_order_items purchase_order_items[]
 
   @@index([addres_id])
   @@map("warehouses")
@@ -372,5 +370,4 @@ model Recipient{
 
    orders    Orders[]  @relation("RecipientOrders")
    addres    Addres?     @relation(fields: [addres_id], references: [id])
-   invoices  Invoice[]
 }

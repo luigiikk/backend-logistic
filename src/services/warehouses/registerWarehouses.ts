@@ -18,7 +18,7 @@ interface warehousesBodySchema {
   zipcode: string,
 }
 
-export async function warehousesResourceService({
+export async function warehousesResourceService(company_id: number, {
   name,
   street,
   number,
@@ -34,9 +34,20 @@ export async function warehousesResourceService({
 
   const addres = await addresRepository.create({street, number, complement, city, state, country, zipcode});
 
+  const company = await prisma.companies.findUnique({
+    where: {
+      id: company_id
+    }
+  })
+
+  if(!company){
+    throw new Error('company not exists');
+  }
+
   const warehouses = await warehousesRepository.create({
     name,
-    addres: { connect: { id: addres.id } }
+    addres: { connect: { id: addres.id } },
+    company: {connect: {id: company.id}}
   });
 
   return warehouses;

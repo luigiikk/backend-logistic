@@ -12,7 +12,7 @@ interface CategoryResourceBodySchema {
   category_id: number
 }
 
-export async function registerResourceService({
+export async function registerResourceService(company_id: number, {
   name,
   description,
   quantity,
@@ -29,11 +29,21 @@ export async function registerResourceService({
     }
   )
 
+  const company = await prisma.companies.findUnique({
+    where: {
+      id: company_id
+    }
+  })
+
+  if(!company){
+    throw new Error('company not exists');
+  }
+
   if(!category){
     throw new Error("Category not exists");
   }
 
-  const resource = await resourceRepository.create({name, description, quantity, category: { connect: { id: category.id } }})
+  const resource = await resourceRepository.create({name, description, quantity, company: {connect: {id: company.id}}, category: { connect: { id: category.id } }})
 
   return resource;
 }

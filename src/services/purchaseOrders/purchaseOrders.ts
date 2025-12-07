@@ -5,6 +5,7 @@ interface PurchaseOrdersParams {
   status_id: number;
   purchase_orders_items: {
     resource_id: number;
+    warehouse_id: number,
     quantity: number;
     unit_price: number;
   }[];

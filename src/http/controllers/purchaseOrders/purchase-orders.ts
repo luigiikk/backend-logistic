@@ -8,6 +8,7 @@ export const purchaseOrdersBodySchema = z.object({
   purchase_orders_items: z.array(
     z.object({
       resource_id: z.number(),
+      warehouse_id: z.number(),
       quantity: z.number(),
       unit_price: z.number(),
   }))

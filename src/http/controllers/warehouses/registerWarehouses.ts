@@ -22,9 +22,18 @@ export async function warehousesRegister(
 ) {
   const { name, street, number, complement, city, state, country, zipcode } = request.body;
 
+  await request.jwtVerify();
+
+  if (request.user.role != "company") {
+    return reply.status(409).send();
+  }
+
+  const company_id = request.user.sub;
+
   try {
-    await warehousesResourceService({ name, street, number, complement, city, state, country, zipcode});
+    await warehousesResourceService(company_id, { name, street, number, complement, city, state, country, zipcode});
   } catch (error) {
+    console.log(error)
     return reply.status(409).send();
   }
 

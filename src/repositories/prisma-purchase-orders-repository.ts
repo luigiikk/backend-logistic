@@ -6,6 +6,7 @@ interface PurchaseOrdersData {
   status_id: number;
   purchase_orders_items: {
     resource_id: number;
+    warehouse_id: number;
     quantity: number;
     unit_price: number;
   }[];
@@ -31,14 +32,14 @@ export class PrismaPurchaseOrdersRepository {
     status_id,
     purchase_orders_items,
   }: PurchaseOrdersData) {
-
     const total_value = purchase_orders_items.reduce(
       (acc, item) => acc + item.quantity * item.unit_price,
       0
     );
-
+  
     return await prisma.$transaction(async (tx) => {
-
+  
+      // 1. Create the purchase order
       const purchaseOrder = await tx.purchase_orders.create({
         data: {
           supplier_id,
@@ -47,34 +48,89 @@ export class PrismaPurchaseOrdersRepository {
           total_value,
         },
       });
-
+  
+      // 2. Create purchase order items
       await tx.purchase_order_items.createMany({
         data: purchase_orders_items.map((item) => ({
           purchase_order_id: purchaseOrder.id,
           resource_id: item.resource_id,
+          warehouse_id: item.warehouse_id, 
           quantity: item.quantity,
           unit_price: item.unit_price,
           total_price: item.quantity * item.unit_price,
           company_id,
         })),
       });
-
-
+  
+      // 3. UPDATE STOCK for each item
+      for (const item of purchase_orders_items) {
+        const { resource_id, warehouse_id, quantity } = item;
+  
+        //
+        // 3.1 Update resource.quantity
+        //
+        const resource = await tx.resources.findUnique({
+          where: { id: resource_id, company_id },
+        });
+  
+        if (!resource) {
+          throw new Error("Resource not found");
+        }
+  
+        await tx.resources.update({
+          where: { id: resource_id, company_id },
+          data: {
+            quantity: (resource.quantity ?? 0) + quantity,
+          },
+        });
+  
+        //
+        // 3.2 Update or create inventory
+        //
+        let inventory = await tx.inventory.findFirst({
+          where: {
+            resource_id,
+            warehouse_id,
+            company_id,
+          },
+        });
+  
+        if (!inventory) {
+          // create a new inventory record for this warehouse
+          inventory = await tx.inventory.create({
+            data: {
+              resource_id,
+              warehouse_id,
+              company_id,
+              quantity: 0,
+            },
+          });
+        }
+  
+        await tx.inventory.update({
+          where: { id: inventory.id },
+          data: {
+            quantity: (inventory.quantity ?? 0) + quantity,
+          },
+        });
+      }
+  
+      // 4. Create invoice
       const invoice = await tx.invoice.create({
         data: {
           issue_date: new Date(),
-      
-          company: { connect: { id: company_id } },
-          purchase_order: { connect: { id: purchaseOrder.id } },
+          company_id,
+          purchase_order_id: purchaseOrder.id,
         },
       });
-
+  
       return {
         ...purchaseOrder,
         invoice,
       };
     });
   }
+  
 
   async update({
     id,
