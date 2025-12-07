@@ -28,4 +28,16 @@ export class PrismaPurchaseOrdersItemsRepository {
         }
       })
     }
+
+    async getPurchaseOrdersItemsById(id: number, company_id: number) {
+      return await prisma.purchase_order_items.findUnique({
+          where: {
+            id,
+            company_id,
+          },
+          include: {
+            resource: true,
+          }
+        })
+      }
 }
