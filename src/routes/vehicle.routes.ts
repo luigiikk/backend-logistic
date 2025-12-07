@@ -40,6 +40,7 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number(),
               plate: z.string(),
               model: z.string(),
               capacity: z.number().int(),

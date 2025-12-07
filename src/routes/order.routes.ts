@@ -44,6 +44,7 @@ export async function orderRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number(),
               code: z.string(),
               sender_client: z.string(),
               recipient: z.string(),

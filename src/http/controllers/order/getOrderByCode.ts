@@ -9,7 +9,15 @@ export async function getOrderByCode(
   const { code } = request.params as { code: string };
   try {
     const order = await getOrderByCodeService({code});
-    return reply.status(200).send(order);
+
+    const response = {
+      ...order,
+      sender_client: { name: order.sender_client?.name || "" },
+      recipient: { name: order.recipient?.name || "" },
+      status: { name: order.status?.name || "" },
+    };
+
+    return reply.status(200).send(response);
   } catch (error) {
     return reply.status(409).send(error);
   }
