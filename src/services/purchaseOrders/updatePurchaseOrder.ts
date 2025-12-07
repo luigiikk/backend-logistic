@@ -6,6 +6,7 @@ export interface PurchaseOrdersUpdateParams {
   purchase_orders_items: {
     id?: number;
     resource_id: number;
+    warehouse_id: number;
     quantity: number;
     unit_price: number;
   }[];

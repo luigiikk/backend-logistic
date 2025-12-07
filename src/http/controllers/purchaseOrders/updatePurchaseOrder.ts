@@ -10,9 +10,9 @@ export const purchaseOrdersUpdateBodySchema = z.object({
     z.object({
       id: z.number().int(),
       resource_id: z.number().int(),
+      warehouse_id: z.number(),
       quantity: z.number(),
       unit_price: z.number(),
-      company_id: z.number().int(),
   }))
 });
 
@@ -36,6 +36,7 @@ export async function updatePurchaseOrder(
     if (request.user.role != "company") {
       return reply.status(409).send();
     }
+    
 
   try {
     await updatePurchaseOrdersService(id, company_id, {

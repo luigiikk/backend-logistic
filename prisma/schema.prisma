@@ -333,6 +333,8 @@ model Inventory {
 
   @@index([resource_id])
   @@index([warehouse_id])
+  @@unique([resource_id, warehouse_id, company_id])
+  
   @@map("inventory")
 }
 

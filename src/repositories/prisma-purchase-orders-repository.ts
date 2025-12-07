@@ -19,6 +19,7 @@ interface UpdatePurchaseOrderParams {
   status_id: number;
   purchase_orders_items: {
     resource_id: number;
+    warehouse_id: number;
     quantity: number;
     unit_price: number;
   }[];
@@ -140,35 +141,58 @@ export class PrismaPurchaseOrdersRepository {
     purchase_orders_items,
   }: UpdatePurchaseOrderParams) {
     return await prisma.$transaction(async (tx) => {
-      // calcular total
+  
+      // 1. Calcular o total
       const total_value = purchase_orders_items.reduce(
         (acc, item) => acc + item.quantity * item.unit_price,
         0
       );
   
-      // atualizar a purchase order
+      // 2. Atualizar a purchase order
       const updatedOrder = await tx.purchase_orders.update({
-        where: {
-          id,
-          company_id,
-        },
-        data: {
-          supplier_id,
-          status_id,
-          total_value,
-        },
+        where: { id, company_id },
+        data: { supplier_id, status_id, total_value },
       });
   
-      // apagar items antigos
+      // 3. Buscar items antigos para reverter o estoque
+      const oldItems = await tx.purchase_order_items.findMany({
+        where: { purchase_order_id: id, company_id },
+      });
+  
+      // 4. Reverter efeitos no RESOURCE e INVENTORY
+      for (const old of oldItems) {
+        // 4.1 Reverter RESOURCE.quantity
+        await tx.resources.update({
+          where: { id: old.resource_id },
+          data: {
+            quantity: { decrement: (old.quantity ?? 0) }, // pois ao criar aumentou
+          },
+        });
+  
+        // 4.2 Reverter INVENTORY.quantity
+        await tx.inventory.updateMany({
+          where: {
+            resource_id: old.resource_id,
+            warehouse_id: old.warehouse_id,
+            company_id,
+          },
+          data: {
+            quantity: { decrement: (old.quantity ?? 0) },
+          },
+        });
+      }
+  
+      // 5. Deletar items antigos
       await tx.purchase_order_items.deleteMany({
         where: { purchase_order_id: id, company_id },
       });
   
-      // criar items novos
+      // 6. Criar novos items
       await tx.purchase_order_items.createMany({
         data: purchase_orders_items.map((item) => ({
           purchase_order_id: id,
           resource_id: item.resource_id,
+          warehouse_id: item.warehouse_id,
           quantity: item.quantity,
           unit_price: item.unit_price,
           total_price: item.quantity * item.unit_price,
@@ -176,7 +200,38 @@ export class PrismaPurchaseOrdersRepository {
         })),
       });
   
-      // atualizar invoice existente
+      // 7. Aplicar NOVOS efeitos no estoque
+      for (const item of purchase_orders_items) {
+        // 7.1 Atualizar RESOURCE.quantity
+        await tx.resources.update({
+          where: { id: item.resource_id },
+          data: {
+            quantity: { increment: item.quantity },
+          },
+        });
+  
+        // 7.2 Atualizar INVENTORY.quantity por warehouse
+        await tx.inventory.upsert({
+          where: {
+            resource_id_warehouse_id_company_id: {
+              resource_id: item.resource_id,
+              warehouse_id: item.warehouse_id,
+              company_id,
+            },
+          },
+          update: {
+            quantity: { increment: item.quantity },
+          },
+          create: {
+            resource_id: item.resource_id,
+            warehouse_id: item.warehouse_id,
+            company_id,
+            quantity: item.quantity,
+          },
+        });
+      }
+  
+      // 8. Atualizar invoice
       const invoice = await tx.invoice.findFirst({
         where: {
           purchase_order_id: id,
@@ -189,9 +244,7 @@ export class PrismaPurchaseOrdersRepository {
       if (invoice) {
         updatedInvoice = await tx.invoice.update({
           where: { id: invoice.id },
-          data: {
-            updated_at: new Date(),
-          },
+          data: { updated_at: new Date() },
         });
       }
   
