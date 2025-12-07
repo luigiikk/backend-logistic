@@ -9,7 +9,7 @@ interface InventoryBodySchema {
   quantity: number,
 }
 
-export async function registerInventoryService({
+export async function registerInventoryService(company_id: number, {
   resource_id,
   warehouse_id,
   quantity,
@@ -17,7 +17,7 @@ export async function registerInventoryService({
 
   const inventoryRepository = new PrismaInventoryRepository();
 
-  const inventory = await inventoryRepository.createOrIncrement(resource_id, warehouse_id, quantity);
+  const inventory = await inventoryRepository.createOrIncrement(company_id, resource_id, warehouse_id, quantity);
 
   return inventory;
 }

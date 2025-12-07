@@ -10,7 +10,7 @@ import z from "zod";
 
 export async function inventoryRoutes(app: FastifyTypedInstance) {
   app.post(
-    "/inventory/receive",
+    "/receive",
     {
       schema: {
         tags: ["inventory"],

@@ -2,42 +2,67 @@ import { prisma } from "@/lib/prisma.js";
 
 export class PrismaInventoryRepository {
 
-  async findByResourceAndWarehouse(resourceId: number, warehouseId: number) {
+  async findByResourceAndWarehouse(resourceId: number, warehouseId: number, company_id: number) {
     const inventory = await prisma.inventory.findFirst({
       where: {
         resource_id: resourceId,
-        warehouse_id: warehouseId
+        warehouse_id: warehouseId,
+        company_id,
       }
     });
 
     return inventory;
   }
 
-  async createOrIncrement(resourceId: number, warehouseId: number, quantity: number) {
-    const existingInventory = await this.findByResourceAndWarehouse(resourceId, warehouseId);
-
-    if (existingInventory) {
-      const updated = await prisma.inventory.update({
-        where: { id: existingInventory.id },
-        data: {
-          quantity: (existingInventory.quantity ?? 0) + quantity
-        }
+  async createOrIncrement(
+    company_id: number,
+    resourceId: number,
+    warehouseId: number,
+    quantity: number
+  ) {
+    return await prisma.$transaction(async (tx) => {
+      const existingInventory = await tx.inventory.findFirst({
+        where: {
+          resource_id: resourceId,
+          warehouse_id: warehouseId,
+          company_id,
+        },
       });
-
-      return updated;
-    }
-
-    const created = await prisma.inventory.create({
-      data: {
-        resource: { connect: { id: resourceId } },
-        warehouse: { connect: { id: warehouseId } },
-        quantity
+  
+      let inventoryRecord;
+  
+      if (existingInventory) {
+        // Atualiza inventory existente
+        inventoryRecord = await tx.inventory.update({
+          where: { id: existingInventory.id },
+          data: {
+            quantity: (existingInventory.quantity ?? 0) + quantity,
+          },
+        });
+      } else {
+        // Cria novo registro de inventário
+        inventoryRecord = await tx.inventory.create({
+          data: {
+            resource_id: resourceId,
+            warehouse_id: warehouseId,
+            company_id,
+            quantity,
+          },
+        });
       }
+  
+      // Sempre atualizar a quantidade total de recursos
+      await tx.resources.update({
+        where: { id: resourceId, company_id },
+        data: {
+          quantity: { increment: quantity },
+        },
+      });
+  
+      return inventoryRecord;
     });
-
-    return created;
   }
-
+  
   async incrementQuantity(id: number, quantity: number) {
     const updated = await prisma.inventory.update({
       where: { id },
