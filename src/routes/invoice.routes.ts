@@ -1,5 +1,5 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
-import { getInventoryByResourceId } from "@/http/controllers/inventory/inventory-by-resourceId.js";
+import { getInventoryByResourceId } from "@/http/controllers/inventory/inventory-by-id.js";
 import { deleteInvoice } from "@/http/controllers/invoice/deleteInvoice.js";
 import { getAllInvoices } from "@/http/controllers/invoice/getAllInvoices.js";
 import { getInvoice } from "@/http/controllers/invoice/getInvoice.js";

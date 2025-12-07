@@ -1,12 +1,11 @@
-import { getAllInventoryService } from "@/services/inventory/getAllInventory.js";
-import { getInventoryByResourceIdService } from "@/services/inventory/iventoryGetById.js";
+import { getInventoryByIdService } from "@/services/inventory/iventoryGetById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 
-export async function getAllInventory(
+export async function getInventoryById(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-
+  const { id } = request.params as { id: number };
   await request.jwtVerify();
   const company_id = request.user.sub;
 
@@ -15,8 +14,8 @@ export async function getAllInventory(
   }
 
   try {
-    const inventory = await getAllInventoryService(company_id);
-
+    const inventory = await getInventoryByIdService(company_id, id);
+    
     return reply.status(200).send(inventory);
   } catch (error) {
     return reply.status(500).send(error);

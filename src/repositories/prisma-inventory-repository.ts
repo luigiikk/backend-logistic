@@ -179,13 +179,12 @@ export class PrismaInventoryRepository {
    })
   }
 
-  async getInventoryByResourceId(resourceId: number) {
+  async getInventoryById(company_id: number, id: number) {
     return await prisma.inventory.findMany({
-      where: { resource_id: resourceId },
+      where: { company_id, id},
       include: {
         resource: true,
         warehouse: true,
-        addres: true
       },
     });
   }
