@@ -7,6 +7,7 @@ import z from "zod";
 export const inventoryTransferBodySchema = z.object({
   id: z.number(),
   warehouse_id: z.number(),
+  company_id: z.number(),
   quantity: z.number()
 });
 
@@ -16,10 +17,17 @@ export async function inventoryTransfer(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
+  await request.jwtVerify();
+  const company_id = request.user.sub;
+
+  if (request.user.role != "company") {
+    return reply.status(409).send();
+  }
+  
   const { id, warehouse_id, quantity } = request.body;
 
   try {
-    await transferInventoryService({ id, warehouse_id, quantity});
+    await transferInventoryService(company_id, { id, warehouse_id, quantity});
   } catch (error) {
     return reply.status(409).send();
   }

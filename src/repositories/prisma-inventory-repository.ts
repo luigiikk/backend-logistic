@@ -128,10 +128,10 @@ export class PrismaInventoryRepository {
     });
   }
 
-  async moveInventory(inventoryId: number, newWarehouseId: number, quantity: number) {
+  async moveInventory(company_id: number, inventoryId: number, newWarehouseId: number, quantity: number) {
    return await prisma.$transaction(async (prisma) => {
     const originInventory = await prisma.inventory.findUnique({
-      where: {id: inventoryId }
+      where: {id: inventoryId, company_id }
     });
 
     if(!originInventory) {
@@ -153,6 +153,7 @@ export class PrismaInventoryRepository {
       where: {
         resource_id: originInventory.resource_id,
         warehouse_id: newWarehouseId,
+        company_id,
       },
     });
 
@@ -160,6 +161,7 @@ export class PrismaInventoryRepository {
       destinyInventory = await prisma.inventory.create({
         data: {
           resource_id: originInventory.resource_id,
+          company_id,
           warehouse_id: newWarehouseId,
           quantity: quantity,
         },
@@ -174,7 +176,6 @@ export class PrismaInventoryRepository {
     }
 
     return destinyInventory;
-
    })
   }
 

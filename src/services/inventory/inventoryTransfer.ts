@@ -9,7 +9,7 @@ interface InventoryBodySchema {
   quantity: number
 }
 
-export async function transferInventoryService({
+export async function transferInventoryService(company_id: number, {
   id,
   warehouse_id,
   quantity,
@@ -17,7 +17,7 @@ export async function transferInventoryService({
 
   const inventoryRepository = new PrismaInventoryRepository();
 
-  const inventory = await inventoryRepository.moveInventory(id, warehouse_id, quantity );
+  const inventory = await inventoryRepository.moveInventory(company_id, id, warehouse_id, quantity );
 
   return inventory;
 }
