@@ -1,6 +1,9 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
+import { getAllPurchaseOrders } from "@/http/controllers/purchaseOrders/getAllPurchaseOrders.js";
+import { getPurchaseOrdersById } from "@/http/controllers/purchaseOrders/getPurchaseOrderById.js";
 import { purchaseOrders, purchaseOrdersBodySchema } from "@/http/controllers/purchaseOrders/purchase-orders.js";
 import { purchaseOrdersItems, purchaseOrdersItemsBodySchema } from "@/http/controllers/purchaseOrders/purchaseOrdersItems/purchase-orders-items.js";
+import { purchaseOrdersUpdateBodySchema, updatePurchaseOrder } from "@/http/controllers/purchaseOrders/updatePurchaseOrder.js";
 import z from "zod";
 
 
@@ -21,21 +24,109 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
     purchaseOrders
   );
 
-  app.post(
-    "/:purchaseOrdersId/items",
+  app.get(
+    "/:id",
     {
       schema: {
-        tags: ["purchase-orders-items"],
-        description: "Purchase Orders",
+        tags: ["purchase-orders"],
+        description: "Get purchase order by ID",
         params: z.object({
-          purchaseOrdersId: z.coerce.number(),
+          id: z.coerce.number(),
         }),
-        body: purchaseOrdersItemsBodySchema,
         response: {
-          201: z.null().describe("Purchase Order item"),
+          200: z.object({
+            id: z.number().int(),
+            supplier_id: z.number().int(),
+            status_id: z.number().int(),
+            total_value: z.number(),
+            company_id: z.number().int(),
+            created_at: z.coerce.date(),
+            updated_at: z.coerce.date(),
+  
+            items: z.array(
+              z.object({
+                id: z.number().int(),
+                purchase_order_id: z.number().int(),
+                resource_id: z.number().int(),
+                quantity: z.number(),
+                unit_price: z.number(),
+                total_price: z.number(),
+                company_id: z.number().int(),
+                created_at: z.coerce.date(),
+                updated_at: z.coerce.date(),
+              })
+            ),
+  
+            supplier: z.object({
+              id: z.number().int(),
+              name: z.string(),
+              CNPJ: z.string(),
+              phone: z.string(),
+              email: z.string(),
+              contactPerson: z.string(),
+              notes: z.string(),
+              addres_id: z.number().int(),
+              company_id: z.number().int(),
+              created_at: z.coerce.date(),
+              updated_at: z.coerce.date(),
+            }),
+          }),
         },
       },
     },
-    purchaseOrdersItems
+    getPurchaseOrdersById
+  );
+
+  app.get(
+    "",
+    {
+      schema: {
+        tags: ["purchase-orders"],
+        description: "List All Purchase Orders",
+        response: {
+          200: z.array(
+            z.object({
+              supplier_id: z.number(),
+              status_id: z.number(),
+              company_id: z.number(),
+              total_value: z.float32(),
+
+              supplier: z.object({
+                id: z.number().int(),
+                name: z.string(),
+                CNPJ: z.string(),
+                phone: z.string(),
+                email: z.string(),
+                contactPerson: z.string(),
+                notes: z.string(),
+                addres_id: z.number().int(),
+                company_id: z.number().int(),
+                created_at: z.coerce.date(),
+                updated_at: z.coerce.date(),
+              }),
+            })
+          ),
+        },
+      },
+    },
+    getAllPurchaseOrders
+  );
+
+  app.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["purchase-orders"],
+        description: "Update Purchase Orders",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        body: purchaseOrdersUpdateBodySchema,
+        response: {
+          204: z.null().describe("purchase orders updated"),
+        },
+      },
+    },
+    updatePurchaseOrder
   );
 }

@@ -11,27 +11,28 @@ export class PrismaInvoicesRepository {
     return invoice;
   }
 
-  async getAllInvoices() {
-    return await prisma.invoice.findMany({
-      select: {
-        recipient_id: true,
-        client_id: true,
-        invoice_number: true,
-        issue_date: true,
-        due_date: true,
-        total_amount: true,
-        tax_amount: true,
-        status_id: true,
-        link_file: true,
+  async getAllInvoices(company_id: number) {
+    const invoice = await prisma.invoice.findMany({
+      where: {
+        company_id,
       },
+      include: {
+        purchase_order: true
+      }
     });
+
+    return invoice;
   }
 
-  async getInvoice(id: number) {
+  async getInvoice(id: number, company_id: number) {
     const invoice = await prisma.invoice.findUnique({
       where: {
         id,
+        company_id,
       },
+      include: {
+        purchase_order: true
+      }
     });
 
     return invoice;
@@ -45,14 +46,9 @@ export class PrismaInvoicesRepository {
     });
   }
 
-  async updateInvoice(id: number, data: InvoiceUpdateParams) {
-      const invoiceExists = await prisma.invoice.findUnique({ where: { id } });
-  
-      if (!invoiceExists) {
-        throw new Error("invoice not found");
-      }
+  async updateInvoice(id: number, company_id: number, data: InvoiceUpdateParams) {
       await prisma.invoice.update({
-        where: { id },
+        where: { id, company_id },
         data,
       });
     }

@@ -6,7 +6,15 @@ export async function getAllInvoices(
   reply: FastifyReply
 ) {
   try {
-    const invoices = await getAllInvoicesService();
+
+    await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if (request.user.role != "company") {
+      return reply.status(409).send();
+    }
+
+    const invoices = await getAllInvoicesService(company_id);
     return reply.status(200).send(invoices);
   } catch (error) {
     return reply.status(500).send();

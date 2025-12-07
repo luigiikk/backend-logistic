@@ -3,13 +3,8 @@ import z from "zod";
 import { updateInvoiceService } from "@/services/invoice/updateInvoice.js";
 
 export const invoiceUpdateBodySchema = z.object({
-  client_id: z.number().int(),
-  recipient_id: z.number().int(),
-  issue_date: z.string().transform((s) => new Date(s)),
-  due_date: z.string().transform((s) => new Date(s)),
-  total_amount: z.number(),
-  tax_amount: z.number(),
-  status_id: z.number(),
+  issue_date: z.coerce.date(),
+  due_date: z.coerce.date(),
   link_file: z.string(),
 });
 
@@ -20,26 +15,24 @@ export async function updateInvoice(
   reply: FastifyReply
 ) {
   const {
-    client_id,
-    recipient_id,
     issue_date,
     due_date,
-    total_amount,
-    tax_amount,
-    status_id,
     link_file,
   } = request.body;
+
   const { id } = request.params;
 
+  await request.jwtVerify();
+    const company_id = request.user.sub;
+
+    if (request.user.role != "company") {
+      return reply.status(409).send();
+    }
+
   try {
-    await updateInvoiceService(id, {
-      client_id,
-      recipient_id,
+    await updateInvoiceService(id, company_id, {
       issue_date,
       due_date,
-      total_amount,
-      tax_amount,
-      status_id,
       link_file,
     });
   } catch (error) {

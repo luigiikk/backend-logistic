@@ -1,25 +1,26 @@
 import { PrismaPurchaseOrdersRepository } from "@/repositories/prisma-purchase-orders-repository.js";
 
-interface PurchaseOrdersParams {
+export interface PurchaseOrdersUpdateParams {
   supplier_id: number;
   status_id: number;
   purchase_orders_items: {
+    id?: number;
     resource_id: number;
     quantity: number;
     unit_price: number;
   }[];
 }
 
-export async function purchaseOrdersService(
+export async function updatePurchaseOrdersService(
+  id: number,
   company_id: number,
-  { supplier_id, status_id, purchase_orders_items }: PurchaseOrdersParams
+  data: PurchaseOrdersUpdateParams
 ) {
   const repository = new PrismaPurchaseOrdersRepository();
 
-  return await repository.create({
+  return await repository.update({
+    id,
     company_id,
-    supplier_id,
-    status_id,
-    purchase_orders_items,
+    ...data,
   });
 }
