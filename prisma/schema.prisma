@@ -40,7 +40,6 @@ model Companies {
   warehouses Warehouses[]
   inventory Inventory[]
   client Client[]
-  invoices Invoice[]
 
   @@map("companies")
 }
@@ -114,6 +113,7 @@ model Client {
   addres          Addres?   @relation(fields: [addres_id], references: [id])
   orders_sent     Orders[]  @relation("SenderOrders")
   company       Companies @relation(fields: [company_id], references: [id])
+  invoices        Invoice[]
 
   @@index([addres_id])
   @@map("client")
@@ -156,7 +156,7 @@ model Products {
   updated_at  DateTime @updatedAt
 
   // relations
-  order Orders @relation(fields: [order_id], references: [id])
+  order Orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
 
   @@index([order_id])
   @@map("products")
@@ -171,6 +171,7 @@ model Status {
 
   // relations
   orders          Orders[]
+  invoices        Invoice[]
   purchase_orders purchase_orders[]
   Vehicles        Vehicles[]
 
@@ -181,20 +182,26 @@ model Status {
 
 model Invoice {
   id             Int       @id @default(autoincrement())
+  client_id      Int?
+  recipient_id   Int?
   invoice_number Int?      @unique
-  purchase_order_id Int 
-  company_id     Int   
   issue_date     DateTime?
   due_date       DateTime?
+  total_amount   Float?
+  tax_amount     Float?
+  status_id      Int
   link_file      String?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
 
   // relations
-  company Companies    @relation(fields: [company_id], references: [id])
-  purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
+  client Client? @relation(fields: [client_id], references: [id])
+  recipient Recipient? @relation(fields: [recipient_id], references: [id])
+  status Status  @relation(fields: [status_id], references: [id])
 
-  @@index([purchase_order_id])
+  @@index([client_id])
+  @@index([status_id])
+  @@index([recipient_id])
   @@map("invoice")
 }
 
@@ -266,7 +273,6 @@ model purchase_orders {
   status   Status                 @relation(fields: [status_id], references: [id])
   company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
   items    purchase_order_items[]
-  invoices Invoice[]
 
   @@index([supplier_id])
   @@index([status_id])
@@ -366,4 +372,5 @@ model Recipient{
 
    orders    Orders[]  @relation("RecipientOrders")
    addres    Addres?     @relation(fields: [addres_id], references: [id])
+   invoices  Invoice[]
 }

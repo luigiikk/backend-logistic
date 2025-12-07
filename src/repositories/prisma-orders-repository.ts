@@ -236,6 +236,7 @@ export class PrismaOrdersRepository {
     return await prisma.orders.findMany({
       where: { company_id },
       select: {
+        id: true,
         code: true,
         sender_client: { select: { name: true } },
         recipient: { select: { name: true } },

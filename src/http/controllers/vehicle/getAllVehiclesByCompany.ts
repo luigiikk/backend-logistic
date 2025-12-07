@@ -15,6 +15,7 @@ export async function getAllVehiclesByCompany(
 
     const vehicle = await getAllVehiclesByCompanyService(company_id);
     const formattedVehicles = vehicle.map((vehicle) => ({
+      id: vehicle.id,
       plate: vehicle.plate ?? "",
       model: vehicle.model ?? "",
       capacity: vehicle.capacity ?? 0,

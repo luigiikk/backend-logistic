@@ -15,6 +15,7 @@ export async function getAllOrdersByCompany(
 
     const orders = await getAllOrdersByCompanyService(company_id);
     const formattedOrders = orders.map((ord) => ({
+      id: ord.id,
       code: ord.code ?? "",
       sender_client: ord.sender_client?.name ?? "",
       recipient: ord.recipient?.name ?? "",
@@ -22,7 +23,6 @@ export async function getAllOrdersByCompany(
       vehicle: ord.vehicle?.plate ?? "",
     }));
 
-    console.log(formattedOrders)
     return reply.status(200).send(formattedOrders);
   } catch (error) {
     return reply.status(500).send();
