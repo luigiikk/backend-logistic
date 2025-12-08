@@ -1,5 +1,4 @@
 import { getAllInventoryService } from "@/services/inventory/getAllInventory.js";
-import { getInventoryByResourceIdService } from "@/services/inventory/iventoryGetById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function getAllInventory(
