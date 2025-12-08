@@ -11,4 +11,16 @@ export class PrismaResourceRepository {
 
     return resource;
   }
+
+  async getAllResource(company_id: number) {
+    return await prisma.resources.findMany({
+        where: {
+          company_id,
+        },
+        include: {
+          category: true
+        }
+      })
+    }
+
 }
