@@ -32,4 +32,28 @@ export class PrismaResourceRepository {
       },
     });
   }
+
+  async updateResource(
+    company_id: number,
+    id: number,
+    data: {
+      name: string;
+      quantity: number;
+      category_id: number;
+    }
+  ) {
+    const resource = await prisma.resources.update({
+      where: { id, company_id },
+      data: {
+        name: data.name,
+        quantity: data.quantity,
+        category_id: data.category_id,
+      },
+      include: {
+        category: true,
+      }
+    });
+  
+    return resource;
+  }
 }
