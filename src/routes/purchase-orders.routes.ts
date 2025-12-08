@@ -40,8 +40,6 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
             status_id: z.number().int(),
             total_value: z.number(),
             company_id: z.number().int(),
-            created_at: z.coerce.date(),
-            updated_at: z.coerce.date(),
   
             items: z.array(
               z.object({
@@ -52,8 +50,6 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
                 unit_price: z.number(),
                 total_price: z.number(),
                 company_id: z.number().int(),
-                created_at: z.coerce.date(),
-                updated_at: z.coerce.date(),
               })
             ),
   
@@ -67,8 +63,6 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
               notes: z.string(),
               addres_id: z.number().int(),
               company_id: z.number().int(),
-              created_at: z.coerce.date(),
-              updated_at: z.coerce.date(),
             }),
           }),
         },
@@ -86,24 +80,50 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number().int(),
+
               supplier_id: z.number(),
               status_id: z.number(),
               company_id: z.number(),
-              total_value: z.float32(),
+              total_value: z.number(), 
+
+              created_at: z.coerce.date(), 
+              updated_at: z.coerce.date(),
 
               supplier: z.object({
                 id: z.number().int(),
                 name: z.string(),
                 CNPJ: z.string(),
-                phone: z.string(),
-                email: z.string(),
-                contactPerson: z.string(),
-                notes: z.string(),
-                addres_id: z.number().int(),
+                phone: z.string().nullable().optional(),
+                email: z.string().nullable().optional(),
+                contactPerson: z.string().nullable().optional(),
+                notes: z.string().nullable().optional(),
+                addres_id: z.number().int().nullable().optional(),
                 company_id: z.number().int(),
-                created_at: z.coerce.date(),
-                updated_at: z.coerce.date(),
-              }),
+              }).nullable().optional(),
+
+              status: z.object({
+                id: z.number(),
+                name: z.string(),
+              }).nullable().optional(),
+
+              items: z.array(
+                z.object({
+                  id: z.number(),
+                  quantity: z.number(),
+                  unit_price: z.number(),
+                  resource_id: z.number(),
+                  
+                  resource: z.object({
+                    id: z.number(),
+                    name: z.string(),
+                    category: z.object({
+                      id: z.number(),
+                      name: z.string(),
+                    }).nullable().optional(),
+                  }).nullable().optional(),
+                })
+              ).optional().default([]),
             })
           ),
         },

@@ -256,12 +256,25 @@ export class PrismaPurchaseOrdersRepository {
   }
 
   async getAllPurchaseOrders(company_id: number) {
-  return await prisma.purchase_orders.findMany({
+    return await prisma.purchase_orders.findMany({
       where: {
         company_id,
       },
       include: {
-        supplier: true
+        supplier: true, 
+        status: true,   
+        items: {
+          include: {
+            resource: {
+              include: {
+                category: true 
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        created_at: 'desc' 
       }
     })
   }
@@ -273,8 +286,16 @@ export class PrismaPurchaseOrdersRepository {
         company_id,
       },
       include: {
-        items: true,
         supplier: true,
+        status: true,
+        items: {
+          include: {
+            resource: {
+              include: { category: true }
+            },
+            Warehouse: true
+          }
+        }
       }
     });
   }
