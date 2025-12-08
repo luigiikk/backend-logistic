@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/prisma.js";
 import { Prisma } from "@prisma/client";
 
-
 export class PrismaResourceRepository {
-  
-  async create(data: Prisma.ResourcesCreateInput){
+  async create(data: Prisma.ResourcesCreateInput) {
     const resource = await prisma.resources.create({
       data,
     });
@@ -14,13 +12,24 @@ export class PrismaResourceRepository {
 
   async getAllResource(company_id: number) {
     return await prisma.resources.findMany({
-        where: {
-          company_id,
-        },
-        include: {
-          category: true
-        }
-      })
-    }
+      where: {
+        company_id,
+      },
+      include: {
+        category: true,
+      },
+    });
+  }
 
+  async getResourceById(company_id: number, id: number) {
+    return await prisma.resources.findMany({
+      where: {
+        company_id,
+        id,
+      },
+      include: {
+        category: true,
+      },
+    });
+  }
 }
