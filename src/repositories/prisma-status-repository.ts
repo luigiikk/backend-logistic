@@ -71,12 +71,12 @@ export class PrismaStatusRepository {
     });
   }
 
-  async getStatusByType(
-  company_id: number, 
-  type: "order" | "vehicle" | "invoice" | "purchase_order"
-) {
-  return await prisma.status.findMany({
-    where: { company_id, type },
+  async getStatusByType(company_id: number, type: "invoice" | "vehicle" | "order" | "purchase_order") {
+  const statusList = await prisma.status.findMany({
+    where: {
+      company_id,
+      type,
+    },
     select: {
       id: true,
       name: true,
@@ -84,6 +84,7 @@ export class PrismaStatusRepository {
       is_default: true,
     },
   });
-}
 
+  return statusList;
+}
 }

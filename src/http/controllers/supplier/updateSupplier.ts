@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
-import { updateCompanyService } from "@/services/company/updateCompany.js";
 import { updateSupplierService } from "@/services/supplier/updateSupplier.js";
 
 export const supplierUpdateBodySchema = z.object({
@@ -19,6 +18,7 @@ export const supplierUpdateBodySchema = z.object({
   country: z.string().optional().nullable(),
   zipcode: z.string().optional().nullable(),
 });
+
 type RegisterBody = z.infer<typeof supplierUpdateBodySchema>;
 
 export async function updateSupplier(
@@ -26,17 +26,15 @@ export async function updateSupplier(
   reply: FastifyReply
 ) {
   await request.jwtVerify();
-  const company_id = request.user.sub;
-  
+  const company_id = Number(request.user.sub);
+
   const { name, email, CNPJ, contactPerson, phone, notes, street, number, complement, city, country, state, zipcode} = request.body;
 
   const { id } = request.params;
-
   try {
     await updateSupplierService(id, { name, email, phone, CNPJ, contactPerson, notes, company_id, street, number, complement, city, country, state, zipcode});
+    return reply.status(200).send({ message: 'Fornecedor atualizado com sucesso' });
   } catch (error) {
-    return reply.status(409).send();
+    return reply.status(500).send({ message: "Erro interno ao atualizar" });
   }
-
-  return reply.status(200).send({ message: 'Company updated successfully' });
 }

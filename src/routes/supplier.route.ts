@@ -47,12 +47,14 @@ export async function supplierRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number(),
               name: z.string(),
               email: z.string().email(),
               phone: z.string(),
               CNPJ: z.string(),
-              contactPerson: z.string(),
-              notes: z.string(),
+              contactPerson: z.string().nullable().optional(),
+              notes: z.string().nullable().optional(),
+              
               address: z.object({
                 street: z.string().nullable().optional(),
                 number: z.number().nullable().optional(),
@@ -60,7 +62,7 @@ export async function supplierRoutes(app: FastifyTypedInstance) {
                 state: z.string().nullable().optional(),
                 complement: z.string().nullable().optional(),
                 zipcode: z.string().nullable().optional(),
-              }),
+              }).nullable().optional(), 
             })
           ),
         },
@@ -79,23 +81,24 @@ export async function supplierRoutes(app: FastifyTypedInstance) {
           id: z.coerce.number(),
         }),
         response: {
-          200:
-            z.object({
-              name: z.string(),
-              email: z.string().email(),
-              phone: z.string(),
-              CNPJ: z.string(),
-              contactPerson: z.string(),
-              notes: z.string(),
-              address: z.object({
-                street: z.string().nullable().optional(),
-                number: z.number().nullable().optional(),
-                city: z.string().nullable().optional(),
-                state: z.string().nullable().optional(),
-                complement: z.string().nullable().optional(),
-                zipcode: z.string().nullable().optional(),
-              }),
-            })
+          200: z.object({
+            id: z.number(),
+            name: z.string(),
+            email: z.string().email(),
+            phone: z.string(),
+            CNPJ: z.string(),
+            contactPerson: z.string().nullable().optional(),
+            notes: z.string().nullable().optional(),
+            
+            address: z.object({
+              street: z.string().nullable().optional(),
+              number: z.number().nullable().optional(),
+              city: z.string().nullable().optional(),
+              state: z.string().nullable().optional(),
+              complement: z.string().nullable().optional(),
+              zipcode: z.string().nullable().optional(),
+            }).nullable().optional(),
+          }),
         },
       },
     },

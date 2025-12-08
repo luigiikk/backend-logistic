@@ -8,7 +8,6 @@ export const purchaseOrdersUpdateBodySchema = z.object({
   status_id: z.number(),
   purchase_orders_items: z.array(
     z.object({
-      id: z.number().int(),
       resource_id: z.number().int(),
       warehouse_id: z.number(),
       quantity: z.number(),
