@@ -2,8 +2,10 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { deleteStatus } from "@/http/controllers/status/deleteStatus.js";
 import { getAllStatusByCompany } from "@/http/controllers/status/getAllStatusByCompany.js";
 import { getStatus } from "@/http/controllers/status/getStatus.js";
+import { getStatusByType } from "@/http/controllers/status/getStatusByType.js";
 import { registerStatus, statusRegisterBodySchema } from "@/http/controllers/status/registerStatus.js";
 import { statusUpdateBodySchema, updateStatus } from "@/http/controllers/status/updateStatus.js";
+
 import z from "zod";
 
 
@@ -48,6 +50,30 @@ export async function statusRoutes(app: FastifyTypedInstance) {
       },
     },
     getStatus
+  );
+
+  app.get(
+    "/:type",
+    {
+      schema: {
+        tags: ["status"],
+        description: "List all statuses by type",
+        params: z.object({
+          type: z.enum(["order", "vehicle", "invoice", "purchase_order"]),
+        }),
+        response: {
+          200: z.array(
+            z.object({
+              id: z.number(),
+              name: z.string(),
+              type: z.enum(["order", "vehicle", "invoice", "purchase_order"]),
+              is_default: z.boolean().optional(),
+            })
+          ),
+        },
+      },
+    },
+    getStatusByType
   );
   
   app.post(

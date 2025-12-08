@@ -70,4 +70,20 @@ export class PrismaStatusRepository {
       data,
     });
   }
+
+  async getStatusByType(
+  company_id: number, 
+  type: "order" | "vehicle" | "invoice" | "purchase_order"
+) {
+  return await prisma.status.findMany({
+    where: { company_id, type },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      is_default: true,
+    },
+  });
+}
+
 }
