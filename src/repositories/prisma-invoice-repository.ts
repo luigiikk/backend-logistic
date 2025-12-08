@@ -3,7 +3,8 @@ import { InvoiceUpdateParams } from "@/services/invoice/updateInvoice.js";
 import { Prisma } from "@prisma/client";
 
 export class PrismaInvoicesRepository {
-  async create(data: Prisma.InvoiceCreateInput) {
+  
+  async create(data: Prisma.InvoiceUncheckedCreateInput) {
     const invoice = await prisma.invoice.create({
       data,
     });
@@ -12,27 +13,32 @@ export class PrismaInvoicesRepository {
   }
 
   async getAllInvoices(company_id: number) {
-    const invoice = await prisma.invoice.findMany({
+    const invoices = await prisma.invoice.findMany({
       where: {
         company_id,
       },
       include: {
-        purchase_order: true
-      }
+        purchase_order: {
+          include: {
+            supplier: true,
+            status: true,
+          },
+        },
+      },
     });
 
-    return invoice;
+    return invoices;
   }
 
   async getInvoice(id: number, company_id: number) {
-    const invoice = await prisma.invoice.findUnique({
+    const invoice = await prisma.invoice.findFirst({
       where: {
         id,
         company_id,
       },
       include: {
-        purchase_order: true
-      }
+        purchase_order: true,
+      },
     });
 
     return invoice;
@@ -47,9 +53,13 @@ export class PrismaInvoicesRepository {
   }
 
   async updateInvoice(id: number, company_id: number, data: InvoiceUpdateParams) {
-      await prisma.invoice.update({
-        where: { id, company_id },
-        data,
-      });
-    }
+    const result = await prisma.invoice.updateMany({
+      where: { 
+        id, 
+        company_id 
+      },
+      data,
+    });
+    return result; 
+  }
 }
