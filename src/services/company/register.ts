@@ -8,6 +8,13 @@ interface CompanyRegisterParams {
   email: string;
   phone_number: string;
   password: string;
+  street: string | null | undefined;
+  number: number | null | undefined;
+  complement: string | null | undefined;
+  city: string | null | undefined;
+  state: string | null | undefined;
+  country: string | null | undefined;
+  zipcode: string | null | undefined;
 }
 
 export async function registerService({
@@ -16,6 +23,13 @@ export async function registerService({
   password,
   CNPJ,
   phone_number,
+  number, 
+  street, 
+  complement, 
+  city, 
+  country, 
+  state, 
+  zipcode
 }: CompanyRegisterParams) {
   const password_hash = await hash(password, 6);
 
@@ -47,6 +61,15 @@ export async function registerService({
     password_hash,
     CNPJ,
     phone_number,
+  },  
+  {
+    number, 
+    street, 
+    complement, 
+    city, 
+    country, 
+    state, 
+    zipcode
   });
 
   return company;

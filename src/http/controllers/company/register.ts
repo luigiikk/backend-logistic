@@ -8,18 +8,25 @@ export const companyRegisterBodySchema = z.object({
   phone_number: z.string(),
   CNPJ: z.string(),
   password: z.string().min(6),
+  street: z.string().nullable().optional(),
+  number: z.number().nullable().optional(),
+  complement: z.string().nullable().optional(),
+  city: z.string().nullable().optional(),
+  state: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+  zipcode: z.string().nullable().optional(),
 });
 
 type RegisterBody = z.infer<typeof companyRegisterBodySchema>;
 
-export async function register(
+export async function registerCompany(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, email, password, phone_number, CNPJ } = request.body;
+  const { name, email, password, phone_number, CNPJ, number, street, complement, city, country, state, zipcode } = request.body;
 
   try {
-    await registerService({ name, CNPJ, email, password, phone_number });
+    await registerService({ name, CNPJ, email, password, phone_number, number, street, complement, city, country, state, zipcode });
   } catch (error) {
     return reply.status(409).send();
   }

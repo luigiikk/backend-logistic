@@ -1,0 +1,26 @@
+import { PrismaEmployeesRepository } from "@/repositories/prisma-employees-repository.js";
+import { AddresUpdateParams } from "../addres/updateAddres.js";
+
+export interface EmployeeUpdateParams {
+  name: string;
+  employee_roles:number,
+  email: string;
+  phone_number: string;
+}
+
+export async function updateEmployeeService(id:number, company_id: number,{
+  name,
+  employee_roles,
+  email,
+  phone_number,
+}: EmployeeUpdateParams, addressData: AddresUpdateParams) {
+ 
+  const prismaEmployeesRepository = new PrismaEmployeesRepository;
+
+  await prismaEmployeesRepository.updateEmployee(id, company_id,{
+    name,
+    employee_roles,
+    email,
+    phone_number
+  }, addressData);
+}

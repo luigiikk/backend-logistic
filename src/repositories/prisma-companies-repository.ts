@@ -5,11 +5,19 @@ import { Prisma } from "@prisma/client";
 
 
 export class PrismaCompaniesRepository {
-  async create(data: Prisma.CompaniesCreateInput){
+  async create(
+    data: Prisma.CompaniesCreateInput,
+    addres_data: Prisma.AddresCreateInput
+  ) {
     const company = await prisma.companies.create({
-      data,
+      data: {
+        ...data,
+        addres: {
+          create: addres_data,
+        },
+      },
     });
-
+  
     return company;
   }
 
@@ -30,7 +38,8 @@ export class PrismaCompaniesRepository {
     const company = await prisma.companies.findUnique({
       where: {
         id,
-      }
+      },
+      include: { addres: true }
     });
 
     return company;

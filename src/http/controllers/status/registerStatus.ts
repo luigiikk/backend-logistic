@@ -6,7 +6,6 @@ export const statusRegisterBodySchema = z.object({
   name: z.string(),
   type: z.enum(["order", "vehicle", "invoice", "purchase_order"]),
   is_default: z.boolean().optional(),
-  company_id: z.number().int(),
 });
 
 type RegisterBody = z.infer<typeof statusRegisterBodySchema>;
@@ -15,7 +14,11 @@ export async function registerStatus(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, type, is_default, company_id } = request.body;
+  const { name, type, is_default } = request.body;
+
+  await request.jwtVerify();
+  const user = request.user;
+  const company_id = user.sub
 
   try {
     await registerStatusService({
