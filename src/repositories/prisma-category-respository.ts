@@ -11,4 +11,16 @@ export class PrismaCategoryRepository {
 
     return category;
   }
+
+  async getAllCategory(company_id: number) {
+    return await prisma.category_Resource.findMany();
+  }
+
+  async getCategoryById(company_id: number, id: number) {
+    return await prisma.category_Resource.findUnique({
+      where: {
+        id,
+      }
+    });
+  }
 }
