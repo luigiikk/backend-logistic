@@ -7,9 +7,8 @@ import { getOrderByRecepientCpf } from "@/http/controllers/order/getOrderByRecep
 import { orderRegisterByClientBodySchema, registerOrderByClient } from "@/http/controllers/order/registerOrderByClient.js";
 import { orderRegisterByCompanyBodySchema, registerOrderByCompany } from "@/http/controllers/order/registerOrderByCompany.js";
 import { orderUpdateByCompanyBodySchema, updateOrderByCompany } from "@/http/controllers/order/updateOrderByCompany.js";
+import { getTracking } from "@/http/controllers/order/getTracking.js";
 import z from "zod";
-
-
 
 export async function orderRoutes(app: FastifyTypedInstance) {
   app.get(
@@ -96,21 +95,17 @@ export async function orderRoutes(app: FastifyTypedInstance) {
           200: z.array(
             z.object({
               code: z.string(),
-        
               sender_client: z
                 .object({
                   name: z.string(),
                 })
                 .nullable(),
-        
               recipient: z.object({
                 name: z.string(),
               }),
-        
               status: z.object({
                 name: z.string(),
               }),
-        
               vehicle: z
                 .object({
                   plate: z.string(),
@@ -187,5 +182,40 @@ export async function orderRoutes(app: FastifyTypedInstance) {
       },
     },
     deleteOrder
+  );
+
+  app.get(
+    "/tracking/:query",
+    {
+      schema: {
+        tags: ["order"],
+        description: "Track order by ID or Code",
+        params: z.object({
+          query: z.string(),
+        }),
+        response: {
+          200: z.object({
+            id: z.number(),
+            code: z.string().nullable(),
+            estimated_delivery: z.date().nullable(),
+            created_at: z.date(),
+            status: z.object({
+              name: z.string(),
+              type: z.string(),
+            }),
+            tracking_history: z.array(
+              z.object({
+                created_at: z.date(),
+                description: z.string().nullable(),
+                status: z.object({
+                  name: z.string(),
+                }),
+              })
+            ),
+          }),
+        },
+      },
+    },
+    getTracking
   );
 }
