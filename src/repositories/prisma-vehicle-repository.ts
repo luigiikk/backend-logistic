@@ -18,7 +18,7 @@ export class PrismaVehiclesRepository {
       id: true,
       plate: true,
       model: true,
-      capacity: true,
+      total_volume: true,
       company_id: true,
       status: {
         select: {

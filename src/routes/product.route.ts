@@ -21,6 +21,7 @@ export async function productRoutes(app: FastifyTypedInstance) {
               description: z.string(),
               quantity: z.number().int(),
               order_id: z.number().int(),
+              volume: z.number().positive(),
             })
           ),
         },
@@ -44,11 +45,15 @@ export async function productRoutes(app: FastifyTypedInstance) {
             description: z.string(),
             quantity: z.number().int(),
             order_id: z.number().int(),
+            height: z.number().positive(),
+            width: z.number().positive(),
+            depth: z.number().positive(),
+            volume: z.number().positive(),
           }),
         },
       },
     },
-    getProduct
+    getProduct,
   );
 
   app.post(

@@ -5,6 +5,9 @@ interface ProductRegisterParams {
   name: string;
   description: string;
   quantity: number;
+  height: number;
+  width: number;
+  depth: number;
   order_id: number;
 }
 
@@ -12,6 +15,9 @@ export async function registerProductService({
   name,
   description,
   quantity,
+  height,
+  width,
+  depth,
   order_id,
 }: ProductRegisterParams) {
   const orderExists = await prisma.orders.findUnique({
@@ -30,12 +36,21 @@ export async function registerProductService({
     throw new Error("Product with this name and description already exists in this order");
   }
 
+  if (height <= 0 || width <= 0 || depth <= 0) {
+    throw new Error("Invalid dimensions");
+  }
+
   const prismaProductsRepository = new PrismaProductsRepository();
+  const volume = height * width * depth;
 
   const product = await prismaProductsRepository.create({
     name,
     description,
     quantity,
+    height,
+    width,
+    depth,
+    volume,
     order: { connect: { id: order_id } },
   });
   return product; 

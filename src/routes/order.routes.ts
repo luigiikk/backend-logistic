@@ -27,12 +27,28 @@ export async function orderRoutes(app: FastifyTypedInstance) {
             sender_client: z.string(),
             recipient: z.string(),
             status: z.string(),
-            vehicle: z.string(),
+            vehicle: z
+              .object({
+                plate: z.string(),
+              })
+              .nullable(),
           }),
         },
+        products: z.array(
+          z.object({
+            name: z.string().nullable(),
+            quantity: z.number(),
+
+            height: z.number(),
+            width: z.number(),
+            depth: z.number(),
+
+            volume: z.number(),
+          }),
+        ),
       },
     },
-    getOrder
+    getOrder,
   );
 
   app.get(
@@ -49,13 +65,17 @@ export async function orderRoutes(app: FastifyTypedInstance) {
               sender_client: z.string(),
               recipient: z.string(),
               status: z.string(),
-              vehicle: z.string(),
-            })
+              vehicle: z
+                .object({
+                  plate: z.string(),
+                })
+                .nullable(),
+            }),
           ),
         },
       },
     },
-    getAllOrdersByCompany
+    getAllOrdersByCompany,
   );
 
   app.get(

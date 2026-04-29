@@ -3,7 +3,7 @@ import { PrismaOrdersRepository } from "@/repositories/prisma-orders-repository.
 
 export interface OrderRegisterCompanyParams {
   company_id: number;
-  vehicle_id: number;
+  vehicle_id?: number;
 
   recipient: {
     name: string;
@@ -24,6 +24,9 @@ export interface OrderRegisterCompanyParams {
     name?: string | null;
     description?: string | null;
     quantity?: number | null;
+    height: number;
+    width: number;
+    depth: number;
   }[];
 }
 

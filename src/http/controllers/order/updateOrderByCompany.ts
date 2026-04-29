@@ -29,6 +29,9 @@ export const orderUpdateByCompanyBodySchema = z.object({
         name: z.string().nullable().optional(),
         description: z.string().nullable().optional(),
         quantity: z.number().int().nullable().optional(),
+        height: z.number().positive(),
+        width: z.number().positive(),
+        depth: z.number().positive(),
       })
     )
     .optional(),
