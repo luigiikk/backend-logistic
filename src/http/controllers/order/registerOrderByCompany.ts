@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { registerOrderByClientService } from "@/services/order/registerOrder.js";
 import { registerOrderByCompanyService } from "@/services/order/registerOrderByCompany.js";
 
 export const orderRegisterByCompanyBodySchema = z.object({
@@ -59,7 +58,7 @@ export async function registerOrderByCompany(
       products,
     });
   } catch (error) {
-  console.error(error); // 👈 ISSO AQUI
+  console.error(error); 
   return reply.status(409).send({
     message: error instanceof Error ? error.message : "Unknown error"
   });

@@ -5,8 +5,8 @@ import { registerVehicleService } from "@/services/vehicle/registerVehicle.js";
 export const vehicleRegisterBodySchema = z.object({
   plate: z.string(),
   model: z.string(),
-  capacity: z.number().int(),
-  status_id: z.number().int(),
+  total_volume: z.coerce.number().positive(),
+  status_id: z.number().int().optional(),
 });
 
 type RegisterBody = z.infer<typeof vehicleRegisterBodySchema>;
@@ -15,16 +15,16 @@ export async function registerVehicle(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { plate, model, capacity, status_id } = request.body;
+  const { plate, model, total_volume, status_id } = request.body;
 
   await request.jwtVerify();
   const user = request.user;
   const company_id = user.sub
 
   try {
-    await registerVehicleService({ plate, model, capacity, status_id, company_id });
+    await registerVehicleService({ plate, model, total_volume, status_id, company_id });
   } catch (error) {
-    return reply.status(409).send();
+    return reply.status(409).send(error);
   }
 
   return reply.status(201).send(null);

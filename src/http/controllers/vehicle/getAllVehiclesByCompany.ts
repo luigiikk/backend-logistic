@@ -18,7 +18,7 @@ export async function getAllVehiclesByCompany(
       id: vehicle.id,
       plate: vehicle.plate ?? "",
       model: vehicle.model ?? "",
-      capacity: vehicle.capacity ?? 0,
+      total_volume: vehicle.total_volume,
       status: vehicle.status.name,
     }));
 
