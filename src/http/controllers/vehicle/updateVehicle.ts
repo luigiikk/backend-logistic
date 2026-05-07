@@ -6,7 +6,7 @@ export const vehicleUpdateBodySchema = z.object({
   plate: z.string(),
   model: z.string(),
   total_volume: z.coerce.number().positive(),
-  status_id: z.number().int(),
+  status_id: z.number().int().optional(),
 });
 
 type RegisterBody = z.infer<typeof vehicleUpdateBodySchema>;

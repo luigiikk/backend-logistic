@@ -4,7 +4,7 @@ export interface VehicleUpdateParams {
   plate: string;
   model: string;
   total_volume: number;
-  status_id: number;
+  status_id?: number;
 }
 
 export async function updateVehicleService(

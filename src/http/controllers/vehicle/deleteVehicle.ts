@@ -6,10 +6,12 @@ export async function deleteVehicle(
   reply: FastifyReply
 ) {
   const { id } = request.params as { id: number };
+    await request.jwtVerify();
+    const company_id = request.user.sub;
 
   try {
-    const vechile = await deleteVehicleService(id);
-    return reply.status(200).send(vechile);
+    await deleteVehicleService(id, company_id);
+    return reply.status(200).send();
   } catch (error) {
     return reply.status(409).send(error);
   }
