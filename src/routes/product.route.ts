@@ -17,6 +17,7 @@ export async function productRoutes(app: FastifyTypedInstance) {
         response: {
           200: z.array(
             z.object({
+              id: z.number().int(),
               name: z.string(),
               description: z.string(),
               quantity: z.number().int(),

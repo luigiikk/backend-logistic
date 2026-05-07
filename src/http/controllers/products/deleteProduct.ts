@@ -8,8 +8,8 @@ export async function deleteProduct(
   const { id } = request.params as { id: number };
 
   try {
-    const products = await deleteProductService(id);
-    return reply.status(200).send(products);
+    await deleteProductService(id);
+    return reply.status(200).send();
   } catch (error) {
     return reply.status(409).send(error);
   }
