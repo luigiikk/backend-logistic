@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
 import type { OrderUpdateCompanyParams } from "@/services/order/updateOrderByCompany.js";
 import { generateTrackingCode } from "@/util/generateTrackingCode.js";
+import type { Recipient } from "@prisma/client";
 
 export interface CreateOrderByClientParams {
   sender_client_id: number;
@@ -69,7 +69,7 @@ export class PrismaOrdersRepository {
     products,
   }: CreateOrderByClientParams) {
     return await prisma.$transaction(async (tx) => {
-      let newRecipient: any = null;
+      let newRecipient: Recipient | null = null;
 
       const newRecipientAddress = await tx.addres.create({
         data: {
@@ -114,9 +114,7 @@ export class PrismaOrdersRepository {
       const trackingCode = await generateTrackingCode();
 
       const status = await tx.status.findFirstOrThrow({
-        where: {
-          is_default: true,
-        },
+        where: { is_default: true, type: "order" },
       });
 
       const newOrder = await tx.orders.create({
@@ -166,7 +164,7 @@ export class PrismaOrdersRepository {
     products,
   }: CreateOrderByCompanyParams) {
     return await prisma.$transaction(async (tx) => {
-      let newRecipient: any = null;
+      let newRecipient: Recipient | null = null;
 
       const newRecipientAddress = await tx.addres.create({
         data: {
@@ -195,9 +193,7 @@ export class PrismaOrdersRepository {
             addres: { connect: { id: newRecipientAddress.id } },
           },
         });
-      }
-
-      if (exist_recipient) {
+      } else {
         await tx.recipient.update({
           where: { id: exist_recipient.id },
           data: {
@@ -508,4 +504,38 @@ export class PrismaOrdersRepository {
 
     return updatedOrder;
   }
+
+async allocateVehicleToOrder(order_id: number, vehicle_id: number, company_id: number) {
+  const order = await prisma.orders.findUnique({
+    where: { id: order_id },
+    include: { products: true },
+  });
+
+  if (!order) throw new Error("Order not found");
+  if (order.company_id !== company_id) throw new Error("Not allowed");
+  if (order.vehicle_id) throw new Error("Order already has a vehicle");
+
+  const vehicle = await prisma.vehicles.findFirstOrThrow({
+    where: { id: vehicle_id, company_id },
+  });
+
+  const usedVolume = await prisma.products.aggregate({
+    _sum: { volume: true },
+    where: { order: { vehicle_id } },
+  });
+
+  const used = usedVolume._sum.volume ?? 0;
+
+  const orderVolume = order.products.reduce((acc, p) => acc + (p.volume ?? 0), 0);
+
+  if (used + orderVolume > vehicle.total_volume) {
+    throw new Error("Vehicle capacity exceeded");
+  }
+
+  return await prisma.orders.update({
+    where: { id: order_id },
+    data: { vehicle_id },
+  });
+}
+
 }

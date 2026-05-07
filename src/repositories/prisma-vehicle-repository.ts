@@ -12,8 +12,8 @@ export class PrismaVehiclesRepository {
   }
 
   async getAllVehiclesByCompany(company_id: number) {
-  return await prisma.vehicles.findMany({
-    where: { company_id }, 
+  const vehicles = await prisma.vehicles.findMany({
+    where: { company_id },
     select: {
       id: true,
       plate: true,
@@ -21,11 +21,27 @@ export class PrismaVehiclesRepository {
       total_volume: true,
       company_id: true,
       status: {
+        select: { name: true },
+      },
+      orders: {
         select: {
-          name: true,
+          products: {
+            select: { volume: true },
+          },
         },
       },
     },
+  });
+
+  return vehicles.map((vehicle) => {
+    const usedVolume = vehicle.orders.reduce((acc, order) => {
+      return acc + order.products.reduce((sum, p) => sum + (p.volume ?? 0), 0);
+    }, 0);
+
+    return {
+      ...vehicle,
+      available_volume: vehicle.total_volume - usedVolume,
+    };
   });
 }
 
@@ -44,10 +60,11 @@ export class PrismaVehiclesRepository {
     return vehicle;
   }
 
-  async deleteVehicle(id: number) {
+  async deleteVehicle(id: number, company_id: number) {
     await prisma.vehicles.delete({
       where: {
         id,
+        company_id
       },
     });
   }
