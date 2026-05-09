@@ -1,4 +1,5 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
+import { allocateVehicleToOrder } from "@/http/controllers/order/allocateVehicleToOrder.js";
 import { deleteOrder } from "@/http/controllers/order/deleteOrder.js";
 import { getAllOrdersByCompany } from "@/http/controllers/order/getAllOrdersByCompany.js";
 import { getOrder } from "@/http/controllers/order/getOrder.js";
@@ -27,12 +28,28 @@ export async function orderRoutes(app: FastifyTypedInstance) {
             sender_client: z.string(),
             recipient: z.string(),
             status: z.string(),
-            vehicle: z.string(),
+            vehicle: z
+              .object({
+                plate: z.string(),
+              })
+              .nullable(),
           }),
         },
+        products: z.array(
+          z.object({
+            name: z.string().nullable(),
+            quantity: z.number(),
+
+            height: z.number(),
+            width: z.number(),
+            depth: z.number(),
+
+            volume: z.number(),
+          }),
+        ),
       },
     },
-    getOrder
+    getOrder,
   );
 
   app.get(
@@ -49,13 +66,17 @@ export async function orderRoutes(app: FastifyTypedInstance) {
               sender_client: z.string(),
               recipient: z.string(),
               status: z.string(),
-              vehicle: z.string(),
-            })
+              vehicle: z
+                .object({
+                  plate: z.string(),
+                })
+                .nullable(),
+            }),
           ),
         },
       },
     },
-    getAllOrdersByCompany
+    getAllOrdersByCompany,
   );
 
   app.get(
@@ -188,4 +209,17 @@ export async function orderRoutes(app: FastifyTypedInstance) {
     },
     deleteOrder
   );
+
+  app.patch(
+  "/:order_id/vehicle",
+  {
+    schema: {
+      tags: ["order"],
+      description: "Allocate vehicle to order",
+      params: z.object({ order_id: z.coerce.number() }),
+      body: z.object({ vehicle_id: z.number().int() }),
+    },
+  },
+  allocateVehicleToOrder,
+);
 }

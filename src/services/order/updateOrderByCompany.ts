@@ -23,11 +23,14 @@ export interface OrderUpdateCompanyParams {
   };
 
   products?: {
-    id?: number;
-    name?: string | null;
-    description?: string | null;
-    quantity?: number | null;
-  }[];
+  id?: number;
+  name?: string | null;
+  description?: string | null;
+  quantity?: number | null;
+  height: number;
+  width: number;
+  depth: number;
+}[];
 }
 
 export async function updateOrderByCompanyService(params: OrderUpdateCompanyParams) {

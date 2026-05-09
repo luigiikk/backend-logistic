@@ -25,6 +25,9 @@ export interface OrderRegisterParams {
     name?: string | null;
     description?: string | null;
     quantity?: number | null;
+    height: number;
+    width: number;
+    depth: number;
   }[];
 }
 

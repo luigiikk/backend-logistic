@@ -5,8 +5,8 @@ import { updateVehicleService } from "@/services/vehicle/updateVehicle.js";
 export const vehicleUpdateBodySchema = z.object({
   plate: z.string(),
   model: z.string(),
-  capacity: z.number().int(),
-  status_id: z.number().int(),
+  total_volume: z.coerce.number().positive(),
+  status_id: z.number().int().optional(),
 });
 
 type RegisterBody = z.infer<typeof vehicleUpdateBodySchema>;
@@ -15,7 +15,7 @@ export async function updateVehicle(
   request: FastifyRequest<{ Params: { id: number }; Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const {plate, model, capacity,  status_id } = request.body;
+  const {plate, model, total_volume,  status_id } = request.body;
   const { id } = request.params;
 
   await request.jwtVerify();
@@ -26,11 +26,11 @@ export async function updateVehicle(
     await updateVehicleService(id, company_id, {
       plate,
       model,
-      capacity,
+      total_volume,
       status_id,
     });
   } catch (error) {
-    return reply.status(409).send();
+    return reply.status(409).send(error);
   }
 
   return reply.status(200).send({ message: "Vehicle updated successfully" });

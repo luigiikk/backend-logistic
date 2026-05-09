@@ -19,6 +19,15 @@ export async function deleteProductService(id: number) {
   } catch (error) {
     throw new Error("Error deleting product");
   }
+  const remainingProducts = await prisma.products.count({
+    where: { order_id: product.order_id },
+  });
+
+  if (remainingProducts === 0) {
+    await prisma.orders.delete({
+      where: { id: product.order_id },
+    });
+  }
   return product;
   
 }

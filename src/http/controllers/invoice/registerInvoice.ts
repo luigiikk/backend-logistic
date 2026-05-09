@@ -33,7 +33,6 @@ export async function registerInvoice(
       link_file,
     });
   } catch (error) {
-    // Dica: Logue o erro aqui para saber o que aconteceu (console.error(error))
     return reply.status(409).send(); 
   }
 

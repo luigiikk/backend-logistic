@@ -87,4 +87,10 @@ export class PrismaStatusRepository {
 
   return statusList;
 }
+
+async getSystemDefault(type: string) {
+  return await prisma.status.findFirst({
+    where: { type, is_default: true, company_id: null },
+  });
+}
 }

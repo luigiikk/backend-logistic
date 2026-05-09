@@ -20,7 +20,7 @@ export async function getAllOrdersByCompany(
       sender_client: ord.sender_client?.name ?? "",
       recipient: ord.recipient?.name ?? "",
       status: ord.status?.name ?? "",
-      vehicle: ord.vehicle?.plate ?? "",
+      vehicle: ord.vehicle ? { plate: ord.vehicle.plate } : null,
     }));
 
     return reply.status(200).send(formattedOrders);

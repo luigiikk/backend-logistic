@@ -70,7 +70,7 @@ model Vehicles {
   id          Int       @id @default(autoincrement())
   plate       String    @unique
   model       String?
-  capacity    Int?
+  total_volume      Float
   status_id   Int
   company_id  Int        // 🚀 Nova coluna
   created_at  DateTime   @default(now())
@@ -126,7 +126,7 @@ model Orders {
   sender_client_id Int?
   recipient_id     Int
   status_id        Int
-  vehicle_id       Int?        // ⬅️ Agora é opcional
+  vehicle_id       Int?       
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
 
@@ -151,7 +151,11 @@ model Products {
   name        String?
   order_id    Int
   description String?
-  quantity    Int?
+  quantity    Int? @default(1)
+  height Float
+  width  Float
+  depth  Float
+  volume Float
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -167,14 +171,13 @@ model Status {
   name String // you mentioned "enum" in the design — consider replacing with an enum in Prisma if you have fixed values
   type String
   is_default Boolean @default(false)
-  company_id  Int
+  company_id  Int?
 
   // relations
   orders          Orders[]
   purchase_orders purchase_orders[]
   Vehicles        Vehicles[]
-
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  company         Companies? @relation(fields: [company_id], references: [id], onDelete: Cascade) // Companies?
 
   @@map("status")
 }

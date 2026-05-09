@@ -22,7 +22,7 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
           200: z.object({
             plate: z.string(),
             model: z.string(),
-            capacity: z.number().int(),
+            total_volume: z.number().positive(),
             status: z.string(),
           }),
         },
@@ -43,7 +43,8 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
               id: z.number(),
               plate: z.string(),
               model: z.string(),
-              capacity: z.number().int(),
+              total_volume: z.number().positive(),
+              available_volume: z.number(),
               status: z.string(),
             })
           ),
@@ -80,8 +81,8 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
         body: z.object({
           plate: z.string(),
           model: z.string(),
-          capacity: z.number().int(),
-          status_id: z.number().int(),
+          total_volume: z.coerce.number().positive(),
+          status_id: z.number().int().optional(),
         }),
         response: {
           204: z.null().describe("Vehicle updated"),

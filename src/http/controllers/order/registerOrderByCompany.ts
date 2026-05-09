@@ -1,10 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { registerOrderByClientService } from "@/services/order/registerOrder.js";
 import { registerOrderByCompanyService } from "@/services/order/registerOrderByCompany.js";
 
 export const orderRegisterByCompanyBodySchema = z.object({
-  vehicle_id: z.number(), 
+  vehicle_id: z.number().optional(),
 
   recipient: z.object({
     name: z.string(),
@@ -28,7 +27,10 @@ export const orderRegisterByCompanyBodySchema = z.object({
         name: z.string().nullable().optional(),
         description: z.string().nullable().optional(),
         quantity: z.number().int().nullable().optional(),
-      })
+        height: z.number(),
+        width: z.number(),
+        depth: z.number(),
+      }),
     )
     .min(1, "A ordem precisa ter ao menos um produto"),
 });
@@ -56,8 +58,11 @@ export async function registerOrderByCompany(
       products,
     });
   } catch (error) {
-    return reply.status(409).send();
-  }
+  console.error(error); 
+  return reply.status(409).send({
+    message: error instanceof Error ? error.message : "Unknown error"
+  });
+}
 
   return reply.status(201).send(null);
 }

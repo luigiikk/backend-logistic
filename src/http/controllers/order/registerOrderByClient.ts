@@ -27,7 +27,10 @@ export const orderRegisterByClientBodySchema = z.object({
         name: z.string().nullable().optional(),
         description: z.string().nullable().optional(),
         quantity: z.number().int().nullable().optional(),
-      })
+        height: z.number(),
+        width: z.number(),
+        depth: z.number(),
+      }),
     )
     .min(1, "A ordem precisa ter ao menos um produto"),
 });

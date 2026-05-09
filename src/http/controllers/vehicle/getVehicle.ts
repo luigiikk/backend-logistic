@@ -17,7 +17,7 @@ export async function getVehicle(request: FastifyRequest, reply: FastifyReply) {
     const response = {
       plate: vehicle.plate,
       model: vehicle.model,
-      capacity: vehicle.capacity,
+      total_volume: vehicle.total_volume,
       status: vehicle.status.name,
     };
 

@@ -18,6 +18,7 @@ export class PrismaProductsRepository {
         description: true,
         quantity: true,
         order_id: true,
+        volume: true,
       },
     });
   }
