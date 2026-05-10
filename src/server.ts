@@ -33,23 +33,34 @@ app.register(fastifyCors, {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
 });
 
+app.register(fastifyJwt, {
+  secret: env.JWT_SECRET,
+});
+
 app.register(fastifySwagger, {
   openapi: {
     info: {
       title: 'Logistic API',
       version: '1.0.0',
-    }
+    },
+    components: {
+      securitySchemes: {
+        jwt: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
-  transform: jsonSchemaTransform
+  transform: jsonSchemaTransform,
 });
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 });
 
-app.register(fastifyJwt, {
-  secret: env.JWT_SECRET,
-});
+
 
 
 app.register(companyRoutes, { prefix: "company" });
