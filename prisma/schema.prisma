@@ -17,69 +17,69 @@ datasource db {
 }
 
 model Companies {
-  id            Int       @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String?
-  email         String?   @unique
+  email         String?  @unique
   phone_number  String?
   CNPJ          String?  @unique
   password_hash String
-  addres_id Int?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
+  addres_id     Int?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   // relations
-  addres    Addres?     @relation(fields: [addres_id], references: [id])
-  vehicles   Vehicles[]
-  employees  Employees[]
-  status     Status[]
-  orders Orders[]
-  resources Resources[]
+  addres               Addres?                @relation(fields: [addres_id], references: [id])
+  vehicles             Vehicles[]
+  employees            Employees[]
+  status               Status[]
+  orders               Orders[]
+  resources            Resources[]
   purchase_order_items purchase_order_items[]
-  purchase_orders purchase_orders[]
-  supplier Supplier[]
-  warehouses Warehouses[]
-  inventory Inventory[]
-  client Client[]
-  invoices Invoice[]
+  purchase_orders      purchase_orders[]
+  supplier             Supplier[]
+  warehouses           Warehouses[]
+  inventory            Inventory[]
+  client               Client[]
+  invoices             Invoice[]
 
   @@map("companies")
 }
 
 model Employees {
-  id            Int       @id @default(autoincrement())
-  company_id    Int
-  enrollment    String    @unique
-  name          String
-  email         String    @unique
-  phone_number  String?
-  password_hash String
-  employee_roles  Int // FK to Roles.id (single role)
-  addres_id Int?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
+  id             Int      @id @default(autoincrement())
+  company_id     Int
+  enrollment     String   @unique
+  name           String
+  email          String   @unique
+  phone_number   String?
+  password_hash  String
+  employee_roles Int // FK to Roles.id (single role)
+  addres_id      Int?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   // relations
-  company     Companies  @relation(fields: [company_id], references: [id])
-  role            Roles     @relation("EmployeeRoleRelation", fields: [employee_roles], references: [id])
-  addres    Addres?     @relation(fields: [addres_id], references: [id])
+  company Companies @relation(fields: [company_id], references: [id])
+  role    Roles     @relation("EmployeeRoleRelation", fields: [employee_roles], references: [id])
+  addres  Addres?   @relation(fields: [addres_id], references: [id])
 
   @@map("employees")
 }
 
 model Vehicles {
-  id          Int       @id @default(autoincrement())
-  plate       String    @unique
-  model       String?
-  total_volume      Float
-  status_id   Int
-  company_id  Int        // 🚀 Nova coluna
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
+  id           Int      @id @default(autoincrement())
+  plate        String   @unique
+  model        String?
+  total_volume Float
+  status_id    Int
+  company_id   Int // 🚀 Nova coluna
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   // relations
-  status   Status    @relation(fields: [status_id], references: [id])
-  company  Companies @relation(fields: [company_id], references: [id])
-  orders   Orders[]  @relation("VehicleOrders")
+  status  Status    @relation(fields: [status_id], references: [id])
+  company Companies @relation(fields: [company_id], references: [id])
+  orders  Orders[]  @relation("VehicleOrders")
 
   @@index([status_id])
   @@index([company_id])
@@ -111,32 +111,33 @@ model Client {
   updated_at    DateTime @updatedAt
 
   // relations
-  addres          Addres?   @relation(fields: [addres_id], references: [id])
-  orders_sent     Orders[]  @relation("SenderOrders")
-  company       Companies @relation(fields: [company_id], references: [id])
+  addres      Addres?   @relation(fields: [addres_id], references: [id])
+  orders_sent Orders[]  @relation("SenderOrders")
+  company     Companies @relation(fields: [company_id], references: [id])
 
   @@index([addres_id])
   @@map("client")
 }
 
 model Orders {
-  id               Int        @id @default(autoincrement())
-  code             String?     @unique
-  company_id       Int    
+  id               Int      @id @default(autoincrement())
+  code             String?  @unique
+  company_id       Int
   sender_client_id Int?
   recipient_id     Int
   status_id        Int
-  vehicle_id       Int?       
-  created_at       DateTime    @default(now())
-  updated_at       DateTime    @updatedAt
+  vehicle_id       Int?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   // relations
-  sender_client Client?    @relation("SenderOrders", fields: [sender_client_id], references: [id])
-  recipient     Recipient @relation("RecipientOrders", fields: [recipient_id], references: [id])
-  status        Status    @relation(fields: [status_id], references: [id])
-  vehicle       Vehicles? @relation("VehicleOrders", fields: [vehicle_id], references: [id])
+  sender_client Client?         @relation("SenderOrders", fields: [sender_client_id], references: [id])
+  recipient     Recipient       @relation("RecipientOrders", fields: [recipient_id], references: [id])
+  status        Status          @relation(fields: [status_id], references: [id])
+  vehicle       Vehicles?       @relation("VehicleOrders", fields: [vehicle_id], references: [id])
   products      Products[]
-  company       Companies @relation(fields: [company_id], references: [id])
+  company       Companies       @relation(fields: [company_id], references: [id])
+  tracking      OrderTracking[]
 
   @@index([sender_client_id])
   @@index([recipient_id])
@@ -151,11 +152,11 @@ model Products {
   name        String?
   order_id    Int
   description String?
-  quantity    Int? @default(1)
-  height Float
-  width  Float
-  depth  Float
-  volume Float
+  quantity    Int?     @default(1)
+  height      Float
+  width       Float
+  depth       Float
+  volume      Float
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -167,40 +168,40 @@ model Products {
 }
 
 model Status {
-  id   Int    @id @default(autoincrement())
-  name String // you mentioned "enum" in the design — consider replacing with an enum in Prisma if you have fixed values
-  type String
+  id         Int     @id @default(autoincrement())
+  name       String // you mentioned "enum" in the design — consider replacing with an enum in Prisma if you have fixed values
+  type       String
   is_default Boolean @default(false)
-  company_id  Int?
+  company_id Int?
 
   // relations
   orders          Orders[]
   purchase_orders purchase_orders[]
   Vehicles        Vehicles[]
-  company         Companies? @relation(fields: [company_id], references: [id], onDelete: Cascade) // Companies?
+  company         Companies?        @relation(fields: [company_id], references: [id], onDelete: Cascade) // Companies?
+  tracking        OrderTracking[]
 
   @@map("status")
 }
 
 model Invoice {
-  id             Int       @id @default(autoincrement())
-  invoice_number Int?      @unique
-  purchase_order_id Int 
-  company_id     Int   
-  issue_date     DateTime?
-  due_date       DateTime?
-  link_file      String?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  invoice_number    Int?      @unique
+  purchase_order_id Int
+  company_id        Int
+  issue_date        DateTime?
+  due_date          DateTime?
+  link_file         String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
 
   // relations
-  company Companies    @relation(fields: [company_id], references: [id])
+  company        Companies       @relation(fields: [company_id], references: [id])
   purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
 
   @@index([purchase_order_id])
   @@map("invoice")
 }
-
 
 model Resources {
   id          Int      @id @default(autoincrement())
@@ -214,7 +215,7 @@ model Resources {
 
   // relations
   category             Category_Resource?     @relation(fields: [category_id], references: [id])
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  company              Companies              @relation(fields: [company_id], references: [id], onDelete: Cascade)
   inventory            Inventory[]
   purchase_order_items purchase_order_items[]
 
@@ -250,8 +251,8 @@ model purchase_order_items {
   // relations
   purchase_order purchase_orders @relation(fields: [purchase_order_id], references: [id])
   resource       Resources       @relation(fields: [resource_id], references: [id])
-  Warehouse       Warehouses       @relation(fields: [warehouse_id], references: [id])
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  Warehouse      Warehouses      @relation(fields: [warehouse_id], references: [id])
+  company        Companies       @relation(fields: [company_id], references: [id], onDelete: Cascade)
 
   @@index([purchase_order_id])
   @@index([resource_id])
@@ -263,16 +264,16 @@ model purchase_orders {
   supplier_id Int
   status_id   Int
   total_value Float?
-  company_id Int
+  company_id  Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
   // relations
   supplier Supplier               @relation(fields: [supplier_id], references: [id])
   status   Status                 @relation(fields: [status_id], references: [id])
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  company  Companies              @relation(fields: [company_id], references: [id], onDelete: Cascade)
   items    purchase_order_items[]
-   invoices Invoice[]
+  invoices Invoice[]
 
   @@index([supplier_id])
   @@index([status_id])
@@ -280,11 +281,11 @@ model purchase_orders {
 }
 
 model Supplier {
-  id            Int       @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String?
-  CNPJ          String?   @unique
+  CNPJ          String?  @unique
   phone         String?
-  email         String?   @unique
+  email         String?  @unique
   contactPerson String?
   notes         String?
   addres_id     Int
@@ -293,14 +294,13 @@ model Supplier {
   updated_at    DateTime @updatedAt
 
   // relations
-  addres          Addres        @relation(fields: [addres_id], references: [id])
-  company         Companies     @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  addres          Addres            @relation(fields: [addres_id], references: [id])
+  company         Companies         @relation(fields: [company_id], references: [id], onDelete: Cascade)
   purchase_orders purchase_orders[]
 
   @@index([addres_id])
   @@map("supplier")
 }
-
 
 model Warehouses {
   id         Int      @id @default(autoincrement())
@@ -311,9 +311,9 @@ model Warehouses {
   updated_at DateTime @updatedAt
 
   // relations
-  addres    Addres?     @relation(fields: [addres_id], references: [id])
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  inventory Inventory[]
+  addres               Addres?                @relation(fields: [addres_id], references: [id])
+  company              Companies              @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  inventory            Inventory[]
   purchase_order_items purchase_order_items[]
 
   @@index([addres_id])
@@ -332,12 +332,11 @@ model Inventory {
   // relations
   resource  Resources   @relation(fields: [resource_id], references: [id])
   warehouse Warehouses? @relation(fields: [warehouse_id], references: [id])
-  company Companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  company   Companies   @relation(fields: [company_id], references: [id], onDelete: Cascade)
 
+  @@unique([resource_id, warehouse_id, company_id])
   @@index([resource_id])
   @@index([warehouse_id])
-  @@unique([resource_id, warehouse_id, company_id])
-  
   @@map("inventory")
 }
 
@@ -358,21 +357,44 @@ model Addres {
   suppliers  Supplier[]
   warehouses Warehouses[]
   recipient  Recipient[]
-  companies Companies[]
-  employees Employees[]
+  companies  Companies[]
+  employees  Employees[]
 
   @@map("addres")
 }
 
-model Recipient{
-  id        Int      @id @default(autoincrement())
-  name      String
-  cpf       String   @unique
-  email     String   @unique
-  addres_id Int?
+model Recipient {
+  id         Int      @id @default(autoincrement())
+  name       String
+  cpf        String   @unique
+  email      String   @unique
+  addres_id  Int?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-   orders    Orders[]  @relation("RecipientOrders")
-   addres    Addres?     @relation(fields: [addres_id], references: [id])
+  orders Orders[] @relation("RecipientOrders")
+  addres Addres?  @relation(fields: [addres_id], references: [id])
+}
+
+model OrderTracking {
+  id        Int  @id @default(autoincrement())
+  order_id  Int
+  status_id Int?
+
+  location    String?
+  description String?
+
+  estimated_delivery DateTime?
+  occurred_at        DateTime  @default(now())
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // relations
+  order  Orders  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  status Status? @relation(fields: [status_id], references: [id])
+
+  @@index([order_id])
+  @@index([status_id])
+  @@map("order_tracking")
 }

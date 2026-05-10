@@ -3,6 +3,14 @@ import type { OrderUpdateCompanyParams } from "@/services/order/updateOrderByCom
 import { generateTrackingCode } from "@/util/generateTrackingCode.js";
 import type { Recipient } from "@prisma/client";
 
+export interface CreateOrderTrackingParams {
+  order_id: number;
+  status_id: number;
+  location?: string | null;
+  description: string;
+  estimated_delivery?: Date | null;
+}
+
 export interface CreateOrderByClientParams {
   sender_client_id: number;
   company_id: number;
@@ -326,6 +334,29 @@ export class PrismaOrdersRepository {
     return order;
   }
 
+  async getOrderWithTracking(id: number, company_id: number) {
+    return prisma.orders.findFirst({
+      where: {
+        id,
+        company_id,
+      },
+  
+      include: {
+        status: true,
+  
+        tracking: {
+          include: {
+            status: true,
+          },
+  
+          orderBy: {
+            occurred_at: "desc",
+          },
+        },
+      },
+    });
+  }
+
   async getOrderByCode(code: string) {
     const order = await prisma.orders.findUnique({
       where: { code: code },
@@ -535,6 +566,23 @@ async allocateVehicleToOrder(order_id: number, vehicle_id: number, company_id: n
   return await prisma.orders.update({
     where: { id: order_id },
     data: { vehicle_id },
+  });
+}
+
+async updateOrderStatus(order_id: number, status_id: number) {
+  return prisma.orders.update({
+    where: {
+      id: order_id,
+    },
+    data: {
+      status_id,
+    },
+  });
+}
+
+async createOrderTracking(data: CreateOrderTrackingParams) {
+  return prisma.orderTracking.create({
+    data,
   });
 }
 
