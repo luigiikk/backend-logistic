@@ -9,7 +9,7 @@ import z from "zod";
 export async function orderTrackingRoutes(app: FastifyTypedInstance) {
 
   app.post(
-    "/orders/:id/tracking",
+    "/orders/:id",
     {
       schema: {
         tags: ["order-tracking"],
@@ -25,7 +25,7 @@ export async function orderTrackingRoutes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/orders/:id/tracking",
+    "/orders/:id",
     {
       schema: {
         tags: ["order-tracking"],
@@ -69,10 +69,10 @@ export async function orderTrackingRoutes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/tracking",
+    "",
     {
       schema: {
-        tags: ["public-tracking"],
+        tags: ["order-tracking"],
         description: "Get public order tracking",
         querystring: z.object({
           code: z.string().min(3),

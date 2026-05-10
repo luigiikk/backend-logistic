@@ -22,6 +22,7 @@ import { roulesRoutes } from "./routes/roule.routes.js";
 import { supplierRoutes } from "./routes/supplier.route.js";
 import { purchaseOrdersItemsRoutes } from "./routes/purchase-order-items.routes.js";
 import { supportRoutes } from "./routes/suport.routes.js";
+import { orderTrackingRoutes } from "./routes/order-tracking.route.js";
 
 // input data
 app.setValidatorCompiler(validatorCompiler);
@@ -80,6 +81,7 @@ app.register(roulesRoutes, {prefix: "roules"});
 app.register(supplierRoutes, {prefix: "supplier"});
 app.register(purchaseOrdersItemsRoutes, {prefix: "purchase-order-items"});
 app.register(supportRoutes, {prefix: "email"})
+app.register(orderTrackingRoutes, {prefix: "tracking"})
 
 app.listen({
   host: '0.0.0.0',

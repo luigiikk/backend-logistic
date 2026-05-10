@@ -15,19 +15,26 @@ export async function getPublicTracking(
         cpf,
       });
 
-    return reply.status(200).send({
-      order: {
-        id: order.id,
-        code: order.code,
-
-        status: {
-          id: order.status.id,
-          name: order.status.name,
+      return reply.status(200).send({
+        order: {
+          id: order.id,
+          code: order.code,
+          status: {
+            id: order.status.id,
+            name: order.status.name,
+          },
         },
-      },
-
-      tracking: order.tracking,
-    });
+      
+        tracking: order.tracking.map((t) => ({
+          id: t.id,
+          location: t.location ?? null,
+          description: t.description ?? null,
+          estimated_delivery: t.estimated_delivery
+            ? t.estimated_delivery.toISOString()
+            : null,
+          occurred_at: t.occurred_at.toISOString(),
+        })),
+      });
   } catch (error) {
     return reply.status(404).send({
       message:
