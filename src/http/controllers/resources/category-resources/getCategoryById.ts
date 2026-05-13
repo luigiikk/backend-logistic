@@ -1,6 +1,4 @@
 import { getCategoryByIdService } from "@/services/resources/category/getCategoryById.js";
-import { getAllResourceService } from "@/services/resources/getAllResource.js";
-import { getResourceByIdService } from "@/services/resources/getResourceById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function getCategoryById(
@@ -10,22 +8,13 @@ export async function getCategoryById(
 
   const { id } = request.params as { id: number };
 
-  await request.jwtVerify();
-
-  if (request.user.role != "company") {
-    return reply.status(409).send();
-  }
-
-  const company_id = request.user.sub;
-
   try {
-    const resource = await getCategoryByIdService(company_id, id);
+    const category = await getCategoryByIdService(id);
 
-    return reply.status(200).send(resource);
+    return reply.status(200).send(category);
   } catch (error) {
-    console.log(error);
-    return reply
-      .status(409)
-      .send({ error: "Could not found resources." });
+    return reply.status(404).send({
+      error: "Category not found."
+    });
   }
 }

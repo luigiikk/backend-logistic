@@ -3,10 +3,9 @@ import { PrismaResourceRepository } from "@/repositories/prisma-resource-reposit
 
 
 export async function getCategoryByIdService(
-  company_id: number,
   id: number
 ) {
   const repository = new PrismaCategoryRepository();
 
-  return await repository.getCategoryById(company_id, id);
+  return await repository.getCategoryById(id);
 }

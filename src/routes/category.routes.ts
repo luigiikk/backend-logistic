@@ -1,6 +1,7 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
 import { getAllCategory } from "@/http/controllers/resources/category-resources/getAllCategory.js";
 import { getCategoryById } from "@/http/controllers/resources/category-resources/getCategoryById.js";
+import { CategorySchema } from "@/schemas/category.schema.js";
 import z from "zod";
 
 export async function categoryRoutes(app: FastifyTypedInstance) {
@@ -11,13 +12,7 @@ export async function categoryRoutes(app: FastifyTypedInstance) {
         tags: ["category-resource"],
         description: "Get All categories",
         response: {
-          201: z.array(
-            z.object({
-            id: z.number(),
-            name: z.string(),
-            description: z.string()
-            })
-          ),
+          201: z.array(CategorySchema),
         },
       },
     },
@@ -34,12 +29,7 @@ export async function categoryRoutes(app: FastifyTypedInstance) {
           id: z.coerce.number(),
         }),
         response: {
-          201: 
-            z.object({
-              id: z.number(),
-              name: z.string(),
-              description: z.string()
-            })
+          201: CategorySchema
         },
       },
     },

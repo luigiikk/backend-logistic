@@ -7,22 +7,13 @@ export async function getAllCategory(
   reply: FastifyReply
 ) {
 
-  await request.jwtVerify();
-
-  if (request.user.role != "company") {
-    return reply.status(409).send();
-  }
-
-  const company_id = request.user.sub;
-
   try {
-    const category = await getAllCategoryService(company_id);
+    const categories = await getAllCategoryService();
 
-    return reply.status(200).send(category);
+    return reply.status(200).send(categories);
   } catch (error) {
-    console.log(error);
-    return reply
-      .status(409)
-      .send({ error: "Could not found resources." });
+    return reply.status(500).send({
+      error: "Could not fetch categories."
+    });
   }
 }
