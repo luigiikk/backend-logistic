@@ -43,7 +43,8 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
               company_id: z.number(),
               width: z.number().nullable(),
               height: z.number().nullable(),
-              depth: z.number().nullable(),
+              length: z.number().nullable(),
+              total_quantity: z.number(),
               created_at: z.coerce.date(),
               updated_at: z.coerce.date(),
 

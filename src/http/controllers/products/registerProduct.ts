@@ -8,7 +8,7 @@ export const productRegisterBodySchema = z.object({
   quantity: z.number().int(),
   height: z.coerce.number().positive(),
   width: z.coerce.number().positive(),
-  depth: z.coerce.number().positive(),
+  length: z.coerce.number().positive(),
   order_id: z.number().int(),
 });
 
@@ -18,11 +18,11 @@ export async function registerProduct(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, description, quantity, height, width, depth, order_id } = request.body;
+  const { name, description, quantity, height, width, length, order_id } = request.body;
 
 
   try {
-    await registerProductService({ name, description, quantity, height, width, depth, order_id });
+    await registerProductService({ name, description, quantity, height, width, length, order_id });
   } catch (error) {
     return reply.status(409).send();
   }

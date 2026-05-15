@@ -27,7 +27,7 @@ export interface OrderRegisterParams {
     quantity?: number | null;
     height: number;
     width: number;
-    depth: number;
+    length: number;
   }[];
 }
 

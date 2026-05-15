@@ -61,12 +61,12 @@ export class PrismaPurchaseOrdersRepository {
         purchase_orders_items.map(async (item) => {
           const resource = await tx.resources.findUnique({
             where: { id: item.resource_id },
-            select: { width: true, height: true, depth: true },
+            select: { width: true, height: true, length: true },
           });
 
           const unitVolume =
-            resource?.width && resource?.height && resource?.depth
-              ? resource.width * resource.height * resource.depth
+            resource?.width && resource?.height && resource?.length
+              ? resource.width * resource.height * resource.length
               : 0;
 
           return {
@@ -169,12 +169,12 @@ export class PrismaPurchaseOrdersRepository {
         purchase_orders_items.map(async (item) => {
           const resource = await tx.resources.findUnique({
             where: { id: item.resource_id },
-            select: { width: true, height: true, depth: true },
+            select: { width: true, height: true, length: true },
           });
 
           const unitVolume =
-            resource?.width && resource?.height && resource?.depth
-              ? resource.width * resource.height * resource.depth
+            resource?.width && resource?.height && resource?.length
+              ? resource.width * resource.height * resource.length
               : 0;
 
           return {

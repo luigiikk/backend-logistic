@@ -7,7 +7,7 @@ interface ProductRegisterParams {
   quantity: number;
   height: number;
   width: number;
-  depth: number;
+  length: number;
   order_id: number;
 }
 
@@ -17,7 +17,7 @@ export async function registerProductService({
   quantity,
   height,
   width,
-  depth,
+  length,
   order_id,
 }: ProductRegisterParams) {
   const orderExists = await prisma.orders.findUnique({
@@ -36,12 +36,12 @@ export async function registerProductService({
     throw new Error("Product with this name and description already exists in this order");
   }
 
-  if (height <= 0 || width <= 0 || depth <= 0) {
+  if (height <= 0 || width <= 0 || length <= 0) {
     throw new Error("Invalid dimensions");
   }
 
   const prismaProductsRepository = new PrismaProductsRepository();
-  const volume = height * width * depth;
+  const volume = height * width * length;
 
   const product = await prismaProductsRepository.create({
     name,
@@ -49,7 +49,7 @@ export async function registerProductService({
     quantity,
     height,
     width,
-    depth,
+    length,
     volume,
     order: { connect: { id: order_id } },
   });

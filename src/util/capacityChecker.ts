@@ -108,12 +108,12 @@ export async function calcIncomingVolumeByWarehouse(
   for (const item of items) {
     const resource = await tx.resources.findUnique({
       where: { id: item.resource_id },
-      select: { width: true, height: true, depth: true },
+      select: { width: true, height: true, length: true },
     });
 
     const unitVolume =
-      resource?.width && resource?.height && resource?.depth
-        ? resource.width * resource.height * resource.depth
+      resource?.width && resource?.height && resource?.length
+        ? resource.width * resource.height * resource.length
         : 0;
 
     const itemVolume = unitVolume * item.quantity;

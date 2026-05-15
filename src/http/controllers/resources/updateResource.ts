@@ -7,7 +7,7 @@ export const updateResourceBodySchema = z.object({
   category_id: z.number(),
   height: z.coerce.number().positive(),
   width: z.coerce.number().positive(),
-  depth: z.coerce.number().positive(),
+  length: z.coerce.number().positive(),
 });
 
 type RegisterBody = z.infer<typeof updateResourceBodySchema>;
@@ -20,7 +20,7 @@ export async function updateResource(
     name,
     height,
     width,
-    depth,
+    length,
     category_id
   } = request.body;
 
@@ -39,7 +39,7 @@ export async function updateResource(
       name,
       height,
       width,
-      depth,
+      length,
       category_id
     } );
   } catch (error) {

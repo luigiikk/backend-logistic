@@ -37,7 +37,7 @@ export interface CreateOrderByClientParams {
     quantity?: number | null;
     height: number;
     width: number;
-    depth: number;
+    length: number;
   }[];
 }
 
@@ -66,7 +66,7 @@ export interface CreateOrderByCompanyParams {
     quantity?: number | null;
     height: number;
     width: number;
-    depth: number;
+    length: number;
   }[];
 }
 
@@ -139,10 +139,10 @@ export class PrismaOrdersRepository {
       if (products.length > 0) {
         await tx.products.createMany({
           data: products.map((p) => {
-            if (!p.height || !p.width || !p.depth) {
+            if (!p.height || !p.width || !p.length) {
               throw new Error("Missing product dimensions");
             }
-            const unitVolume = p.height * p.width * p.depth;
+            const unitVolume = p.height * p.width * p.length;
             const totalVolume = unitVolume * (p.quantity ?? 1);
 
             return {
@@ -152,7 +152,7 @@ export class PrismaOrdersRepository {
               quantity: p.quantity ?? 1,
               height: p.height,
               width: p.width,
-              depth: p.depth,
+              length: p.length,
               volume: totalVolume,
             };
           }),
@@ -239,10 +239,10 @@ export class PrismaOrdersRepository {
       const used = usedVolumeVehicle._sum.volume ?? 0;
 
       const newProductsVolume = products.reduce((acc, p) => {
-        if (!p.height || !p.width || !p.depth) {
+        if (!p.height || !p.width || !p.length) {
           throw new Error("Missing product dimensions");
         }
-        const unit = p.height * p.width * p.depth;
+        const unit = p.height * p.width * p.length;
         return acc + unit * (p.quantity ?? 1);
       }, 0);
 
@@ -266,7 +266,7 @@ export class PrismaOrdersRepository {
       if (products.length > 0) {
         await tx.products.createMany({
           data: products.map((p) => {
-            const unitVolume = p.height * p.width * p.depth;
+            const unitVolume = p.height * p.width * p.length;
             const totalVolume = unitVolume * (p.quantity ?? 1);
 
             return {
@@ -276,7 +276,7 @@ export class PrismaOrdersRepository {
               quantity: p.quantity ?? 1,
               height: p.height,
               width: p.width,
-              depth: p.depth,
+              length: p.length,
               volume: totalVolume,
             };
           }),
@@ -434,12 +434,12 @@ export class PrismaOrdersRepository {
       for (const product of products) {
         if (!product.id) continue;
 
-        const { id, height, width, depth, quantity, ...rest } = product;
+        const { id, height, width, length, quantity, ...rest } = product;
 
         let volume;
 
-        if (height !== undefined && width !== undefined && depth !== undefined) {
-          const unit = height * width * depth;
+        if (height !== undefined && width !== undefined && length !== undefined) {
+          const unit = height * width * length;
           volume = unit * (quantity ?? 1);
         }
 
@@ -449,7 +449,7 @@ export class PrismaOrdersRepository {
             ...rest,
             height,
             width,
-            depth,
+            length,
             quantity,
             ...(volume !== undefined && { volume }),
           },

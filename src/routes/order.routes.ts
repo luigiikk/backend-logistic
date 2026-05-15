@@ -42,7 +42,7 @@ export async function orderRoutes(app: FastifyTypedInstance) {
 
             height: z.number(),
             width: z.number(),
-            depth: z.number(),
+            length: z.number(),
 
             volume: z.number(),
           }),

@@ -6,7 +6,7 @@ interface CategoryResourceBodySchema {
   description: string,
   height: number,
   width: number,
-  depth: number,
+  length: number,
   category_id: number
 }
 
@@ -15,7 +15,7 @@ export async function registerResourceService(company_id: number, {
   description,
   height,
   width,
-  depth,
+  length,
   category_id
 }: CategoryResourceBodySchema) {
 
@@ -43,7 +43,7 @@ export async function registerResourceService(company_id: number, {
     throw new Error("Category not exists");
   }
 
-  const resource = await resourceRepository.create({name, description, height, width, depth, company: {connect: {id: company.id}}, category: { connect: { id: category.id } }})
+  const resource = await resourceRepository.create({name, description, height, width, length, company: {connect: {id: company.id}}, category: { connect: { id: category.id } }})
 
   return resource;
 }

@@ -29,7 +29,7 @@ export interface OrderUpdateCompanyParams {
   quantity?: number | null;
   height: number;
   width: number;
-  depth: number;
+  length: number;
 }[];
 }
 

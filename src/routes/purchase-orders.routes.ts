@@ -125,7 +125,7 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
                         name: z.string(),
                         width: z.number().nullable().optional(),
                         height: z.number().nullable().optional(),
-                        depth: z.number().nullable().optional(),
+                        length: z.number().nullable().optional(),
                         category: z
                           .object({
                             id: z.number(),

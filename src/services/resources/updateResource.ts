@@ -4,7 +4,7 @@ export interface resourceUpdateParams {
   name: string;
   height: number;
   width: number;
-  depth: number;
+  length: number;
   category_id: number;
 }
 

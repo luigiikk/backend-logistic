@@ -48,7 +48,7 @@ export async function productRoutes(app: FastifyTypedInstance) {
             order_id: z.number().int(),
             height: z.number().positive(),
             width: z.number().positive(),
-            depth: z.number().positive(),
+            length: z.number().positive(),
             volume: z.number().positive(),
           }),
         },

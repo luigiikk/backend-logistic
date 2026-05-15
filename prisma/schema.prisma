@@ -155,7 +155,7 @@ model Products {
   quantity    Int?     @default(1)
   height      Float
   width       Float
-  depth       Float
+  length       Float
   volume      Float
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -209,7 +209,7 @@ model Resources {
   description String?
   height      Float    @default(0)
   width       Float    @default(0)
-  depth       Float    @default(0)
+  length       Float    @default(0)
   category_id Int?
   company_id  Int
   created_at  DateTime @default(now())
