@@ -16,6 +16,7 @@ interface warehousesBodySchema {
   state: string,
   country: string,
   zipcode: string,
+  total_volume: number,
 }
 
 export async function warehousesResourceService(company_id: number, {
@@ -26,7 +27,8 @@ export async function warehousesResourceService(company_id: number, {
   city,
   state,
   country,
-  zipcode
+  zipcode,
+  total_volume,
 }: warehousesBodySchema) {
 
   const warehousesRepository = new PrismaWarehousesRepository();
@@ -47,7 +49,8 @@ export async function warehousesResourceService(company_id: number, {
   const warehouses = await warehousesRepository.create({
     name,
     addres: { connect: { id: addres.id } },
-    company: {connect: {id: company.id}}
+    company: {connect: {id: company.id}},
+    total_volume,
   });
 
   return warehouses;

@@ -4,8 +4,10 @@ import { updateResourceService } from "@/services/resources/updateResource.js";
 
 export const updateResourceBodySchema = z.object({
   name: z.string(),
-  quantity: z.number(),
   category_id: z.number(),
+  height: z.coerce.number().positive(),
+  width: z.coerce.number().positive(),
+  depth: z.coerce.number().positive(),
 });
 
 type RegisterBody = z.infer<typeof updateResourceBodySchema>;
@@ -16,7 +18,9 @@ export async function updateResource(
 ) {
   const {
     name,
-    quantity,
+    height,
+    width,
+    depth,
     category_id
   } = request.body;
 
@@ -33,7 +37,9 @@ export async function updateResource(
   try {
     await updateResourceService(id, company_id, {
       name,
-      quantity,
+      height,
+      width,
+      depth,
       category_id
     } );
   } catch (error) {

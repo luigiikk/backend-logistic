@@ -15,13 +15,14 @@ export async function getAllWarehouse(
 
   try {
     const rawData = await getAllWarehousesService(company_id);
-
-    const formattedData = rawData.map((item: any) => ({
-      ...item,
-      address: item.addres ? item.addres : null,
-      addres: undefined 
-    }));
-
+ 
+    const formattedData = rawData.map(({ addres, used_volume, total_volume, ...rest }) => ({
+  ...rest,
+  address: addres ?? null,
+  used_volume: used_volume ?? 0,
+  total_volume: typeof total_volume === "number" ? total_volume : null,
+}));
+ 
     return reply.status(200).send(formattedData);
   } catch (error) {
     console.log(error);

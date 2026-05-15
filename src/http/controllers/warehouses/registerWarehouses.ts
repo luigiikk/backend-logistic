@@ -12,6 +12,8 @@ export const warehousesRegisterBodySchema = z.object({
   state: z.string(),
   country: z.string(),
   zipcode: z.string(),
+  total_volume: z.coerce.number().positive(),
+
 });
 
 type RegisterBody = z.infer<typeof warehousesRegisterBodySchema>;
@@ -20,7 +22,7 @@ export async function warehousesRegister(
   request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ) {
-  const { name, street, number, complement, city, state, country, zipcode } = request.body;
+  const { name, street, number, complement, city, state, country, zipcode, total_volume } = request.body;
 
   await request.jwtVerify();
 
@@ -31,7 +33,7 @@ export async function warehousesRegister(
   const company_id = request.user.sub;
 
   try {
-    await warehousesResourceService(company_id, { name, street, number, complement, city, state, country, zipcode});
+    await warehousesResourceService(company_id, { name, street, number, complement, city, state, country, zipcode, total_volume});
   } catch (error) {
     console.log(error)
     return reply.status(409).send();

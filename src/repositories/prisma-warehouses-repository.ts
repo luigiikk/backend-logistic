@@ -10,6 +10,7 @@ interface UpdateWarehouseParams {
   state?: string;
   country?: string;
   zipcode?: string;
+  total_volume: number;
 }
 
 export class PrismaWarehousesRepository {
@@ -21,23 +22,40 @@ export class PrismaWarehousesRepository {
     return warehouses;
   }
 
-  async getAllWarehouses(company_id: number) {
-    return await prisma.warehouses.findMany({
-      where: { 
-        company_id 
-      },
-      include: { 
-        addres: true 
-      }
-    });
-  }
+ async getAllWarehouses(company_id: number) {
+  const warehouses = await prisma.warehouses.findMany({
+    where: { company_id },
+    include: { addres: true },
+  });
 
-  async getWarehouseById(id: number) {
-    return await prisma.warehouses.findUnique({
-      where: { id },
-      include: { addres: true }
-    });
-  }
+  const usedVolumes = await prisma.purchase_order_items.groupBy({
+    by: ["warehouse_id"],
+    where: { company_id },
+    _sum: { volume: true },
+  });
+
+  const usedMap = new Map(
+    usedVolumes.map((r) => [r.warehouse_id, r._sum.volume ?? 0])
+  );
+
+  return warehouses.map((w) => {
+    const used = usedMap.get(w.id) ?? 0;
+    const total = w.total_volume ?? 0;
+
+    return {
+      ...w,
+      used_volume: used,
+      available_volume: total - used,
+    };
+  });
+}
+
+  async getWarehouseById(id: number, company_id: number) {
+  return await prisma.warehouses.findUnique({
+    where: { id, company_id },
+    include: { addres: true },
+  });
+}
 
   async updateWarehouse(id: number, company_id: number, data: UpdateWarehouseParams) {
     const { name, ...addressData } = data;
@@ -56,23 +74,18 @@ export class PrismaWarehousesRepository {
       where: { id, company_id },
       data: {
         ...(name ? { name } : {}),
-        ...(currentWarehouse.addres_id && Object.values(addressData).some(v => v !== undefined) ? {
-          addres: {
-            update: {
-              street: addressData.street,
-              number: addressData.number,
-              complement: addressData.complement,
-              city: addressData.city,
-              state: addressData.state,
-              country: addressData.country,
-              zipcode: addressData.zipcode
+        ...(data.total_volume ? { total_volume: data.total_volume } : {}),
+        ...(Object.values(addressData).some((v) => v !== undefined)
+          ? {
+              addres: currentWarehouse.addres_id
+                ? { update: { ...addressData } }
+                : { create: { ...addressData } },
             }
-          }
-        } : {})
+          : {}),
       },
       include: {
-        addres: true
-      }
+        addres: true,
+      },
     });
   }
 

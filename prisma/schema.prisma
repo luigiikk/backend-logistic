@@ -207,7 +207,9 @@ model Resources {
   id          Int      @id @default(autoincrement())
   name        String?
   description String?
-  quantity    Int?
+  height      Float    @default(0)
+  width       Float    @default(0)
+  depth       Float    @default(0)
   category_id Int?
   company_id  Int
   created_at  DateTime @default(now())
@@ -243,6 +245,7 @@ model purchase_order_items {
   quantity          Int?
   unit_price        Float?
   total_price       Float?
+  volume            Float    @default(0) 
   company_id        Int
   warehouse_id      Int
   created_at        DateTime @default(now())
@@ -264,6 +267,7 @@ model purchase_orders {
   supplier_id Int
   status_id   Int
   total_value Float?
+  total_volume Float?
   company_id  Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -307,6 +311,7 @@ model Warehouses {
   name       String?
   addres_id  Int?
   company_id Int
+  total_volume Float
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

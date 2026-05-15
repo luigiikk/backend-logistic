@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/prisma.js";
 import { Prisma } from "@prisma/client";
 
+type UpdateResourceData = {
+  name?: string
+  height?: number
+  width?: number
+  depth?: number
+  category_id?: number
+}
+
 export class PrismaResourceRepository {
   async create(data: Prisma.ResourcesCreateInput) {
     const resource = await prisma.resources.create({
@@ -22,7 +30,7 @@ export class PrismaResourceRepository {
   }
 
   async getResourceById(company_id: number, id: number) {
-    return await prisma.resources.findMany({
+    return await prisma.resources.findUnique({
       where: {
         company_id,
         id,
@@ -36,18 +44,16 @@ export class PrismaResourceRepository {
   async updateResource(
     company_id: number,
     id: number,
-    data: {
-      name: string;
-      quantity: number;
-      category_id: number;
-    }
+    data: UpdateResourceData
   ) {
     const resource = await prisma.resources.update({
       where: { id, company_id },
       data: {
         name: data.name,
-        quantity: data.quantity,
         category_id: data.category_id,
+        height: data.height,
+        width: data.width,
+        depth: data.depth,
       },
       include: {
         category: true,

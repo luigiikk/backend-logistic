@@ -30,18 +30,22 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
         tags: ["resource"],
         description: "Get All resource",
         response: {
-          201: z.array(
+          200: z.array(
             z.object({
               id: z.number(),
               name: z.string(),
               description: z.string(),
-              quantity: z.number(),
-              category_id: z.object({
+              category_id: z.number(),
+              width: z.number(),
+              height: z.number(),
+              depth: z.number(),
+
+              category: z.object({
                 id: z.number(),
                 name: z.string(),
-                description: z.string()
-              })
-            })
+                description: z.string(),
+              }),
+            }),
           ),
         },
       },
@@ -64,7 +68,6 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
               id: z.number(),
               name: z.string(),
               description: z.string(),
-              quantity: z.number(),
               category_id: z.object({
                 id: z.number(),
                 name: z.string(),

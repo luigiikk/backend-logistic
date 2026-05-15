@@ -1,4 +1,3 @@
-import { getAllResourceService } from "@/services/resources/getAllResource.js";
 import { getResourceByIdService } from "@/services/resources/getResourceById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 

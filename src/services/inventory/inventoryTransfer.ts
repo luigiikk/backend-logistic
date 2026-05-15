@@ -1,7 +1,4 @@
-import { warehousesRegister } from "@/http/controllers/warehouses/registerWarehouses.js";
-import { prisma } from "@/lib/prisma.js";
 import { PrismaInventoryRepository } from "@/repositories/prisma-inventory-repository.js";
-import { PrismaResourceRepository } from "@/repositories/prisma-resource-repository.js";
 
 interface InventoryBodySchema {
   id: number;

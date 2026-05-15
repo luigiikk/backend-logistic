@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma.js";
 import type { OrderUpdateCompanyParams } from "@/services/order/updateOrderByCompany.js";
 import { generateTrackingCode } from "@/util/generateTrackingCode.js";
 import type { Recipient } from "@prisma/client";
+import { checkCapacity } from "@/util/capacityChecker.js";
 
 export interface CreateOrderTrackingParams {
   order_id: number;
@@ -217,6 +218,7 @@ export class PrismaOrdersRepository {
       const status = await tx.status.findFirstOrThrow({
         where: {
           is_default: true,
+          type: "order",
         },
       });
 

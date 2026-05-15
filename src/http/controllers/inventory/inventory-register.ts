@@ -1,5 +1,4 @@
 import { registerInventoryService } from "@/services/inventory/inventoryRegister.js";
-import { registerResourceService } from "@/services/resources/registerResource.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
 

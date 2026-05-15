@@ -2,7 +2,6 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { getAllPurchaseOrders } from "@/http/controllers/purchaseOrders/getAllPurchaseOrders.js";
 import { getPurchaseOrdersById } from "@/http/controllers/purchaseOrders/getPurchaseOrderById.js";
 import { purchaseOrders, purchaseOrdersBodySchema } from "@/http/controllers/purchaseOrders/purchase-orders.js";
-import { purchaseOrdersItems, purchaseOrdersItemsBodySchema } from "@/http/controllers/purchaseOrders/purchaseOrdersItems/purchase-orders-items.js";
 import { purchaseOrdersUpdateBodySchema, updatePurchaseOrder } from "@/http/controllers/purchaseOrders/updatePurchaseOrder.js";
 import z from "zod";
 

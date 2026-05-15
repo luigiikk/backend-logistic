@@ -1,9 +1,10 @@
-import { PrismaPurchaseOrdersRepository } from "@/repositories/prisma-purchase-orders-repository.js";
 import { PrismaResourceRepository } from "@/repositories/prisma-resource-repository.js";
 
 export interface resourceUpdateParams {
   name: string;
-  quantity: number;
+  height: number;
+  width: number;
+  depth: number;
   category_id: number;
 }
 
