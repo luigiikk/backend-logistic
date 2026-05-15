@@ -1,11 +1,15 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
 import { getAllResource } from "@/http/controllers/resources/getAllResource.js";
 import { getResourceById } from "@/http/controllers/resources/getResourceById.js";
-import { resourceRegister, resourceRegisterBodySchema } from "@/http/controllers/resources/registerResource.js";
-import { updateResource, updateResourceBodySchema } from "@/http/controllers/resources/updateResource.js";
+import {
+  resourceRegister,
+  resourceRegisterBodySchema,
+} from "@/http/controllers/resources/registerResource.js";
+import {
+  updateResource,
+  updateResourceBodySchema,
+} from "@/http/controllers/resources/updateResource.js";
 import z from "zod";
-
-
 
 export async function resourceRoutes(app: FastifyTypedInstance) {
   app.post(
@@ -20,7 +24,7 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
         },
       },
     },
-    resourceRegister
+    resourceRegister,
   );
 
   app.get(
@@ -33,24 +37,31 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
           200: z.array(
             z.object({
               id: z.number(),
-              name: z.string(),
-              description: z.string(),
-              category_id: z.number(),
-              width: z.number(),
-              height: z.number(),
-              depth: z.number(),
+              name: z.string().nullable(),
+              description: z.string().nullable(),
+              category_id: z.number().nullable(),
+              company_id: z.number(),
+              width: z.number().nullable(),
+              height: z.number().nullable(),
+              depth: z.number().nullable(),
+              created_at: z.coerce.date(),
+              updated_at: z.coerce.date(),
 
-              category: z.object({
-                id: z.number(),
-                name: z.string(),
-                description: z.string(),
-              }),
+              category: z
+                .object({
+                  id: z.number(),
+                  name: z.string().nullable(),
+                  description: z.string().nullable(),
+                  created_at: z.coerce.date(),
+                  updated_at: z.coerce.date(),
+                })
+                .nullable(),
             }),
           ),
         },
       },
     },
-    getAllResource
+    getAllResource,
   );
 
   app.get(
@@ -63,21 +74,20 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
           id: z.coerce.number(),
         }),
         response: {
-          201: 
-            z.object({
+          201: z.object({
+            id: z.number(),
+            name: z.string(),
+            description: z.string(),
+            category_id: z.object({
               id: z.number(),
               name: z.string(),
               description: z.string(),
-              category_id: z.object({
-                id: z.number(),
-                name: z.string(),
-                description: z.string()
-              })
-            })
+            }),
+          }),
         },
       },
     },
-    getResourceById
+    getResourceById,
   );
 
   app.put(
@@ -95,6 +105,6 @@ export async function resourceRoutes(app: FastifyTypedInstance) {
         },
       },
     },
-    updateResource
+    updateResource,
   );
 }

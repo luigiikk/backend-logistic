@@ -39,37 +39,44 @@ export async function supplierRoutes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "",
-    {
-      schema: {
-        tags: ["supplier"],
-        description: "List supplier by company",
-        response: {
-          200: z.array(
-            z.object({
+  "",
+  {
+    schema: {
+      tags: ["supplier"],
+      description: "List supplier by company",
+      response: {
+        200: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string().nullable(),
+            email: z.string().nullable(),
+            phone: z.string().nullable(),
+            CNPJ: z.string().nullable(),
+            contactPerson: z.string().nullable(),
+            notes: z.string().nullable(),
+            addres_id: z.number().nullable(),
+            company_id: z.number(),
+            created_at: z.coerce.date(),
+            updated_at: z.coerce.date(),
+            address: z.object({
               id: z.number(),
-              name: z.string(),
-              email: z.string().email(),
-              phone: z.string(),
-              CNPJ: z.string(),
-              contactPerson: z.string().nullable().optional(),
-              notes: z.string().nullable().optional(),
-              
-              address: z.object({
-                street: z.string().nullable().optional(),
-                number: z.number().nullable().optional(),
-                city: z.string().nullable().optional(),
-                state: z.string().nullable().optional(),
-                complement: z.string().nullable().optional(),
-                zipcode: z.string().nullable().optional(),
-              }).nullable().optional(), 
-            })
-          ),
-        },
+              street: z.string().nullable(),
+              number: z.number().nullable(),
+              city: z.string().nullable(),
+              state: z.string().nullable(),
+              complement: z.string().nullable(),
+              zipcode: z.string().nullable(),
+              country: z.string().nullable(),
+              created_at: z.coerce.date(),
+              updated_at: z.coerce.date(),
+            }).nullable(),
+          })
+        ),
       },
     },
-    getAllSupplierByCompany
-  );
+  },
+  getAllSupplierByCompany
+);
 
   app.get(
     "/:id",

@@ -30,6 +30,18 @@ export async function statusRoutes(app: FastifyTypedInstance) {
     },
     getAllStatusByCompany
   );
+
+  app.get(
+  "/:type",
+  {
+    schema: {
+      tags: ["status"],
+      description: "List all statuses by type",
+      // remove o params daqui — deixa o controller validar
+    },
+  },
+  getStatusByType
+);
   
   app.get(
     "/status/:id",
@@ -50,30 +62,6 @@ export async function statusRoutes(app: FastifyTypedInstance) {
       },
     },
     getStatus
-  );
-
-  app.get(
-    "/:type",
-    {
-      schema: {
-        tags: ["status"],
-        description: "List all statuses by type",
-        params: z.object({
-          type: z.enum(["order", "vehicle", "invoice", "purchase_order"]),
-        }),
-        response: {
-          200: z.array(
-            z.object({
-              id: z.number(),
-              name: z.string(),
-              type: z.enum(["order", "vehicle", "invoice", "purchase_order"]),
-              is_default: z.boolean().optional(),
-            })
-          ),
-        },
-      },
-    },
-    getStatusByType
   );
   
   app.post(
