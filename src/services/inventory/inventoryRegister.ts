@@ -1,7 +1,4 @@
-import { warehousesRegister } from "@/http/controllers/warehouses/registerWarehouses.js";
-import { prisma } from "@/lib/prisma.js";
 import { PrismaInventoryRepository } from "@/repositories/prisma-inventory-repository.js";
-import { PrismaResourceRepository } from "@/repositories/prisma-resource-repository.js";
 
 interface InventoryBodySchema {
   resource_id: number;
@@ -17,7 +14,7 @@ export async function registerInventoryService(company_id: number, {
 
   const inventoryRepository = new PrismaInventoryRepository();
 
-  const inventory = await inventoryRepository.createOrIncrement(company_id, resource_id, warehouse_id, quantity);
+  const inventory = await inventoryRepository.moveInventory(company_id, resource_id, warehouse_id, quantity);
 
   return inventory;
 }
