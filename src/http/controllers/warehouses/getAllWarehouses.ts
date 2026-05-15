@@ -16,10 +16,11 @@ export async function getAllWarehouse(
   try {
     const rawData = await getAllWarehousesService(company_id);
  
-    const formattedData = rawData.map(({ addres, used_volume, total_volume, ...rest }) => ({
+    const formattedData = rawData.map(({ addres, used_volume, total_volume, available_volume, ...rest }) => ({
   ...rest,
   address: addres ?? null,
   used_volume: used_volume ?? 0,
+  available_volume: available_volume ?? 0, // ← faltava isso
   total_volume: typeof total_volume === "number" ? total_volume : null,
 }));
  

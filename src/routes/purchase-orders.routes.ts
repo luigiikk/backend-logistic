@@ -84,51 +84,68 @@ export async function purchaseOrdersRoutes(app: FastifyTypedInstance) {
               supplier_id: z.number(),
               status_id: z.number(),
               company_id: z.number(),
-              total_value: z.number(), 
+              total_value: z.number(),
 
-              created_at: z.coerce.date(), 
+              created_at: z.coerce.date(),
               updated_at: z.coerce.date(),
 
-              supplier: z.object({
-                id: z.number().int(),
-                name: z.string(),
-                CNPJ: z.string(),
-                phone: z.string().nullable().optional(),
-                email: z.string().nullable().optional(),
-                contactPerson: z.string().nullable().optional(),
-                notes: z.string().nullable().optional(),
-                addres_id: z.number().int().nullable().optional(),
-                company_id: z.number().int(),
-              }).nullable().optional(),
-
-              status: z.object({
-                id: z.number(),
-                name: z.string(),
-              }).nullable().optional(),
-
-              items: z.array(
-                z.object({
-                  id: z.number(),
-                  quantity: z.number(),
-                  unit_price: z.number(),
-                  resource_id: z.number(),
-                  
-                  resource: z.object({
-                    id: z.number(),
-                    name: z.string(),
-                    category: z.object({
-                      id: z.number(),
-                      name: z.string(),
-                    }).nullable().optional(),
-                  }).nullable().optional(),
+              supplier: z
+                .object({
+                  id: z.number().int(),
+                  name: z.string(),
+                  CNPJ: z.string(),
+                  phone: z.string().nullable().optional(),
+                  email: z.string().nullable().optional(),
+                  contactPerson: z.string().nullable().optional(),
+                  notes: z.string().nullable().optional(),
+                  addres_id: z.number().int().nullable().optional(),
+                  company_id: z.number().int(),
                 })
-              ).optional().default([]),
-            })
+                .nullable()
+                .optional(),
+
+              status: z
+                .object({
+                  id: z.number(),
+                  name: z.string(),
+                })
+                .nullable()
+                .optional(),
+
+              items: z
+                .array(
+                  z.object({
+                    id: z.number(),
+                    quantity: z.number(),
+                    unit_price: z.number(),
+                    resource_id: z.number(),
+                    resource: z
+                      .object({
+                        id: z.number(),
+                        name: z.string(),
+                        width: z.number().nullable().optional(),
+                        height: z.number().nullable().optional(),
+                        depth: z.number().nullable().optional(),
+                        category: z
+                          .object({
+                            id: z.number(),
+                            name: z.string(),
+                          })
+                          .nullable()
+                          .optional(),
+                      })
+                      .nullable()
+                      .optional(),
+                  }),
+                )
+                .optional()
+                .default([]),
+            }),
           ),
         },
       },
     },
-    getAllPurchaseOrders
+    getAllPurchaseOrders,
   );
 
   app.put(
