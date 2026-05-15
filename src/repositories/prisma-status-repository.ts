@@ -72,10 +72,13 @@ export class PrismaStatusRepository {
   }
 
   async getStatusByType(company_id: number, type: "invoice" | "vehicle" | "order" | "purchase_order") {
-  const statusList = await prisma.status.findMany({
+  return await prisma.status.findMany({
     where: {
-      company_id,
       type,
+      OR: [
+        { company_id },
+        { company_id: null }, // ← inclui os status globais da seed
+      ],
     },
     select: {
       id: true,
@@ -84,8 +87,6 @@ export class PrismaStatusRepository {
       is_default: true,
     },
   });
-
-  return statusList;
 }
 
 async getSystemDefault(type: string) {

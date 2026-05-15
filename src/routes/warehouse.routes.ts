@@ -24,17 +24,43 @@ export async function warehouseRoutes(app: FastifyTypedInstance) {
     warehousesRegister
   );
 
-  app.get(
-    "",
-    {
-      schema: {
-        tags: ["warehouses"],
-        description: "List all warehouses for the company",
-        security: [{ jwt: [] }],
+app.get(
+  "",
+  {
+    schema: {
+      tags: ["warehouses"],
+      description: "List all warehouses for the company",
+      response: {
+        200: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string().nullable(),
+            company_id: z.number(),
+            addres_id: z.number().nullable(),
+            total_volume: z.number().nullable(),
+            used_volume: z.number(),
+            available_volume: z.number(),
+            created_at: z.coerce.date(),
+            updated_at: z.coerce.date(),
+            address: z.object({
+              id: z.number(),
+              street: z.string().nullable(),
+              number: z.number().nullable(),
+              city: z.string().nullable(),
+              state: z.string().nullable(),
+              complement: z.string().nullable(),
+              zipcode: z.string().nullable(),
+              country: z.string().nullable(),
+              created_at: z.coerce.date(),
+              updated_at: z.coerce.date(),
+            }).nullable(),
+          })
+        ),
       },
     },
-    getAllWarehouse
-  );
+  },
+  getAllWarehouse
+);
 
   app.get(
     "/:id",
