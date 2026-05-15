@@ -4,7 +4,7 @@ import z from "zod";
 
 export const purchaseOrdersBodySchema = z.object({
   supplier_id: z.number(),
-  status_id: z.number(),
+  status_id: z.number().optional(),
   purchase_orders_items: z.array(
     z.object({
       resource_id: z.number(),
@@ -37,7 +37,7 @@ export async function purchaseOrders(
       purchase_orders_items,
     });
 
-    return reply.status(201).send('Purchase Order');
+    return reply.status(201).send(purchaseOrder);
   } catch (error) {
     console.log(error);
     return reply
