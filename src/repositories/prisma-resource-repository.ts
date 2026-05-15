@@ -5,7 +5,7 @@ type UpdateResourceData = {
   name?: string
   height?: number
   width?: number
-  depth?: number
+  length?: number
   category_id?: number
 }
 
@@ -19,15 +19,26 @@ export class PrismaResourceRepository {
   }
 
   async getAllResource(company_id: number) {
-    return await prisma.resources.findMany({
-      where: {
-        company_id,
-      },
-      include: {
-        category: true,
-      },
-    });
-  }
+  const resources = await prisma.resources.findMany({
+    where: { company_id },
+    include: { category: true },
+  });
+
+  const inventorySums = await prisma.inventory.groupBy({
+    by: ["resource_id"],
+    where: { company_id },
+    _sum: { quantity: true },
+  });
+
+  const sumMap = new Map(
+    inventorySums.map((i) => [i.resource_id, i._sum.quantity ?? 0])
+  );
+
+  return resources.map((r) => ({
+    ...r,
+    total_quantity: sumMap.get(r.id) ?? 0,
+  }));
+}
 
   async getResourceById(company_id: number, id: number) {
     return await prisma.resources.findUnique({
@@ -53,7 +64,7 @@ export class PrismaResourceRepository {
         category_id: data.category_id,
         height: data.height,
         width: data.width,
-        depth: data.depth,
+        length: data.length,
       },
       include: {
         category: true,

@@ -15,29 +15,30 @@ export async function purchaseOrdersItemsRoutes(app: FastifyTypedInstance) {
         description: "List All Purchase Orders Items",
         response: {
           200: z.array(
-            z.object({
-              purchase_order_id: z.number(),
-              resource_id: z.number(),
-              company_id: z.number(),
-              warehouse_id: z.number(),
-              quantity: z.number(),
-              unit_price: z.float32(),
-              total_price: z.float32(),
-              created_at: z.coerce.date(),
-              updated_at: z.coerce.date(),
+  z.object({
+    id: z.number(),
+    purchase_order_id: z.number(),
+    resource_id: z.number(),
+    company_id: z.number(),
+    warehouse_id: z.number(),
+    quantity: z.number().nullable(),
+    unit_price: z.number().nullable(),
+    total_price: z.number().nullable(),
+    volume: z.number(),
+    created_at: z.coerce.date(),
+    updated_at: z.coerce.date(),
 
-              resource: z.object({
-                id: z.number().int(),
-                name: z.string(),
-                description: z.string(),
-                quantity: z.number(),
-                category_id: z.number(),
-                company_id: z.number(),
-                created_at: z.coerce.date(),
-                updated_at: z.coerce.date(),
-              }),
-            })
-          ),
+    resource: z.object({
+      id: z.number(),
+      name: z.string().nullable(),
+      description: z.string().nullable(),
+      category_id: z.number().nullable(),
+      company_id: z.number(),
+      created_at: z.coerce.date(),
+      updated_at: z.coerce.date(),
+    }),
+  })
+),
         },
       },
     },

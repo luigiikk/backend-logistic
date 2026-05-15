@@ -37,7 +37,7 @@ export async function purchaseOrders(
       purchase_orders_items,
     });
 
-    return reply.status(201).send(purchaseOrder);
+    return reply.status(201).send(null);
   } catch (error) {
     console.log(error);
     return reply

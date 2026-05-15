@@ -14,7 +14,7 @@ export async function registerInventoryService(company_id: number, {
 
   const inventoryRepository = new PrismaInventoryRepository();
 
-  const inventory = await inventoryRepository.moveInventory(company_id, resource_id, warehouse_id, quantity);
+  const inventory = await inventoryRepository.addStock(company_id, resource_id, warehouse_id, quantity);
 
   return inventory;
 }

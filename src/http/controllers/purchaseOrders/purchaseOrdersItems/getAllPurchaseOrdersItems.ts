@@ -18,7 +18,6 @@ export async function getAllPurchaseOrdersItems(
   try {
     const purchaseOrdersItems = await getAllPurchaseOrdersItemsService(company_id);
 
-    console.log(purchaseOrdersItems)
     return reply.status(200).send(purchaseOrdersItems);
   } catch (error) {
     console.log(error);

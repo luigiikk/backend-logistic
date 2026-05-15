@@ -2,6 +2,16 @@ import { prisma } from "@/lib/prisma.js";
 
 export class PrismaInventoryRepository {
 
+  async addStock(company_id: number, resource_id: number, warehouse_id: number, quantity: number) {
+  return await prisma.inventory.upsert({
+    where: {
+      resource_id_warehouse_id_company_id: { resource_id, warehouse_id, company_id },
+    },
+    update: { quantity: { increment: quantity } },
+    create: { resource_id, warehouse_id, company_id, quantity },
+  });
+}
+
   async findByResourceAndWarehouse(resourceId: number, warehouseId: number, company_id: number) {
     return await prisma.inventory.findFirst({
       where: {
@@ -103,14 +113,16 @@ export class PrismaInventoryRepository {
   }
 
   async getAllInventory(company_id: number) {
-    return await prisma.inventory.findMany({
-      where: { company_id },
-      include: {
-        resource: true,
-        warehouse: true,
+  return await prisma.inventory.findMany({
+    where: { company_id },
+    include: {
+      resource: {
+        include: { category: true },
       },
-    });
-  }
+      warehouse: true,
+    },
+  });
+}
 
   async getInventoryByWarehouseId(warehouseId: number, company_id: number) {
     const inventory = await prisma.inventory.findMany({

@@ -98,44 +98,44 @@ export async function inventoryRoutes(app: FastifyTypedInstance) {
     getInventoryById
   );
 
-  app.get(
-    "",
-    {
-      schema: {
-        tags: ["inventory"],
-        description: "Get all inventory",
-        response: {
-          200: z.array(
-            z.object({
-              id: z.number().int(),
-              resource_id: z.number(),
-              warehouse_id: z.number(),
-              quantity: z.number(),
+ app.get(
+  "",
+  {
+    schema: {
+      tags: ["inventory"],
+      description: "Get all inventory",
+      response: {
+        200: z.array(
+          z.object({
+            id: z.number().int(),
+            resource_id: z.number(),
+            warehouse_id: z.number().nullable(),
+            quantity: z.number().nullable(),
+            company_id: z.number(),
+
+            resource: z.object({
+              id: z.number(),
+              name: z.string().nullable(),
+              description: z.string().nullable(),
+              category_id: z.number().nullable(),
               company_id: z.number(),
-            
-        
-              resource: z.object({
+              category: z.object({
                 id: z.number(),
-                name: z.string(),
-                description: z.string(),
-                quantity: z.number(),
-                category_id: z.number(),
-                company_id: z.number(),
-               
-              }),
-        
-              warehouse: z.object({
-                id: z.number(),
-                name: z.string(),
-                addres_id: z.number(),
-                company_id: z.number(),
-               
-              }),
-            })
-          ),
-        }
-      },
+                name: z.string().nullable(),
+              }).nullable().optional(),
+            }),
+
+            warehouse: z.object({
+              id: z.number(),
+              name: z.string().nullable(),
+              addres_id: z.number().nullable(),
+              company_id: z.number(),
+            }).nullable(),
+          })
+        ),
+      }
     },
-    getAllInventory
-  );
+  },
+  getAllInventory
+);
 }
