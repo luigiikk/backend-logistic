@@ -29,9 +29,11 @@ export async function authClient(
     return reply.status(200).send({ token });
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
-      return reply.status(400).send({ message: error.message });
+      return reply.status(401).send({
+        message: error.message
+      });
     }
-
+    
     throw error;
   }
 }

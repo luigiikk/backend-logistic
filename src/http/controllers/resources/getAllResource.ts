@@ -16,7 +16,6 @@ export async function getAllResource(
 
   try {
     const resource = await getAllResourceService(company_id);
-
     return reply.status(200).send(resource);
   } catch (error) {
     console.log(error);

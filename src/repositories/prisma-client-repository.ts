@@ -37,13 +37,11 @@ export class PrismaClientRepository {
   }
 
   async getClientByCNPJ(CNPJ: string){
-    const clientWithSameCNPJ = await prisma.client.findUnique({
+    return await prisma.client.findUnique({
       where: {
         CNPJ,
       }
     });
-
-    return clientWithSameCNPJ;
   }
 
   async deleteClient(id: number) {

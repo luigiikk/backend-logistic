@@ -4,7 +4,6 @@ import { registerClientService } from "@/services/client/registerClient.js";
 import { addresRegisterBodySchema } from "@/http/controllers/addres/registerAddres.js";
 
 export const clientRegisterBodySchema = z.object({
-
   name: z.string(),
   email: z.email(),
   password: z.string().min(6),
