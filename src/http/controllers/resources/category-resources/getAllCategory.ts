@@ -6,14 +6,6 @@ export async function getAllCategory(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-
-  try {
-    const categories = await getAllCategoryService();
-
-    return reply.status(200).send(categories);
-  } catch (error) {
-    return reply.status(500).send({
-      error: "Could not fetch categories."
-    });
-  }
+  const categories = await getAllCategoryService();
+  return reply.status(200).send(categories);
 }

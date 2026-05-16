@@ -5,16 +5,8 @@ export async function getCategoryById(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-
   const { id } = request.params as { id: number };
+  const category = await getCategoryByIdService(id);
 
-  try {
-    const category = await getCategoryByIdService(id);
-
-    return reply.status(200).send(category);
-  } catch (error) {
-    return reply.status(404).send({
-      error: "Category not found."
-    });
-  }
+  return reply.status(200).send(category);
 }

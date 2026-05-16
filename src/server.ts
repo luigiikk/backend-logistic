@@ -23,6 +23,7 @@ import { supplierRoutes } from "./routes/supplier.route.js";
 import { purchaseOrdersItemsRoutes } from "./routes/purchase-order-items.routes.js";
 import { supportRoutes } from "./routes/suport.routes.js";
 import { orderTrackingRoutes } from "./routes/order-tracking.route.js";
+import { AppError } from "./services/erros/AppError.js";
 
 // input data
 app.setValidatorCompiler(validatorCompiler);
@@ -61,7 +62,14 @@ app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 });
 
+app.setErrorHandler((error, request, reply) => {
+  if (error instanceof AppError) {
+    return reply.status(error.statusCode).send({ message: error.message });
+  }
 
+  console.error(error);
+  return reply.status(500).send({ message: "Erro interno no servidor." });
+});
 
 
 app.register(companyRoutes, { prefix: "company" });
