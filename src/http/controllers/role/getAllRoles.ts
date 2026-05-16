@@ -11,6 +11,7 @@ export async function getAllRoles(
     const roles = await getAllRolesService();
     return reply.status(200).send(roles);
   } catch (error) {
-    return reply.status(409).send();
+     console.error("getAllRoles error:", error); 
+  return reply.status(500).send();
   }  
 }
