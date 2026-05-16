@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma.js";
 import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repository.js";
 import { hash } from "bcryptjs";
+import { AppError } from "../erros/AppError.js";
 
 interface CompanyRegisterParams {
   CNPJ: string;
@@ -46,11 +47,11 @@ export async function registerService({
   });
 
   if (companyWithSameEmail) {
-    throw new Error("Email already exists");
+    throw new AppError("Email ja existe", 404);
   }
 
   if (companyWithSameCNPJ) {
-    throw new Error("CNPJ already exists");
+    throw new AppError("Cnpj ja existe", 404);
   }
 
   const prismaCompaniesRepository = new PrismaCompaniesRepository;
@@ -71,6 +72,10 @@ export async function registerService({
     state, 
     zipcode
   });
+
+  if(!company){
+    throw new AppError("Empresa não criada.", 500);
+  }
 
   return company;
 }

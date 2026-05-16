@@ -25,11 +25,7 @@ export async function registerCompany(
 ) {
   const { name, email, password, phone_number, CNPJ, number, street, complement, city, country, state, zipcode } = request.body;
 
-  try {
-    await registerService({ name, CNPJ, email, password, phone_number, number, street, complement, city, country, state, zipcode });
-  } catch (error) {
-    return reply.status(409).send();
-  }
+  await registerService({ name, CNPJ, email, password, phone_number, number, street, complement, city, country, state, zipcode });
 
   return reply.status(201).send(null);
 }

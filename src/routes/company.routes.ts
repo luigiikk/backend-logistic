@@ -1,36 +1,14 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
 import { authCompany, companyAuthBodySchema } from "@/http/controllers/company/authCompany.js";
 import { deleteCompany } from "@/http/controllers/company/deleteCompany.js";
-import { getAllCompanies } from "@/http/controllers/company/getAllCompany.js";
 import { getCompany } from "@/http/controllers/company/getCompany.js";
 import { companyRegisterBodySchema, registerCompany } from "@/http/controllers/company/register.js";
 import { companyUpdateBodySchema, updateCompany } from "@/http/controllers/company/updateCompany.js";
 import { verifyRole } from "@/http/middleware/verifyRole.js";
+import { CompanySchema } from "@/schemas/company.schema.js";
 import z from "zod";
 
 export async function companyRoutes(app: FastifyTypedInstance) {
-  app.get(
-    "",
-    {
-      preHandler: [verifyRole(["admin"])],
-      schema: {
-        tags: ["companies"],
-        description: "List companies",
-        response: {
-          200: z.array(
-            z.object({
-              name: z.string(),
-              email: z.email(),
-              phone_number: z.string(),
-              cnpj: z.string(),
-            })
-          ),
-        },
-      },
-    },
-    getAllCompanies
-  );
-
   app.get(
     "/:id",
     {
@@ -41,19 +19,7 @@ export async function companyRoutes(app: FastifyTypedInstance) {
           id: z.coerce.number(),
         }),
         response: {
-          200: z.object({
-            name: z.string(),
-            email: z.string().email(),
-            phone_number: z.string(),
-            cnpj: z.string(),
-            street: z.string().nullable().optional(),
-            number: z.number().nullable().optional(),
-            complement: z.string().nullable().optional(),
-            city: z.string().nullable().optional(),
-            state: z.string().nullable().optional(),
-            country: z.string().nullable().optional(),
-            zipcode: z.string().nullable().optional(),
-          }),
+          200: CompanySchema,
         },
       },
     },
@@ -73,24 +39,6 @@ export async function companyRoutes(app: FastifyTypedInstance) {
       },
     },
     registerCompany
-  );
-
-  app.delete(
-    "/:id",
-    {
-      preHandler: [verifyRole(["admin"])],
-      schema: {
-        tags: ["companies"],
-        description: "Delete company by id",
-        params: z.object({
-          id: z.coerce.number(),
-        }),
-        response: {
-          200: z.string(),
-        },
-      },
-    },
-    deleteCompany
   );
 
   app.put(

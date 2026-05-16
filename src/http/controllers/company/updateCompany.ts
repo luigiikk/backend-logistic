@@ -17,12 +17,8 @@ export async function updateCompany(
 ) {
   const { name,  email, phone_number, CNPJ } = request.body;
   const { id } = request.params;
-
-  try {
-    await updateCompanyService(id, { name, email, phone_number, CNPJ});
-  } catch (error) {
-    return reply.status(409).send();
-  }
+  
+  await updateCompanyService(id, { name, email, phone_number, CNPJ});
 
   return reply.status(200).send({ message: 'Company updated successfully' });
 }

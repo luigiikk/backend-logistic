@@ -68,7 +68,7 @@ export class PrismaCompaniesRepository {
     if (!companyExists) {
       throw new Error('Company not found');
     }
-    await prisma.companies.update({
+    return await prisma.companies.update({
       where: { id }, 
       data,            
     });

@@ -16,20 +16,12 @@ export async function authCompany(
 ) {
   const { CNPJ, password } = request.body;
 
-  try {
-   const company = await authCompanyService({ CNPJ, password });
+  const company = await authCompanyService({ CNPJ, password });
 
-   const token = await reply.jwtSign(
+  const token = await reply.jwtSign(
     { sub: company.id, role: 'company' }, 
     { expiresIn: "1d" } 
   );
 
-    return reply.status(200).send({ token });
-  } catch (error) {
-    if(error instanceof InvalidCredentialsError){
-      return reply.status(400).send({message: error.message});
-    }
-    
-    throw error
-  }
+  return reply.status(200).send({ token });
 }

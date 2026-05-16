@@ -1,6 +1,7 @@
 import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repository.js";
 import { compare } from "bcryptjs";
 import { InvalidCredentialsError } from "../erros/invalid-credentials-error.js";
+import { AppError } from "../erros/AppError.js";
 
 
 interface CompanyAuthParams {
@@ -17,13 +18,13 @@ export async function authCompanyService({
   const company = await companyRepository.getCompanyByCNPJ(CNPJ);
 
   if(!company){
-    throw new InvalidCredentialsError();
+    throw new AppError("Credenciais Inválidas", 404);
   }
 
   const doesPasswordMatches = await compare(password, company.password_hash);
 
   if(!doesPasswordMatches){
-    throw new  InvalidCredentialsError();
+    throw new AppError("Credenciais Inválidas", 404);
   }
 
   return company;
