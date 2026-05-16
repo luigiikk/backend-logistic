@@ -12,16 +12,26 @@ export async function getOrder(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const company_id = request.user.sub;
-
+    
     const order = await getOrderService(id, company_id);
-
-
     const response = {
       code: order.code ?? "",
       sender_client: order.sender_client?.name,
       recipient: order.recipient.name,
       status: order.status.name,
-      vehicle: order.vehicle?.plate,
+    
+      vehicle: order.vehicle
+        ? { plate: order.vehicle.plate }
+        : null,
+    
+      products: order.products.map((item) => ({
+        name: item.name ?? null,
+        quantity: item.quantity,
+        height: item.height,
+        width: item.width,
+        length: item.length,
+        volume: item.volume,
+      })),
     };
     
     return reply.status(200).send(response);

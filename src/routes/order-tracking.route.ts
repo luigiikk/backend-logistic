@@ -4,12 +4,10 @@ import { getPublicTracking } from "@/http/controllers/order/tracking/getPublicTr
 import { orderTrackingParamsSchema, orderTrackingRegisterBodySchema, registerOrderTracking } from "@/http/controllers/order/tracking/registerOrderTracking.js";
 import z from "zod";
 
-
-
 export async function orderTrackingRoutes(app: FastifyTypedInstance) {
 
   app.post(
-    "/orders/:id",
+    "/order/:id",
     {
       schema: {
         tags: ["order-tracking"],
@@ -25,7 +23,7 @@ export async function orderTrackingRoutes(app: FastifyTypedInstance) {
   );
 
   app.get(
-    "/orders/:id",
+    "/order/:id",
     {
       schema: {
         tags: ["order-tracking"],

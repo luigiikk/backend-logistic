@@ -33,20 +33,21 @@ export async function orderRoutes(app: FastifyTypedInstance) {
                 plate: z.string(),
               })
               .nullable(),
+        
+            products: z.array(
+              z.object({
+                name: z.string().nullable(),
+                quantity: z.number(),
+        
+                height: z.number(),
+                width: z.number(),
+                length: z.number(),
+        
+                volume: z.number(),
+              }),
+            ),
           }),
         },
-        products: z.array(
-          z.object({
-            name: z.string().nullable(),
-            quantity: z.number(),
-
-            height: z.number(),
-            width: z.number(),
-            length: z.number(),
-
-            volume: z.number(),
-          }),
-        ),
       },
     },
     getOrder,

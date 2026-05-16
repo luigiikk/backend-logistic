@@ -331,8 +331,20 @@ export class PrismaOrdersRepository {
         recipient: { select: { name: true } },
         status: { select: { name: true } },
         vehicle: { select: { plate: true } },
+  
+        products: {
+          select: {
+            name: true,
+            quantity: true,
+            height: true,
+            width: true,
+            length: true,
+            volume: true,
+          }
+        }
       },
     });
+  
     return order;
   }
 

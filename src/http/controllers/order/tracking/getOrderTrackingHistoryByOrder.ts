@@ -18,15 +18,27 @@ export async function getOrderTrackingHistoryByOrderId(
         company_id,
       });
 
-    const response = {
-      order: {
-        id: orderWithTrackingHistory.id,
-        code: orderWithTrackingHistory.code,
-        status: orderWithTrackingHistory.status.name,
-      },
-
-      tracking: orderWithTrackingHistory.tracking,
-    };
+      const response = {
+        order: {
+          id: orderWithTrackingHistory.id,
+          code: orderWithTrackingHistory.code,
+          status: orderWithTrackingHistory.status.name,
+        },
+      
+        tracking: orderWithTrackingHistory.tracking.map((item) => ({
+          id: item.id,
+          location: item.location,
+          description: item.description,
+      
+          estimated_delivery: item.estimated_delivery
+            ? item.estimated_delivery.toISOString()
+            : null,
+      
+          occurred_at: item.occurred_at.toISOString(),
+      
+          status: item.status,
+        })),
+      };
 
     return reply.status(200).send(response);
   } catch (error) {

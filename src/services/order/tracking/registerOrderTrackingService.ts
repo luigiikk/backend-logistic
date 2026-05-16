@@ -1,4 +1,5 @@
 import { PrismaOrdersRepository } from "@/repositories/prisma-orders-repository.js";
+import { AppError } from "@/services/erros/AppError.js";
 
 export interface OrderTrackingRegisterParams {
   order_id: number;
@@ -26,7 +27,7 @@ export async function registerOrderTrackingService({
   const order = await prismaOrderRepository.getOrder(order_id, company_id);
 
   if (!order) {
-    throw new Error("Order not found");
+    throw new AppError("Pedido não encontrado", 404);
   }
 
   await prismaOrderRepository.updateOrderStatus(
@@ -44,6 +45,10 @@ export async function registerOrderTrackingService({
         ? new Date(estimated_delivery)
         : null,
   });
+
+  if (!tracking) {
+    throw new AppError("Rastreio não encontrado", 404);
+  }
 
   return tracking;
 }
