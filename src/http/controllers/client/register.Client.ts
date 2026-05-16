@@ -22,13 +22,7 @@ export async function registerClient(
   const company_id = request.user.sub;
   
   const { name, email, password, phone_number, CNPJ, addressData } = request.body;
-
-  try {
-    await registerClientService({ name, email, password, phone_number, CNPJ, company_id, addressData, });
-  } catch (error) {
-    console.log(error)
-    return reply.status(409).send();
-  }
+  await registerClientService({ name, email, password, phone_number, CNPJ, company_id, addressData, });
 
   return reply.status(201).send(null);
 }

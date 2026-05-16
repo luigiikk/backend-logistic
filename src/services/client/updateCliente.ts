@@ -1,5 +1,6 @@
 import { PrismaAddresRepository } from "@/repositories/prisma-address-repository.js";
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
+import { AppError } from "../erros/AppError.js";
 
 export interface ClientUpdateParams {
   CNPJ: string;
@@ -43,17 +44,24 @@ export async function updateClientService(id:number, {
     phone_number,
   });
 
-  if(client.addres_id)
-  {
-    await prismaAddresRepository.updateAddres(client.addres_id, {
+  if (!client) {
+    throw new AppError("Cliente não encontrado.", 404);
+  }
+
+  if (client.addres_id) {
+    const updatedAddress = await prismaAddresRepository.updateAddres(client.addres_id, {
       number,
       street,
       complement,
       city,
       country,
       state,
-      zipcode
+      zipcode,
     });
+
+    if (!updatedAddress) {
+      throw new AppError("Endereço não encontrado.", 404);
+    }
   }
  
 }

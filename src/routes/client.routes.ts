@@ -6,6 +6,7 @@ import { getClient } from "@/http/controllers/client/getClient.js";
 import { clientRegisterBodySchema, registerClient } from "@/http/controllers/client/register.Client.js";
 import { clientUpdateBodySchema, updateClient } from "@/http/controllers/client/updateClient.js";
 import { verifyRole } from "@/http/middleware/verifyRole.js";
+import { ClientSchema } from "@/schemas/cliente.schema.js";
 import z from "zod";
 
 export async function clientRoutes(app: FastifyTypedInstance) {
@@ -32,7 +33,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
         description: "Create new client",
         body: clientRegisterBodySchema,
         response: {
-          201: z.null().describe("Client created"),
+          201: z.null().describe("Cliente criado com sucesso"),
         },
       },
     },
@@ -49,23 +50,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
           id: z.coerce.number(),
         }),
         response: {
-          200: z.object({
-            id: z.number().int(),
-            name: z.string(),
-            email: z.string().email(),
-            phone_number: z.string(),
-  
-            CPF: z.string().nullable().optional(),
-            CNPJ: z.string().nullable().optional(),
-  
-            street: z.string().nullable().optional(),
-            number: z.number().nullable().optional(),
-            complement: z.string().nullable().optional(),
-            city: z.string().nullable().optional(),
-            state: z.string().nullable().optional(),
-            country: z.string().nullable().optional(),
-            zipcode: z.string().nullable().optional(),
-          }),
+          200: ClientSchema
         },
       },
     },
@@ -81,26 +66,7 @@ export async function clientRoutes(app: FastifyTypedInstance) {
         description: "List all clients",
         response: {
           200: z.array(
-            z.object({
-              id: z.number().int(),
-              CNPJ: z.string(),
-              name: z.string(),
-              email: z.string().email(),
-              phone_number: z.string(),
-              addres_id: z.number().int(),
-              company_id: z.number().int(),
-  
-              addres: z.object({
-                id: z.number().int(),
-                street: z.string(),
-                number: z.number().int(),
-                complement: z.string().nullable(),
-                city: z.string(),
-                state: z.string(),
-                country: z.string(),
-                zipcode: z.string(),
-              }),
-            })
+            ClientSchema
           ),
         },
       },

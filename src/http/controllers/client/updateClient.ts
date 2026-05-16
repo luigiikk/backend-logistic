@@ -29,11 +29,7 @@ export async function updateClient(
   const { name,  email, phone_number, CNPJ, street, number, complement, city, country, state, zipcode} = request.body;
   const { id } = request.params;
 
-  try {
-    await updateClientService(id, { name,  email, phone_number, CNPJ, company_id, street, number, complement, city, country, state, zipcode});
-  } catch (error) {
-    return reply.status(409).send();
-  }
-
-  return reply.status(200).send({ message: 'Client updated successfully' });
+  await updateClientService(id, { name,  email, phone_number, CNPJ, company_id, street, number, complement, city, country, state, zipcode});
+  
+  return reply.status(200).send({ message: 'Client atualizado com sucesso' });
 }

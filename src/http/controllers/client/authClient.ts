@@ -18,22 +18,12 @@ export async function authClient(
 ) {
   const { CNPJ, password } = request.body;
 
-  try {
-   const { client } = await authClientService({ CNPJ, password });
+  const { client } = await authClientService({ CNPJ, password });
   
-    const token = await reply.jwtSign(
-      { sub: client.id, role: 'client'},
-      { expiresIn: "1d" }
-    );
-    
-    return reply.status(200).send({ token });
-  } catch (error) {
-    if (error instanceof InvalidCredentialsError) {
-      return reply.status(401).send({
-        message: error.message
-      });
-    }
-    
-    throw error;
-  }
+  const token = await reply.jwtSign(
+    { sub: client.id, role: 'client'},
+    { expiresIn: "1d" }
+  );
+
+  return reply.status(200).send({ token });
 }

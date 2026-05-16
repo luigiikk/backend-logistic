@@ -51,7 +51,7 @@ export class PrismaAddresRepository {
     if (!addresExists) {
       throw new Error('addres not found');
     }
-    await prisma.addres.update({
+    return await prisma.addres.update({
       where: { id }, 
       data,            
     });

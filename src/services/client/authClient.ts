@@ -1,6 +1,7 @@
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
 import { compare } from "bcryptjs";
 import { InvalidCredentialsError } from "../erros/invalid-credentials-error.js";
+import { AppError } from "../erros/AppError.js";
 
 interface ClientAuthParams {
   CNPJ: string;
@@ -13,17 +14,17 @@ export async function authClientService({ CNPJ, password }: ClientAuthParams) {
   const client = await prismaClientRepository.getClientByCNPJ(CNPJ);
  
   if (!client) {
-    throw new InvalidCredentialsError();
+    throw new AppError('Credenciais Inválidas', 401);
   }
 
   if (!client.password_hash) {
-    throw new InvalidCredentialsError();
+    throw new AppError('Credenciais Inválidas', 401);
   }
 
   const doesPasswordMatch = await compare(password, client.password_hash);
 
     if (!doesPasswordMatch) {
-      throw new InvalidCredentialsError();
+      throw new AppError('Credenciais Inválidas', 401);
     }
 
   return { client };

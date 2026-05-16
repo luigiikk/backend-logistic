@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma.js";
 import { PrismaClientRepository } from "@/repositories/prisma-client-repository.js";
 import { hash } from "bcryptjs";
 import { registerAddresService, AddresRegisterParams } from "../addres/registerAddres.js";
+import { AppError } from "../erros/AppError.js";
 
 interface ClientRegisterParams {
   name: string;
@@ -40,16 +41,16 @@ export async function registerClientService({
   });
 
   if (clientWithSameEmail) {
-    throw new Error("Email already exists");
+    throw new AppError('Email ja existente', 409);
   }
 
   if (clientWithSameCNPJ) {
-    throw new Error("CNPJ already exists");
+    throw new AppError('Cnpj ja existente', 409);
   }
 
   const newAddress = await registerAddresService(addressData);
   if (!newAddress) {
-    throw new Error("Failed to create address");
+    throw new AppError('Falha ao criar endereço', 409);
   }
   
   const addres_id = newAddress.id;

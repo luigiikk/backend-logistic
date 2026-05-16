@@ -7,8 +7,6 @@ export async function getClient(
   reply: FastifyReply
 ) {
   const { id } = request.params as {id: number};
-
-  try {
     await request.jwtVerify();
     const company_id = request.user.sub;
 
@@ -30,8 +28,6 @@ export async function getClient(
       country: client.addres?.country ?? null,
       zipcode: client.addres?.zipcode ?? null,
     };
+    
     return reply.status(200).send(response);
-  } catch (error) {
-    return reply.status(409).send(error);
-  }  
 }
