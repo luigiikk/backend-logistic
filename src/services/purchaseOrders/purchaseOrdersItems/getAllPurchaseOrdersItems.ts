@@ -1,10 +1,6 @@
 import { PrismaPurchaseOrdersItemsRepository } from "@/repositories/prisma-purchase-orders-items-repository.js";
-import { PrismaPurchaseOrdersRepository } from "@/repositories/prisma-purchase-orders-repository.js";
 
-
-export async function getAllPurchaseOrdersItemsService(
-  company_id: number,
-) {
+export async function getAllPurchaseOrdersItemsService(company_id: number) {
   const repository = new PrismaPurchaseOrdersItemsRepository();
 
   return await repository.getAllPurchaseOrdersItems(company_id);

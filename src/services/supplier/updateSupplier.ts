@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma.js";
 import { PrismaAddresRepository } from "@/repositories/prisma-address-repository.js";
-import { PrismaCompaniesRepository } from "@/repositories/prisma-companies-repository.js";
 import { PrismaSupplierRepository } from "@/repositories/prisma-supplier-repository.js";
-import { hash } from "bcryptjs";
 
 interface SupplierUpdateParams {
   name: string;

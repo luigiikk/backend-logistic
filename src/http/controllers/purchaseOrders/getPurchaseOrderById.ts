@@ -1,4 +1,3 @@
-import { getAllPurchaseOrdersService } from "@/services/purchaseOrders/getAllPurchaseOrders.js";
 import { getPurchaseOrdersByIdService } from "@/services/purchaseOrders/getPurchaseOrdersById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 

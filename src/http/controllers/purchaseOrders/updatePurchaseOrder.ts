@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import z from "zod";
-import { updateInvoiceService } from "@/services/invoice/updateInvoice.js";
 import { updatePurchaseOrdersService } from "@/services/purchaseOrders/updatePurchaseOrder.js";
 
 export const purchaseOrdersUpdateBodySchema = z.object({

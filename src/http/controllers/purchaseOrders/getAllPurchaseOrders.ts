@@ -1,5 +1,4 @@
 import { getAllPurchaseOrdersService } from "@/services/purchaseOrders/getAllPurchaseOrders.js";
-import { purchaseOrdersService } from "@/services/purchaseOrders/purchaseOrders.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function getAllPurchaseOrders(
