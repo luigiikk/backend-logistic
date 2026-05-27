@@ -1,4 +1,5 @@
 import type { FastifyTypedInstance } from "@/@types/types.js";
+import { deleteSupplier } from "@/http/controllers/supplier/deleteSupplier.js";
 import { getAllSupplierByCompany } from "@/http/controllers/supplier/getAllSupplierByCompany.js";
 import { getSupplierById } from "@/http/controllers/supplier/getSupplierById.js";
 import { registerSupplier, supplierRegisterBodySchema } from "@/http/controllers/supplier/registerSupplier.js";
@@ -110,5 +111,22 @@ export async function supplierRoutes(app: FastifyTypedInstance) {
       },
     },
     getSupplierById
+  );
+
+  app.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["supplier"],
+        description: "Delete supplier",
+        params: z.object({
+          id: z.coerce.number(),
+        }),
+        response: {
+          200: z.object({ message: z.string() }).describe("Supplier deleted"),
+        },
+      },
+    },
+    deleteSupplier
   );
 }

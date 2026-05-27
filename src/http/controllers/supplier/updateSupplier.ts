@@ -30,11 +30,12 @@ export async function updateSupplier(
 
   const { name, email, CNPJ, contactPerson, phone, notes, street, number, complement, city, country, state, zipcode} = request.body;
 
-  const { id } = request.params;
+  const id = Number(request.params.id);
   try {
     await updateSupplierService(id, { name, email, phone, CNPJ, contactPerson, notes, company_id, street, number, complement, city, country, state, zipcode});
     return reply.status(200).send({ message: 'Fornecedor atualizado com sucesso' });
   } catch (error) {
-    return reply.status(500).send({ message: "Erro interno ao atualizar" });
-  }
+  console.error("Erro ao atualizar fornecedor:", error); 
+  return reply.status(500).send({ message: "Erro interno ao atualizar" });
+}
 }

@@ -31,4 +31,16 @@ export class PrismaSupplierRepository {
       include: {addres: true}
     })
   }
+
+  async deleteSupplier(id: number, company_id: number) {
+  const supplier = await prisma.supplier.findUnique({
+    where: { id, company_id },
+    select: { addres_id: true },
+  });
+
+  if (!supplier) throw new Error("Supplier not found");
+
+  await prisma.supplier.delete({ where: { id } });
+  await prisma.addres.delete({ where: { id: supplier.addres_id } });
+}
 }

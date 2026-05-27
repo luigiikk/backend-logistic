@@ -1,29 +1,22 @@
-import { getPurchaseOrdersByIdService } from "@/services/purchaseOrders/getPurchaseOrdersById.js";
 import { getPurchaseOrdersItemsByIdService } from "@/services/purchaseOrders/purchaseOrdersItems/getPurchaseOrdersItemsById.js";
 import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function getPurchaseOrdersItemsById(
-  request: FastifyRequest,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply
 ) {
-
-const { id } = request.params as { id: number };
-
   await request.jwtVerify();
+  const company_id = Number(request.user.sub);
 
-  if (request.user.role != "company") {
-    return reply.status(409).send();
-  }
+  if (request.user.role !== "company") return reply.status(409).send();
 
-  const company_id = request.user.sub;
+  const id = Number(request.params.id);
 
   try {
-    const purchaseOrdersItem = await getPurchaseOrdersItemsByIdService(id, company_id);
-    return reply.status(200).send(purchaseOrdersItem);
+    const item = await getPurchaseOrdersItemsByIdService(id, company_id);
+    return reply.status(200).send(item);
   } catch (error) {
-    console.log(error);
-    return reply
-      .status(409)
-      .send({ error: "Could not found purchase orders." });
+    console.error("Erro ao buscar item:", error);
+    return reply.status(500).send({ error: "Could not fetch purchase order item." });
   }
 }
