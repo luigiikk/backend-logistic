@@ -12,16 +12,9 @@ export async function getVehicle(request: FastifyRequest, reply: FastifyReply) {
       return reply.status(409).send();
     }
 
-    const vehicle = await getVehicleService(id, company_id);
+  const vehicle = await getVehicleService(id, company_id);
 
-    const response = {
-      plate: vehicle.plate,
-      model: vehicle.model,
-      total_volume: vehicle.total_volume,
-      status: vehicle.status.name,
-    };
-
-    return reply.status(200).send(response);
+    return reply.status(200).send(vehicle);
   } catch (error) {
     return reply.status(409).send(error);
   }

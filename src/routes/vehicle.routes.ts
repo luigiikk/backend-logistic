@@ -9,27 +9,63 @@ import z from "zod";
 
 
 export async function vehicleRoutes(app: FastifyTypedInstance) {
-  app.get(
-    "/:id",
-    {
-      schema: {
-        tags: ["vehicle"],
-        description: "Get vehicle by id",
-        params: z.object({
-          id: z.coerce.number(),
-        }),
-        response: {
-          200: z.object({
-            plate: z.string(),
-            model: z.string(),
-            total_volume: z.number().positive(),
-            status: z.string(),
+ app.get(
+  "/:id",
+  {
+    schema: {
+      tags: ["vehicle"],
+      description: "Get vehicle by id",
+      params: z.object({
+        id: z.coerce.number(),
+      }),
+      response: {
+        200: z.object({
+          id: z.number(),
+          plate: z.string(),
+          model: z.string().nullable(),
+          total_volume: z.number(),
+          status_id: z.number(),
+          company_id: z.number(),
+          created_at: z.date(),
+          updated_at: z.date(),
+          status: z.object({
+            id: z.number(),
+            name: z.string(),
+            type: z.string(),
+            is_default: z.boolean(),
+            company_id: z.number().nullable(),
           }),
-        },
+          documents: z.array(z.object({
+            id: z.number(),
+            type: z.string(),
+            number: z.string().nullable(),
+            issued_at: z.date().nullable(),
+            expires_at: z.date().nullable(),
+            file_url: z.string().nullable(),
+            notes: z.string().nullable(),
+            created_at: z.date(),
+            updated_at: z.date(),
+            vehicle_id: z.number(),
+          })),
+          maintenances: z.array(z.object({
+            id: z.number(),
+            type: z.string(),
+            description: z.string().nullable(),
+            cost: z.number().nullable(),
+            mileage: z.number().nullable(),
+            performed_at: z.date().nullable(),
+            next_due_at: z.date().nullable(),
+            performed_by: z.string().nullable(),
+            created_at: z.date(),
+            updated_at: z.date(),
+            vehicle_id: z.number(),
+          })),
+        }),
       },
     },
-    getVehicle
-  );
+  },
+  getVehicle
+);
   
   app.get(
     "",
@@ -55,19 +91,60 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
   );
   
   app.post(
-    "",
-    {
-     schema: {
-          tags: ["vehicle"],
-          description: "Create new vehicle",
-          body: vehicleRegisterBodySchema,
-          response: {
-            201: z.null().describe("Vehicle created"),
-          },
-        },
+  "",
+  {
+    schema: {
+      tags: ["vehicle"],
+      description: "Create new vehicle",
+      body: vehicleRegisterBodySchema,
+      response: {
+        201: z.object({
+          id: z.number(),
+          plate: z.string(),
+          model: z.string().nullable(),
+          total_volume: z.number(),
+          status_id: z.number(),
+          company_id: z.number(),
+          created_at: z.date(),
+          updated_at: z.date(),
+          status: z.object({
+            id: z.number(),
+            name: z.string(),
+            type: z.string(),
+            is_default: z.boolean(),
+            company_id: z.number().nullable(),
+          }),
+          documents: z.array(z.object({
+            id: z.number(),
+            type: z.string(),
+            number: z.string().nullable(),
+            issued_at: z.date().nullable(),
+            expires_at: z.date().nullable(),
+            file_url: z.string().nullable(),
+            notes: z.string().nullable(),
+            created_at: z.date(),
+            updated_at: z.date(),
+            vehicle_id: z.number(),
+          })),
+          maintenances: z.array(z.object({
+            id: z.number(),
+            type: z.string(),
+            description: z.string().nullable(),
+            cost: z.number().nullable(),
+            mileage: z.number().nullable(),
+            performed_at: z.date().nullable(),
+            next_due_at: z.date().nullable(),
+            performed_by: z.string().nullable(),
+            created_at: z.date(),
+            updated_at: z.date(),
+            vehicle_id: z.number(),
+          })),
+        }),
       },
-      registerVehicle
-    );
+    },
+  },
+  registerVehicle
+);
   
   app.put(
     "/:id",
