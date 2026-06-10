@@ -24,6 +24,9 @@ import { purchaseOrdersItemsRoutes } from "./routes/purchase-order-items.routes.
 import { supportRoutes } from "./routes/suport.routes.js";
 import { orderTrackingRoutes } from "./routes/order-tracking.route.js";
 import { AppError } from "./services/erros/AppError.js";
+import { vehicleMaintenanceRoutes } from "./routes/maintenance-vechile.routes.js";
+import { vehicleDocumentRoutes } from "./routes/document-vehicle.routes.js";
+import { reportsRoutes } from "./routes/reports.routes.js";
 
 // input data
 app.setValidatorCompiler(validatorCompiler);
@@ -90,6 +93,9 @@ app.register(supplierRoutes, {prefix: "supplier"});
 app.register(purchaseOrdersItemsRoutes, {prefix: "purchase-order-items"});
 app.register(supportRoutes, {prefix: "email"})
 app.register(orderTrackingRoutes, {prefix: "tracking"})
+app.register(vehicleDocumentRoutes, { prefix: "/vehicle/:vehicle_id/documents" });
+app.register(vehicleMaintenanceRoutes, { prefix: "/vehicle/:vehicle_id/maintenance" });
+app.register(reportsRoutes, { prefix: "reports" });
 
 app.listen({
   host: '0.0.0.0',

@@ -80,6 +80,8 @@ model Vehicles {
   status  Status    @relation(fields: [status_id], references: [id])
   company Companies @relation(fields: [company_id], references: [id])
   orders  Orders[]  @relation("VehicleOrders")
+  documents    VehicleDocuments[]
+  maintenances VehicleMaintenance[]
 
   @@index([status_id])
   @@index([company_id])
@@ -402,4 +404,37 @@ model OrderTracking {
   @@index([order_id])
   @@index([status_id])
   @@map("order_tracking")
+}
+
+model VehicleDocuments {
+  id          Int      @id @default(autoincrement())
+  vehicle_id  Int
+  type        String 
+  number      String?  
+  issued_at   DateTime?
+  expires_at  DateTime? 
+  file_url    String?
+  notes       String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  vehicle Vehicles @relation(fields: [vehicle_id], references: [id])
+  @@map("vehicle_documents")
+}
+
+model VehicleMaintenance {
+  id            Int      @id @default(autoincrement())
+  vehicle_id    Int
+  type          String
+  description   String?
+  cost          Float?
+  mileage       Int?
+  performed_at  DateTime?
+  next_due_at   DateTime?
+  performed_by  String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  vehicle Vehicles @relation(fields: [vehicle_id], references: [id])
+  @@map("vehicle_maintenance")
 }
