@@ -48,6 +48,7 @@ app.register(fastifySwagger, {
       title: 'Logistic API',
       version: '1.0.0',
     },
+    security: [{ jwt: [] }],
     components: {
       securitySchemes: {
         jwt: {
