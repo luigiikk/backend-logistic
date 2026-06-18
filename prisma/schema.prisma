@@ -418,7 +418,7 @@ model VehicleDocuments {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  vehicle Vehicles @relation(fields: [vehicle_id], references: [id])
+  vehicle Vehicles @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
   @@map("vehicle_documents")
 }
 
@@ -435,6 +435,6 @@ model VehicleMaintenance {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  vehicle Vehicles @relation(fields: [vehicle_id], references: [id])
+  vehicle Vehicles @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
   @@map("vehicle_maintenance")
 }
