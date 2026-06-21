@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { allocateVehicleToOrderService } from "@/services/order/allocateVehicleToOrder.js";
+import { prisma } from "@/lib/prisma.js";
 
 const paramsSchema = z.object({
   order_id: z.coerce.number(),
@@ -21,7 +22,17 @@ export async function allocateVehicleToOrder(
   const { vehicle_id } = bodySchema.parse(request.body);
 
   await request.jwtVerify();
-  const company_id = request.user.sub;
+  let company_id = request.user.sub;
+
+  if (request.user.role !== "company") {
+    const employee = await prisma.employees.findUnique({
+      where: { id: Number(request.user.sub) },
+    });
+    if (!employee) {
+      return reply.status(409).send();
+    }
+    company_id = employee.company_id;
+  }
 
   try {
     await allocateVehicleToOrderService({ order_id, vehicle_id, company_id });
