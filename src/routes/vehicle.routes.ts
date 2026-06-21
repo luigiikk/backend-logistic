@@ -73,6 +73,9 @@ export async function vehicleRoutes(app: FastifyTypedInstance) {
       schema: {
         tags: ["vehicle"],
         description: "List all vehicles",
+        querystring: z.object({
+          status: z.string().optional(),
+        }),
         response: {
           200: z.array(
             z.object({

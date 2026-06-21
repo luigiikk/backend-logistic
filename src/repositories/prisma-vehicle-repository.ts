@@ -52,9 +52,19 @@ export class PrismaVehiclesRepository {
     return vehicle;
   }
  
-  async getAllVehiclesByCompany(company_id: number) {
+  async getAllVehiclesByCompany(company_id: number, statusName?: string) {
     const vehicles = await prisma.vehicles.findMany({
-      where: { company_id },
+      where: { 
+        company_id,
+        ...(statusName && {
+          status: {
+            name: {
+              equals: statusName,
+              mode: 'insensitive',
+            },
+          },
+        }),
+      },
       select: {
         id: true,
         plate: true,

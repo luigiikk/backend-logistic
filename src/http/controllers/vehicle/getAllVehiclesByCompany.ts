@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { getAllVehiclesByCompanyService } from "@/services/vehicle/getAllVehiclesByCompany.js";
 
 export async function getAllVehiclesByCompany(
-  request: FastifyRequest,
+  request: FastifyRequest<{ Querystring: { status?: string } }>,
   reply: FastifyReply
 ) {
   try {
@@ -13,7 +13,9 @@ export async function getAllVehiclesByCompany(
       return reply.status(409).send();
     }
 
-    const vehicles = await getAllVehiclesByCompanyService(company_id);
+    const { status } = request.query;
+
+    const vehicles = await getAllVehiclesByCompanyService(company_id, status);
     const formattedVehicles = vehicles.map((vehicle) => {
 
       return {
