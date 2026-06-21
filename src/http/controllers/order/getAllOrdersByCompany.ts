@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { getAllOrdersByCompanyService } from "@/services/order/getAllOrdersByCompany.js";
+import { prisma } from "@/lib/prisma.js";
 
 export async function getAllOrdersByCompany(
   request: FastifyRequest,
@@ -7,10 +8,17 @@ export async function getAllOrdersByCompany(
 ) {
   try {
     await request.jwtVerify();
-    const company_id = request.user.sub;
+    
+    let company_id = request.user.sub;
 
-    if(request.user.role != "company"){
-      return reply.status(409).send();
+    if (request.user.role !== "company") {
+      const employee = await prisma.employees.findUnique({
+        where: { id: Number(request.user.sub) },
+      });
+      if (!employee) {
+        return reply.status(409).send();
+      }
+      company_id = employee.company_id;
     }
 
     const orders = await getAllOrdersByCompanyService(company_id);

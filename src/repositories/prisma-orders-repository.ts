@@ -8,7 +8,7 @@ export interface CreateOrderTrackingParams {
   order_id: number;
   status_id: number;
   location?: string | null;
-  description: string;
+  description?: string | null;
   estimated_delivery?: Date | null;
 }
 

@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { getOrderTrackingHistoryByOrderIdService } from "@/services/order/tracking/getOrderTrackingHistoryByOrderIdService.js";
+import { prisma } from "@/lib/prisma.js";
 
 export async function getOrderTrackingHistoryByOrderId(
   request: FastifyRequest,
@@ -10,7 +11,17 @@ export async function getOrderTrackingHistoryByOrderId(
   try {
     await request.jwtVerify();
 
-    const company_id = Number(request.user.sub);
+    let company_id = Number(request.user.sub);
+
+    if (request.user.role !== "company") {
+      const employee = await prisma.employees.findUnique({
+        where: { id: Number(request.user.sub) },
+      });
+      if (!employee) {
+        return reply.status(409).send({ message: "Employee not found" });
+      }
+      company_id = employee.company_id;
+    }
 
     const orderWithTrackingHistory =
       await getOrderTrackingHistoryByOrderIdService({

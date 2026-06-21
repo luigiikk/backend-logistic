@@ -9,7 +9,7 @@ export interface OrderTrackingRegisterParams {
 
   location?: string | null;
 
-  description: string;
+  description?: string | null;
 
   estimated_delivery?: Date | string | null;
 }
