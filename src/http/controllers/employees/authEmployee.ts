@@ -30,7 +30,13 @@ export async function authEmployee(
         return reply.status(400).send({message: "role não encontrada"})
     }
     const token = await reply.jwtSign(
-      { sub: employee.id, role: employeeRoles.name ?? "empregado" },
+      {
+        sub: employee.id,
+        role: employeeRoles.name ?? "empregado",
+        name: employee.name,
+        email: employee.email,
+        enrollment: employee.enrollment,
+      },
       { expiresIn: "1d" }
     );
     
