@@ -21,10 +21,15 @@ const invoiceResponseSchema = z.object({
     id: z.number().int(),
     supplier_id: z.number().int(),
     status_id: z.number().int(),
-    total_value: z.number(),
+    total_value: z.number().nullable(),
     company_id: z.number().int(),
     created_at: z.coerce.date(),
     updated_at: z.coerce.date(),
+    code: z.string().optional(),
+    status: z.object({
+      id: z.number().int(),
+      name: z.string(),
+    }).nullable().optional(),
   }),
 });
 

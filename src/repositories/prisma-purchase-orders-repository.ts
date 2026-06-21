@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma.js";
 import { checkCapacity, calcIncomingVolumeByWarehouse } from "@/util/capacityChecker.js";
+import { generateInvoiceNumber } from "@/util/generateInvoiceNumber.js";
 
 interface PurchaseOrdersData {
   company_id: number;
@@ -73,11 +74,21 @@ export class PrismaPurchaseOrdersRepository {
         });
       }
 
+      const invoiceNumber = await generateInvoiceNumber();
       const invoice = await tx.invoice.create({
-        data: { issue_date: new Date(), company_id, purchase_order_id: purchaseOrder.id },
+        data: { 
+          invoice_number: invoiceNumber,
+          issue_date: new Date(), 
+          company_id, 
+          purchase_order_id: purchaseOrder.id 
+        },
       });
 
-      return { ...purchaseOrder, invoice };
+      return { 
+        ...purchaseOrder, 
+        code: `PC-${String(purchaseOrder.id).padStart(5, "0")}`,
+        invoice 
+      };
     });
   }
 
@@ -146,12 +157,16 @@ export class PrismaPurchaseOrdersRepository {
         ? await tx.invoice.update({ where: { id: invoice.id }, data: { updated_at: new Date() } })
         : null;
 
-      return { ...updatedOrder, invoice: updatedInvoice };
+      return { 
+        ...updatedOrder, 
+        code: `PC-${String(updatedOrder.id).padStart(5, "0")}`,
+        invoice: updatedInvoice 
+      };
     });
   }
 
   async getAllPurchaseOrders(company_id: number) {
-    return await prisma.purchase_orders.findMany({
+    const orders = await prisma.purchase_orders.findMany({
       where: { company_id },
       include: {
         supplier: true,
@@ -160,10 +175,15 @@ export class PrismaPurchaseOrdersRepository {
       },
       orderBy: { created_at: "desc" },
     });
+
+    return orders.map((o) => ({
+      ...o,
+      code: `PC-${String(o.id).padStart(5, "0")}`,
+    }));
   }
 
   async getPurchaseOrdersById(id: number, company_id: number) {
-    return await prisma.purchase_orders.findFirst({
+    const order = await prisma.purchase_orders.findFirst({
       where: { id, company_id },
       include: {
         supplier: true,
@@ -171,6 +191,12 @@ export class PrismaPurchaseOrdersRepository {
         items: { include: { resource: { include: { category: true } }, Warehouse: true } },
       },
     });
+
+    if (!order) return null;
+    return {
+      ...order,
+      code: `PC-${String(order.id).padStart(5, "0")}`,
+    };
   }
 
   async delete(id: number, company_id: number) {

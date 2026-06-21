@@ -27,7 +27,13 @@ export class PrismaInvoicesRepository {
       },
     });
 
-    return invoices;
+    return invoices.map((inv) => ({
+      ...inv,
+      purchase_order: {
+        ...inv.purchase_order,
+        code: `PC-${String(inv.purchase_order.id).padStart(5, "0")}`,
+      },
+    }));
   }
 
   async getInvoice(id: number, company_id: number) {
@@ -37,18 +43,61 @@ export class PrismaInvoicesRepository {
         company_id,
       },
       include: {
-        purchase_order: true,
+        purchase_order: {
+          include: {
+            status: true,
+          },
+        },
       },
     });
 
-    return invoice;
+    if (!invoice) return null;
+    return {
+      ...invoice,
+      purchase_order: {
+        ...invoice.purchase_order,
+        code: `PC-${String(invoice.purchase_order.id).padStart(5, "0")}`,
+      },
+    };
   }
 
   async deleteInvoice(id: number) {
-    await prisma.invoice.delete({
-      where: {
-        id,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const invoice = await tx.invoice.findUnique({
+        where: { id },
+      });
+
+      if (!invoice) throw new Error("Invoice not found");
+
+      const { purchase_order_id, company_id } = invoice;
+
+      const order = await tx.purchase_orders.findUnique({
+        where: { id: purchase_order_id, company_id },
+        include: { items: true },
+      });
+
+      if (order) {
+        for (const item of order.items) {
+          const inventory = await tx.inventory.findFirst({
+            where: { resource_id: item.resource_id, warehouse_id: item.warehouse_id, company_id },
+          });
+
+          if (inventory) {
+            await tx.inventory.update({
+              where: { id: inventory.id },
+              data: { quantity: { decrement: item.quantity ?? 0 } },
+            });
+          }
+        }
+
+        await tx.purchase_order_items.deleteMany({ where: { purchase_order_id, company_id } });
+      }
+
+      await tx.invoice.delete({ where: { id } });
+
+      if (order) {
+        await tx.purchase_orders.delete({ where: { id: purchase_order_id } });
+      }
     });
   }
 

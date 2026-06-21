@@ -42,6 +42,7 @@ app.get(
           company_id: z.number().int(),
           created_at: z.coerce.date(),
           updated_at: z.coerce.date(),
+          code: z.string().optional(),
 
           items: z.array(
             z.object({
@@ -96,7 +97,8 @@ app.get(
               supplier_id: z.number(),
               status_id: z.number(),
               company_id: z.number(),
-              total_value: z.number(),
+              total_value: z.number().nullable(),
+              code: z.string().optional(),
 
               created_at: z.coerce.date(),
               updated_at: z.coerce.date(),
