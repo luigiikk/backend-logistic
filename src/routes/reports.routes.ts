@@ -2,16 +2,20 @@ import type { FastifyTypedInstance } from "@/@types/types.js";
 import { getOrdersByMonth } from "@/http/controllers/reports/orderByMonth.js";
 import { getOrdersByPeriod } from "@/http/controllers/reports/orderByPeriod.js";
 import { getProductsByMonth } from "@/http/controllers/reports/productByMonth.js";
+import { getProductsByPeriod } from "@/http/controllers/reports/productByPeriod.js";
 import z from "zod";
 
 const productSchema = z.object({
   id: z.number(),
   name: z.string().nullable(),
+  description: z.string().nullable().optional(),
   quantity: z.number().nullable(),
   volume: z.number(),
   height: z.number(),
   width: z.number(),
   length: z.number(),
+  order_id: z.number().int().optional(),
+  order_code: z.string().nullable().optional(),
 });
 
 const orderSchema = z.object({
@@ -19,8 +23,12 @@ const orderSchema = z.object({
   code: z.string().nullable(),
   status: z.object({ name: z.string() }),
   created_at: z.date(),
+  recipient: z.object({ name: z.string() }),
+  vehicle: z.object({ plate: z.string() }).nullable(),
   products: z.array(
     z.object({
+      id: z.number(),
+      name: z.string().nullable(),
       quantity: z.number().nullable(),
       volume: z.number(),
     })
@@ -100,5 +108,31 @@ export async function reportsRoutes(app: FastifyTypedInstance) {
       },
     },
     getProductsByMonth
+  );
+
+  // GET /reports/products/period?start_date=2026-01-01&end_date=2026-06-30
+  app.get(
+    "/products/period",
+    {
+      schema: {
+        tags: ["reports"],
+        description: "Get products by period",
+        querystring: z.object({
+          start_date: z.string(),
+          end_date: z.string(),
+        }),
+        response: {
+          200: z.object({
+            start_date: z.date(),
+            end_date: z.date(),
+            total_products: z.number(),
+            total_quantity: z.number(),
+            total_volume: z.number(),
+            products: z.array(productSchema),
+          }),
+        },
+      },
+    },
+    getProductsByPeriod
   );
 }

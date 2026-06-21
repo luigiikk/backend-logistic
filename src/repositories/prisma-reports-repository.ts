@@ -16,8 +16,10 @@ export class PrismaReportsRepository {
           code: true,
           status: { select: { name: true } },
           created_at: true,
+          recipient: { select: { name: true } },
+          vehicle: { select: { plate: true } },
           products: {
-            select: { quantity: true, volume: true },
+            select: { id: true, name: true, quantity: true, volume: true },
           },
         },
       }),
@@ -48,8 +50,10 @@ export class PrismaReportsRepository {
           code: true,
           status: { select: { name: true } },
           created_at: true,
+          recipient: { select: { name: true } },
+          vehicle: { select: { plate: true } },
           products: {
-            select: { quantity: true, volume: true },
+            select: { id: true, name: true, quantity: true, volume: true },
           },
         },
       }),
@@ -80,6 +84,7 @@ export class PrismaReportsRepository {
           select: {
             id: true,
             name: true,
+            description: true,
             quantity: true,
             volume: true,
             height: true,
@@ -90,10 +95,57 @@ export class PrismaReportsRepository {
       },
     });
 
-    const products = orders.flatMap((o) => o.products);
+    const products = orders.flatMap((o) =>
+      o.products.map((p) => ({
+        ...p,
+        order_id: o.id,
+        order_code: o.code,
+      }))
+    );
     const total_quantity = products.reduce((acc, p) => acc + (p.quantity ?? 0), 0);
     const total_volume = products.reduce((acc, p) => acc + p.volume, 0);
 
     return { products, total_products: products.length, total_quantity, total_volume, year, month };
+  }
+
+  async getProductsByPeriod(
+    company_id: number,
+    start_date: Date,
+    end_date: Date
+  ) {
+    const orders = await prisma.orders.findMany({
+      where: {
+        company_id,
+        created_at: { gte: start_date, lte: end_date },
+      },
+      select: {
+        id: true,
+        code: true,
+        products: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            quantity: true,
+            volume: true,
+            height: true,
+            width: true,
+            length: true,
+          },
+        },
+      },
+    });
+
+    const products = orders.flatMap((o) =>
+      o.products.map((p) => ({
+        ...p,
+        order_id: o.id,
+        order_code: o.code,
+      }))
+    );
+    const total_quantity = products.reduce((acc, p) => acc + (p.quantity ?? 0), 0);
+    const total_volume = products.reduce((acc, p) => acc + p.volume, 0);
+
+    return { products, total_products: products.length, total_quantity, total_volume, start_date, end_date };
   }
 }
